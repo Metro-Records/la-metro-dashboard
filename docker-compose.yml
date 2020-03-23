@@ -9,6 +9,8 @@ services:
     # Allow container to be attached to, e.g., to access the pdb shell
     stdin_open: true
     tty: true
+    environment:
+      - AIRFLOW_HOME=/app
     ports:
       # Map ports on your computer to ports on your container. This allows you,
       # e.g., to visit your containerized application in a browser on your
@@ -21,21 +23,7 @@ services:
       # Mount the development directory as a volume into the container, so
       # Docker automatically recognizes your changes.
       - .:/app
-    command: python manage.py runserver 0.0.0.0:8000
-
-  migration:
-    container_name: la-metro-dashboard-migration
-    image: la-metro-dashboard:latest
-    depends_on:
-      # Declaring this dependency ensures that your application image is built
-      # before migrations are run, and that your application and migrations can
-      # be run from the same image, rather than creating purpose-specific
-      # copies.
-      - app
-    volumes:
-      # These should generally be the same as your application volumes.
-      - .:/app
-    command: python manage.py migrate
+    command: airflow webserver -p 8000
 
   postgres:
     container_name: la-metro-dashboard-postgres
@@ -60,6 +48,25 @@ services:
       - la-metro-dashboard-db-data:/var/lib/postgresql/data
     ports:
       - 32001:5432
+
+  scheduler:
+    image: la-metro-dashboard:latest
+    container_name: la-metro-dashboard-scheduler
+    restart: always
+    # Allow container to be attached to, e.g., to access the pdb shell
+    stdin_open: true
+    tty: true
+    environment:
+      - AIRFLOW_HOME=/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Mount the development directory as a volume into the container, so
+      # Docker automatically recognizes your changes.
+      - .:/app
+    command: airflow scheduler
+
 
 volumes:
   # Declare your named volume for Postgres.
