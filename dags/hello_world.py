@@ -13,7 +13,7 @@ default_args = {
 dag = DAG(
     'hello_world',
     default_args=default_args,
-    schedule_interval=None
+    schedule_interval='@hourly'
 )
 
 def print_phrase():
