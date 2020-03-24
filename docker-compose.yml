@@ -23,6 +23,7 @@ services:
       # Mount the development directory as a volume into the container, so
       # Docker automatically recognizes your changes.
       - .:/app
+    entrypoint: /app/docker-entrypoint.sh
     command: airflow webserver -p 8000
 
   postgres:
