@@ -13,11 +13,10 @@ default_args = {
 dag = DAG(
     'hello_world',
     default_args=default_args,
-    schedule_interval='@hourly'
+    schedule_interval=None
 )
 
 def print_phrase():
-    breakpoint()
     print("Hello, world")
 
 
