@@ -11,6 +11,7 @@ services:
     tty: true
     environment:
       - AIRFLOW_HOME=/app
+      - AIRFLOW_MIGRATE=on
     ports:
       # Map ports on your computer to ports on your container. This allows you,
       # e.g., to visit your containerized application in a browser on your
