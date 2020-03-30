@@ -1,0 +1,75 @@
+version: '2.4'
+
+services:
+  app:
+    image: la-metro-dashboard
+    container_name: la-metro-dashboard
+    restart: always
+    build: .
+    # Allow container to be attached to, e.g., to access the pdb shell
+    stdin_open: true
+    tty: true
+    environment:
+      - AIRFLOW_HOME=/app
+      - AIRFLOW_MIGRATE=on
+    ports:
+      # Map ports on your computer to ports on your container. This allows you,
+      # e.g., to visit your containerized application in a browser on your
+      # computer.
+      - 8000:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Mount the development directory as a volume into the container, so
+      # Docker automatically recognizes your changes.
+      - .:/app
+    entrypoint: /app/docker-entrypoint.sh
+    command: airflow webserver -p 8000
+
+  postgres:
+    container_name: la-metro-dashboard-postgres
+    image: postgres:11
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      # The default Postgres image exposes a number of environmental variables
+      # that allow you to configure the container's behavior, without writing
+      # any additional code. Specify the name of your database, and any other
+      # variables, here. https://hub.docker.com/_/postgres/#environment-variables
+      - POSTGRES_DB=la_metro_dashboard
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      # By default, Postgres instantiates an anonymous volume. Use a named
+      # one, so your data persists beyond the life of the container. See this
+      # post for a discussion of the pitfalls of Postgres and anonymous
+      # volumes: https://linuxhint.com/run_postgresql_docker_compose/
+      - la-metro-dashboard-db-data:/var/lib/postgresql/data
+    ports:
+      - 32001:5432
+
+  scheduler:
+    image: la-metro-dashboard:latest
+    container_name: la-metro-dashboard-scheduler
+    restart: always
+    # Allow container to be attached to, e.g., to access the pdb shell
+    stdin_open: true
+    tty: true
+    environment:
+      - AIRFLOW_HOME=/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Mount the development directory as a volume into the container, so
+      # Docker automatically recognizes your changes.
+      - .:/app
+    command: airflow scheduler
+
+
+volumes:
+  # Declare your named volume for Postgres.
+  la-metro-dashboard-db-data:
