@@ -1,0 +1,3 @@
+[submodule "la-metro-councilmatic"]
+	path = la-metro-councilmatic
+	url = git@github.com:datamade/la-metro-councilmatic.git
