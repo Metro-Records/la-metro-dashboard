@@ -32,6 +32,9 @@ WORKDIR /app
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install the la-metro-councilmatic submodule
+RUN pip install /app/la-metro-councilmatic
+
 # Copy the contents of the current host directory (i.e., our app code) into
 # the container.
 COPY . /app
