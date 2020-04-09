@@ -13,7 +13,7 @@ default_args = {
 dag = DAG(
     'councilmatic_showmigrations',
     default_args=default_args,
-    schedule_interval="hourly"
+    schedule_interval=None
 )
 
 def print_migrations():
