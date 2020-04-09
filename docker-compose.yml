@@ -27,7 +27,7 @@ services:
       # Docker automatically recognizes your changes.
       - .:/app
     entrypoint: /app/docker-entrypoint.sh
-    command: airflow webserver -p 8000
+    command: airflow webserver -p 8080
 
   dashboard_postgres:
     container_name: la-metro-dashboard-postgres
