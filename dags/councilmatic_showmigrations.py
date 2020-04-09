@@ -1,3 +1,5 @@
+import sys
+
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -17,8 +19,9 @@ dag = DAG(
 )
 
 def print_migrations():
-    call_command('docker-compose', 'run', '--rm', 'airflow', 'python',
-                 'la-metro-councilmatic/manage.py', 'showmigrations')
+    sys.path.append("/app/la-metro-councilmatic/")
+
+    call_command('showmigrations')
 
 
 t1 = DjangoOperator(
