@@ -43,5 +43,3 @@ RUN pip install -r /app/la-metro-councilmatic/requirements.txt
 # Copy the contents of the current host directory (i.e., our app code) into
 # the container.
 COPY . /app
-
-CMD /app/docker-entrypoint.sh
