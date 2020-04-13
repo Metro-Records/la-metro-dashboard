@@ -19,8 +19,6 @@ dag = DAG(
 )
 
 def print_migrations():
-    sys.path.append("/app/la-metro-councilmatic/")
-
     call_command('showmigrations')
 
 

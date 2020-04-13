@@ -7,7 +7,6 @@ import django
 from django.conf import settings
 
 
-
 class DjangoOperator(PythonOperator):
 
     def pre_execute(self, *args, **kwargs):
