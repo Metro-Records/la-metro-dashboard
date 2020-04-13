@@ -1,0 +1,26 @@
+{
+  "name": "la-metro-dashboard",
+  "description": "An Airflow-based dashboard for LA Metro",
+  "scripts": {},
+  "env": {
+    "SECRET_KEY": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "hobby"
+    }
+  },
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "environments": {
+    "review": {
+      "addons": ["heroku-postgresql:hobby-basic"]
+    }
+  },
+  "buildpacks": [],
+  "stack": "container"
+}
