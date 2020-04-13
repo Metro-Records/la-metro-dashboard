@@ -18,6 +18,10 @@ LABEL maintainer "DataMade <info@datamade.us>"
 #
 # Read more on Dockerfile best practices at the source:
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices
+RUN apt-get update && \
+    apt-get install -y libxml2-dev libxslt1-dev antiword unrtf poppler-utils \
+                       tesseract-ocr flac ffmpeg lame libmad0 \
+                       libsox-fmt-mp3 sox libjpeg-dev swig gdal-bin
 
 # Inside the container, create an app directory and switch into it
 RUN mkdir /app
@@ -31,6 +35,10 @@ WORKDIR /app
 # https://blog.realkinetic.com/building-minimal-docker-containers-for-python-applications-37d0272c52f3
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install the la-metro-councilmatic submodule
+COPY ./la-metro-councilmatic /app/la-metro-councilmatic
+RUN pip install -r /app/la-metro-councilmatic/requirements.txt
 
 # Copy the contents of the current host directory (i.e., our app code) into
 # the container.
