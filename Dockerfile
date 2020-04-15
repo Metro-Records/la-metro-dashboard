@@ -36,9 +36,14 @@ WORKDIR /app
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install the la-metro-councilmatic submodule
-COPY ./la-metro-councilmatic/ /app/la-metro-councilmatic/
-RUN pip install -r /app/la-metro-councilmatic/requirements.txt
+# Install LA Metro Councilmatic
+RUN wget -q https://github.com/datamade/la-metro-councilmatic/archive/v0.11.4.tar.gz && \
+    tar -vxf v0.11.4.tar.gz && \
+    rm -Rf v0.11.14.tar.gz && \
+    mv la-metro-councilmatic-0.11.4/ /la-metro-councilmatic && \
+    cp /la-metro-councilmatic/councilmatic/settings_deployment.py.example \
+       /la-metro-councilmatic/councilmatic/settings_deployment.py && \
+    pip install -r /la-metro-councilmatic/requirements.txt
 
 # Copy the contents of the current host directory (i.e., our app code) into
 # the container.
