@@ -4,6 +4,5 @@ setup:
 build:
   docker:
     web: Dockerfile
-  image: web
 run:
   web: gunicorn -t 180 --log-level debug la-metro-datamade.wsgi:application
