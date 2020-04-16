@@ -2,11 +2,6 @@
   "name": "la-metro-dashboard",
   "description": "An Airflow-based dashboard for LA Metro",
   "scripts": {},
-  // "env": {
-  //   "SECRET_KEY": {
-  //     "required": true
-  //   }
-  // },
   "formation": {
     "web": {
       "quantity": 1,
