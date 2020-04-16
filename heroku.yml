@@ -5,4 +5,4 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: gunicorn -t 180 --log-level debug la-metro-datamade.wsgi:application
+  web: airflow webserver -p ${PORT}
