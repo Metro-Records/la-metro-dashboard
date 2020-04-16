@@ -4,5 +4,9 @@ setup:
 build:
   docker:
     web: Dockerfile
+release:
+  command:
+    - ./scripts/release.sh
+  image: web
 run:
   web: airflow webserver -p ${PORT}
