@@ -4,9 +4,11 @@ setup:
 build:
   docker:
     web: Dockerfile
+  worker: Dockerfile
 release:
   command:
     - ./scripts/release.sh
   image: web
 run:
-  web: airflow webserver -p ${PORT} -d & airflow scheduler
+  web: airflow webserver -p ${PORT}
+  worker: airflow scheduler
