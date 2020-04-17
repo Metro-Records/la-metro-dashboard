@@ -9,4 +9,4 @@ release:
     - ./scripts/release.sh
   image: web
 run:
-  web: airflow webserver -p ${PORT}
+  web: airflow webserver -p ${PORT} -d & airflow scheduler
