@@ -12,6 +12,7 @@ services:
     environment:
       - AIRFLOW_HOME=/app
       - AIRFLOW_MIGRATE=on
+      - SQL_ALCHEMY_CONN=postgres://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
     networks:
       - app_net
     ports:
