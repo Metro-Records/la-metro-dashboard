@@ -8,7 +8,7 @@ build:
 release:
   command:
     - ./scripts/release.sh
-  image: web
+  image: worker
 run:
   web: airflow webserver -p ${PORT}
   worker: airflow scheduler
