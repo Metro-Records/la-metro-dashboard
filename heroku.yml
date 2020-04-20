@@ -4,7 +4,7 @@ setup:
 build:
   docker:
     web: Dockerfile
-    worker: Dockerfile
+    worker: worker/Dockerfile
 release:
   command:
     - ./scripts/release.sh
