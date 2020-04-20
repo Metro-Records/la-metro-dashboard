@@ -1,0 +1,14 @@
+setup:
+  addons:
+    - plan: heroku-postgresql
+build:
+  docker:
+    web: Dockerfile
+    worker: Dockerfile
+release:
+  command:
+    - ./scripts/release.sh
+  image: worker
+run:
+  web: airflow webserver -p ${PORT}
+  worker: airflow scheduler
