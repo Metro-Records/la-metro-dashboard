@@ -6,10 +6,8 @@ from airflow import DAG
 from base import DjangoOperator
 from django.core.management import call_command
 
-one_am_today = datetime.now().replace(hour=1)
-
 default_args = {
-    'start_date': one_am_today,
+    'start_date': datetime.now() - timedelta(hour=1),
     'execution_timeout': timedelta(minutes=1)
 }
 
