@@ -1,5 +1,3 @@
-import sys
-
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -7,7 +5,7 @@ from base import DjangoOperator
 from django.core.management import call_command
 
 default_args = {
-    'start_date': datetime.now() - timedelta(hour=1),
+    'start_date': datetime.now() - timedelta(hours=1),
     'execution_timeout': timedelta(minutes=1)
 }
 
@@ -16,9 +14,6 @@ dag = DAG(
     default_args=default_args,
     schedule_interval=None # eventually '0 1 * * *'
 )
-
-APPDIR = '/home/datamade/lametro'
-PYTHONDIR = '/home/datamade/.virtualenvs/lametro/bin/python'
 
 def refresh_guid():
     call_command('refresh_guid')
