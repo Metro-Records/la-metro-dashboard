@@ -15,7 +15,7 @@ class DjangoOperator(PythonOperator):
         '''
         super().pre_execute(*args, **kwargs)
 
-        sys.path.extend(["/la-metro-councilmatic/", "/scrapers-us-municipal/"])
+        sys.path.extend(["/la-metro-councilmatic/", "/scrapers-us-municipal/", "/la-metro-councilmatic/councilmatic/"])
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
 
@@ -30,13 +30,7 @@ class DjangoOperator(PythonOperator):
             }
         }
 
-        os.chdir('/la-metro-councilmatic/lametro')
-
-        print("current working directory~~~~~~")
-        print(os.getcwd())
-
-        print("sys.path")
-        print(sys.path)
-
+        settings.AWS_KEY = ''
+        settings.AWS_SECRET = ''
 
         django.setup()
