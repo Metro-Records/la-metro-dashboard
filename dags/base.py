@@ -30,4 +30,13 @@ class DjangoOperator(PythonOperator):
             }
         }
 
+        os.chdir('/la-metro-councilmatic/lametro')
+
+        print("current working directory~~~~~~")
+        print(os.getcwd())
+
+        print("sys.path")
+        print(sys.path)
+
+
         django.setup()
