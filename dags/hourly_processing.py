@@ -27,7 +27,10 @@ def convert_attachment_text():
     call_command('convert_attachment_text')
 
 def update_index():
-    call_command('update_index')
+    if datetime.now().minute >= 55:
+        call_command('update_index --batch-size=100')
+    else:
+        call_command('update_index --batch-size=100 --age=1')
 
 def data_integrity():
     call_command('data_integrity')
