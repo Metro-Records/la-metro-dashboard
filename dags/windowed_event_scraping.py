@@ -18,7 +18,6 @@ dag = DAG(
 )
 
 def windowed_event_scraping():
-    print("stuff")
     # SUNDAY THROUGH SATURDAY
     # 9pm FRIDAY through 5am SATURDAY, only run at 30,45 minutes
     if now.weekday == 5 and now.hour >= 9 and now.minute < 30:
