@@ -14,7 +14,7 @@ default_args = {
 dag = DAG(
     'windowed_event_scraping',
     default_args=default_args,
-    schedule_interval=None # Eventually 5,20,35,50 * * * 0-6
+    schedule_interval=None # Eventually 0,15,30,45 * * * 0-6
 )
 
 def windowed_event_scraping():

@@ -25,6 +25,7 @@ def daily_scraping():
         # 5 0 * * 0-4,6 datamade /usr/bin/flock /tmp/metrobills.lock /usr/bin/flock /tmp/metroevents.lock $APPDIR/scripts/lametro/full-scrape.sh >> /tmp/lametro.log
         subprocess.run("/la-metro-councilmatic/scripts/lametro/full-scrape.sh", capture_output=True)
 
+
 t1 = DjangoOperator(
     task_id='daily_scraping',
     dag=dag,

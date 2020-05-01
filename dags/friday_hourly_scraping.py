@@ -28,7 +28,6 @@ def friday_hourly_scraping():
         subprocess.run('$APPDIR/scripts/lametro/fast-full-bill-scrape.sh', capture_output=True)
 
 
-
 t1 = DjangoOperator(
     task_id='friday_hourly_scraping',
     dag=dag,
