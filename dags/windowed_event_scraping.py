@@ -32,7 +32,7 @@ def windowed_event_scraping():
     elif now.weekday == 6 and now.hour <= 5 and now.minute < 30:
         pass
     else:
-        run('/scrapers-us-municipal/scripts/lametro/windowed-bill-scrape.sh')
+        run('/scrapers-us-municipal/scripts/lametro/windowed-event-scrape.sh')
 
 
 t1 = DjangoOperator(
