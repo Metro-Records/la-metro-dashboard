@@ -17,15 +17,20 @@ dag = DAG(
     schedule_interval=None # Eventually 0,5 21-23 * * 5
 )
 
+def run(cmd):
+    try:
+        return subprocess.run(cmd, check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        print('Command: %s' % e.cmd)
+        raise(e)
+
 def friday_hourly_scraping():
     if datetime.now().minute < 5:
-        # 0 21-23 * * 5 datamade /usr/bin/flock -n /tmp/metroevents.lock -c $APPDIR/scripts/lametro/fast-full-event-scrape.sh >> /tmp/lametro.log
         print("on the hour, full event scrape")
-        subprocess.run('$APPDIR/scripts/lametro/fast-full-event-scrape.sh', capture_output=True)
+        run('/scrapers-us-municipal/scripts/lametro/fast-full-event-scrape.sh')
     elif datetime.now().minute >= 5:
-        # 5 21-23 * * 5 datamade /usr/bin/flock -n /tmp/metrobills.lock -c $APPDIR/scripts/lametro/fast-full-bill-scrape.sh >> /tmp/lametro.log
         print("5past hour, full bill scrape")
-        subprocess.run('$APPDIR/scripts/lametro/fast-full-bill-scrape.sh', capture_output=True)
+        run('/scrapers-us-municipal/scripts/lametro/fast-full-bill-scrape.sh')
 
 
 t1 = DjangoOperator(

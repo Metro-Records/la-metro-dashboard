@@ -17,13 +17,18 @@ dag = DAG(
     schedule_interval=None # Eventually 5 0 * * 0-6
 )
 
+def run(cmd):
+    try:
+        return subprocess.run(cmd, check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        print('Command: %s' % e.cmd)
+        raise(e)
+
 def daily_scraping():
     if datetime.today().weekday == 5:
-        # 5 0 * * 5 datamade $APPDIR/scripts/lametro/person-scrape.sh >> /tmp/lametro.log
-        subprocess.run("/scrapers-us-municipal/scripts/lametro/person-scrape.sh", capture_output=True)
+        run("/scrapers-us-municipal/scripts/lametro/person-scrape.sh")
     else:
-        # 5 0 * * 0-4,6 datamade /usr/bin/flock /tmp/metrobills.lock /usr/bin/flock /tmp/metroevents.lock $APPDIR/scripts/lametro/full-scrape.sh >> /tmp/lametro.log
-        subprocess.run("/scrapers-us-municipal/scripts/lametro/full-scrape.sh", capture_output=True)
+        run("/scrapers-us-municipal/scripts/lametro/full-scrape.sh")
 
 
 t1 = DjangoOperator(

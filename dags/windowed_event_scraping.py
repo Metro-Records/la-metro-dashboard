@@ -17,6 +17,13 @@ dag = DAG(
     schedule_interval=None # Eventually 0,15,30,45 * * * 0-6
 )
 
+def run(cmd):
+    try:
+        return subprocess.run(cmd, check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        print('Command: %s' % e.cmd)
+        raise(e)
+
 def windowed_event_scraping():
     # SUNDAY THROUGH SATURDAY
     # 9pm FRIDAY through 5am SATURDAY, only run at 30,45 minutes
@@ -25,8 +32,7 @@ def windowed_event_scraping():
     elif now.weekday == 6 and now.hour <= 5 and now.minute < 30:
         pass
     else:
-        # 0,15,30,45 * * * 0-4 datamade /usr/bin/flock -n /tmp/metroevents.lock -c "WINDOW=0.05 $APPDIR/scripts/lametro/windowed-event-scrape.sh" >> /tmp/lametro.log
-        subprocess.run('$APPDIR/scripts/lametro/windowed-bill-scrape.sh', capture_output=True)
+        run('/scrapers-us-municipal/scripts/lametro/windowed-bill-scrape.sh')
 
 
 t1 = DjangoOperator(
