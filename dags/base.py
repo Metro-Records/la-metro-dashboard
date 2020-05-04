@@ -15,7 +15,7 @@ class DjangoOperator(PythonOperator):
         '''
         super().pre_execute(*args, **kwargs)
 
-        sys.path.append("/la-metro-councilmatic/")
+        sys.path.extend(["/la-metro-councilmatic/", "/scrapers-us-municipal/"])
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
 

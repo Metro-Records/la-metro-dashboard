@@ -20,10 +20,10 @@ dag = DAG(
 def daily_scraping():
     if datetime.today().weekday == 5:
         # 5 0 * * 5 datamade $APPDIR/scripts/lametro/person-scrape.sh >> /tmp/lametro.log
-        subprocess.run("/la-metro-councilmatic/scripts/lametro/person-scrape.sh", capture_output=True)
+        subprocess.run("/scrapers-us-municipal/scripts/lametro/person-scrape.sh", capture_output=True)
     else:
         # 5 0 * * 0-4,6 datamade /usr/bin/flock /tmp/metrobills.lock /usr/bin/flock /tmp/metroevents.lock $APPDIR/scripts/lametro/full-scrape.sh >> /tmp/lametro.log
-        subprocess.run("/la-metro-councilmatic/scripts/lametro/full-scrape.sh", capture_output=True)
+        subprocess.run("/scrapers-us-municipal/scripts/lametro/full-scrape.sh", capture_output=True)
 
 
 t1 = DjangoOperator(

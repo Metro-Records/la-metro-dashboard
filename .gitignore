@@ -148,3 +148,6 @@ airflow-webserver.pid
 
 # MacOS
 .DS_Store
+
+# scrapers-us-municipal
+scrapers-us-municipal-master/
