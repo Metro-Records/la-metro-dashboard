@@ -26,9 +26,9 @@ def run(cmd):
 
 def daily_scraping():
     if datetime.today().weekday == 5:
-        run("/scrapers-us-municipal/scripts/lametro/person-scrape.sh")
+        run("/app/scripts/person-scrape.sh")
     else:
-        run("/scrapers-us-municipal/scripts/lametro/full-scrape.sh")
+        run("/app/scripts/full-scrape.sh")
 
 
 t1 = DjangoOperator(
