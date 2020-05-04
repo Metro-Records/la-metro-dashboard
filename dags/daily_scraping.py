@@ -21,7 +21,7 @@ def run(cmd):
     try:
         return subprocess.run(cmd, check=True, capture_output=True)
     except subprocess.CalledProcessError as e:
-        print('Command: %s' % e.cmd)
+        print('Command: %s' % e.output)
         raise(e)
 
 def daily_scraping():
