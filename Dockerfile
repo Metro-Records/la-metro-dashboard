@@ -47,6 +47,12 @@ RUN wget -q https://github.com/datamade/la-metro-councilmatic/archive/v0.11.4.ta
         >> /la-metro-councilmatic/councilmatic/settings_deployment.py && \
     pip install -r /la-metro-councilmatic/requirements.txt
 
+# Make sure Bash is the default shell for remote debugging.
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+# Copy the Heroku Exec file to the expected location for remote debugging.
+ADD ./scripts/heroku-exec.sh /app/.profile.d/heroku-exec.sh
+
 # Copy the contents of the current host directory (i.e., our app code) into
 # the container.
 COPY . /app
