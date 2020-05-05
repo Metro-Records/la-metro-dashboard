@@ -18,7 +18,7 @@ dag = DAG(
 
 def print_database():
     from django.conf import settings
-    print(settings.DATABASES['default']['host'])
+    print(settings.DATABASES['default']['HOST'])
 
 
 t1 = DjangoOperator(
