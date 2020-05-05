@@ -12,6 +12,8 @@ services:
     environment:
       - AIRFLOW_HOME=/app
       - AIRFLOW_MIGRATE=on
+      - AIRFLOW_USERNAME=foo
+      - AIRFLOW_PASSWORD=bar
       - DATABASE_URL=postgres://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
       - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
     networks:
