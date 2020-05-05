@@ -13,6 +13,7 @@ services:
       - AIRFLOW_HOME=/app
       - AIRFLOW_MIGRATE=on
       - DATABASE_URL=postgres://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
+      - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
     networks:
       - app_net
     ports:
@@ -65,6 +66,8 @@ services:
     tty: true
     environment:
       - AIRFLOW_HOME=/app
+      - DATABASE_URL=postgres://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
+      - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
     networks:
       - app_net
     depends_on:

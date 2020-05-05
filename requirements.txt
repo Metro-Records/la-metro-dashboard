@@ -1,3 +1,4 @@
 apache-airflow==1.10.10
 Flask==1.1.1
 psycopg2==2.8.4
+dj-database-url==0.5.0
