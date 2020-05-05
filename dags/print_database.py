@@ -10,7 +10,7 @@ default_args = {
 }
 
 dag = DAG(
-    'councilmatic_showmigrations',
+    'print_database',
     default_args=default_args,
     schedule_interval=None
 )
