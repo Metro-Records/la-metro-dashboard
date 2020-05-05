@@ -43,8 +43,6 @@ RUN wget -q https://github.com/datamade/la-metro-councilmatic/archive/v0.11.4.ta
     mv la-metro-councilmatic-0.11.4/ /la-metro-councilmatic && \
     cp /la-metro-councilmatic/councilmatic/settings_deployment.py.example \
        /la-metro-councilmatic/councilmatic/settings_deployment.py && \
-    echo "import dj_database_url; DATABASES['default'] = dj_database_url.parse(os.environ['LA_METRO_DATABASE_URL'], conn_max_age=600)" \
-        >> /la-metro-councilmatic/councilmatic/settings_deployment.py && \
     pip install -r /la-metro-councilmatic/requirements.txt
 
 # Make sure Bash is the default shell for remote debugging.

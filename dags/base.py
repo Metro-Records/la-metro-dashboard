@@ -1,9 +1,9 @@
 import os
 import sys
 
-from airflow.models import BaseOperator
-from airflow.operators.python_operator import PythonOperator
 import django
+import dj_database_url
+from airflow.operators.python_operator import PythonOperator
 from django.conf import settings
 
 
@@ -19,15 +19,9 @@ class DjangoOperator(PythonOperator):
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
 
-        settings.DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': 'lametro',
-                'USER': 'postgres',
-                'PASSWORD': '',
-                'HOST': 'postgres',
-                'PORT': 5432,
-            }
-        }
+        settings.DATABASES['default'] = dj_database_url.parse(
+            os.environ['LA_METRO_DATABASE_URL'],
+            conn_max_age=600
+        )
 
         django.setup()
