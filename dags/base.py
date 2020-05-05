@@ -1,9 +1,9 @@
 import os
 import sys
 
-from airflow.models import BaseOperator
-from airflow.operators.python_operator import PythonOperator
 import django
+import dj_database_url
+from airflow.operators.python_operator import PythonOperator
 from django.conf import settings
 
 
@@ -32,5 +32,10 @@ class DjangoOperator(PythonOperator):
 
         settings.AWS_KEY = os.getenv('AWS_ACCESS_KEY_ID', '')
         settings.AWS_SECRET = os.getenv('AWS_SECRET_ACCESS_KEY', '')
+
+        settings.DATABASES['default'] = dj_database_url.parse(
+            os.environ['LA_METRO_DATABASE_URL'],
+            conn_max_age=600
+        )
 
         django.setup()
