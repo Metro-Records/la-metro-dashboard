@@ -3,12 +3,13 @@ import subprocess
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from base import DjangoOperator
+from airflow.operators.python_operator import PythonOperator
+# from base import DjangoOperator
 
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
-    'execution_timeout': timedelta(minutes=1)
+    'execution_timeout': timedelta(minutes=60)
 }
 
 dag = DAG(
@@ -33,7 +34,7 @@ def friday_hourly_scraping():
         run('/app/scripts/fast-full-bill-scrape.sh')
 
 
-t1 = DjangoOperator(
+t1 = PythonOperator(
     task_id='friday_hourly_scraping',
     dag=dag,
     python_callable=friday_hourly_scraping
