@@ -1,0 +1,9 @@
+[program:{{ app_name }}]
+user=datamade
+process_name={{ app_name }}
+stdout_logfile=/var/log/{{ app_name }}-out.log
+stdout_logfile_maxbytes=10MB
+stderr_logfile=/var/log/{{ app_name }}-err.log
+stderr_logfile_maxbytes=10MB
+directory=/home/datamade/{{ app_name }}
+command=/home/datamade/.virtualenvs/{{ app_name }}/bin/airflow webserver -p 8080
