@@ -13,7 +13,7 @@ VENV_DIR="/home/datamade/.virtualenvs/$DEPLOYMENT_NAME"
 # Move the contents of the folder that CodeDeploy used to "Install" the app to
 # the deployment specific folder
 rm -Rf $PROJECT_DIR
-mv /datamade/la-metro-dashboard $PROJECT_DIR
+mv /home/datamade/la-metro-dashboard $PROJECT_DIR
 
 # Create a deployment specific virtual environment
 python3 -m venv $VENV_DIR
