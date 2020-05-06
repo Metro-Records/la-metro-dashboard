@@ -7,3 +7,13 @@ stderr_logfile=/var/log/{{ app_name }}-err.log
 stderr_logfile_maxbytes=10MB
 directory=/home/datamade/{{ app_name }}
 command=/home/datamade/.virtualenvs/{{ app_name }}/bin/airflow webserver -p 8080
+
+[program:{{ app_name }}-scheduler]
+user=datamade
+process_name={{ app_name }}-scheduler
+stdout_logfile=/var/log/{{ app_name }}-scheduler-out.log
+stdout_logfile_maxbytes=10MB
+stderr_logfile=/var/log/{{ app_name }}-scheduler-err.log
+stderr_logfile_maxbytes=10MB
+directory=/home/datamade/{{ app_name }}-scheduler
+command=/home/datamade/.virtualenvs/{{ app_name }}-scheduler/bin/airflow scheduler 
