@@ -34,8 +34,16 @@ class DjangoOperator(PythonOperator):
         settings.AWS_SECRET = os.getenv('AWS_SECRET_ACCESS_KEY', '')
 
         settings.DATABASES['default'] = dj_database_url.parse(
-            os.environ['LA_METRO_DATABASE_URL'],
+            os.getenv(
+                'LA_METRO_DATABASE_URL',
+                'postgres://postgres:postgres@postgres:5432/lametro'
+            ),
             conn_max_age=600
+        )
+
+        settings.HAYSTACK_CONNECTIONS['default']['URL'] = os.getenv(
+            'LA_METRO_SOLR_URL',
+            'http://solr:8983/solr/lametro'
         )
 
         django.setup()
