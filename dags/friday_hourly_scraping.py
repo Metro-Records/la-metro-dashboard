@@ -27,10 +27,10 @@ def run(cmd):
 def friday_hourly_scraping():
     if datetime.now().minute < 5:
         print("on the hour, full event scrape")
-        run('/scrapers-us-municipal/scripts/lametro/fast-full-event-scrape.sh')
+        run('/app/scripts/fast-full-event-scrape.sh')
     elif datetime.now().minute >= 5:
         print("5past hour, full bill scrape")
-        run('/scrapers-us-municipal/scripts/lametro/fast-full-bill-scrape.sh')
+        run('/app/scripts/fast-full-bill-scrape.sh')
 
 
 t1 = DjangoOperator(

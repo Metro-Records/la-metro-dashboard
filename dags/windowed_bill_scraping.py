@@ -33,7 +33,7 @@ def windowed_bill_scraping():
     elif now.weekday == 6 and now.hour <= 5 and now.minute < 35:
         pass
     else:
-        run('/scrapers-us-municipal/scripts/lametro/windowed-bill-scrape.sh')
+        run('/app/scripts/windowed-bill-scrape.sh')
 
 
 t1 = DjangoOperator(
