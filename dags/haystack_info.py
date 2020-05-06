@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from base import DjangoOperator
+from django.core.management import call_command
 
 
 default_args = {
@@ -10,19 +11,18 @@ default_args = {
 }
 
 dag = DAG(
-    'print_database',
+    'haystack_info',
     default_args=default_args,
     schedule_interval=None
 )
 
 
-def print_database():
-    from django.conf import settings
-    print(settings.DATABASES['default']['HOST'])
+def haystack_info():
+    call_command('haystack_info')
 
 
 t1 = DjangoOperator(
-    task_id='print_database',
+    task_id='haystack_info',
     dag=dag,
-    python_callable=print_database
+    python_callable=haystack_info
 )
