@@ -33,16 +33,16 @@ sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade setuptools
 sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
 
 # Move project configuration files into the appropriate locations within the project.
-mv $PROJECT_DIR/configs/app_config.$DEPLOYMENT_GROUP_NAME.py $PROJECT_DIR/my-dir/app_config.py
+mv $PROJECT_DIR/configs/airflow.$DEPLOYMENT_GROUP_NAME.cfg $PROJECT_DIR/airflow.cfg
 
 # OPTIONAL If you're using PostgreSQL, check to see if the database that you
 # need is present and, if not, create it setting the datamade user as it's
 # owner.
-psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${DATABASE}'" | grep -q 1 || createdb -U postgres -O datamade ${DATABASE} 
+psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${DATABASE}'" | grep -q 1 || createdb -U postgres -O datamade ${DATABASE}
 
 # Run migrations and other management commands that should be run with
 # every deployment
-$VENV_DIR/bin/airflow initdb
+AIRFLOW_HOME=$PROJECT_DIR $VENV_DIR/bin/airflow initdb
 
 # Echo a simple nginx configuration into the correct place, and tell
 # certbot to request a cert if one does not already exist.
@@ -67,7 +67,3 @@ fi
 # script.
 $VENV_DIR/bin/pip install Jinja2==2.10
 $VENV_DIR/bin/python $PROJECT_DIR/scripts/render_configs.py $DEPLOYMENT_ID $DEPLOYMENT_GROUP_NAME $DOMAIN $APP_NAME
-
-# Write out the deployment ID to a Python module that can get imported by the
-# app and returned by the /pong/ route (see above).
-echo "DEPLOYMENT_ID='$DEPLOYMENT_ID'" > $PROJECT_DIR/plugins/deployment.py
