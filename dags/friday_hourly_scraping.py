@@ -19,9 +19,9 @@ dag = DAG(
 
 def friday_hourly_scraping():
     if datetime.now().minute < 5:
-        return 'fast-full-event-scrape'
+        return 'fast_full-event_scrape'
     elif datetime.now().minute >= 5:
-        return 'fast-full-bill-scrape'
+        return 'fast_full_bill_scrape'
 
 
 branch = BranchPythonOperator(
@@ -31,13 +31,13 @@ branch = BranchPythonOperator(
 )
 
 bill_scrape = BashOperator(
-    task_id='fast-full-bill-scrape',
+    task_id='fast_full_bill_scrape',
     dag=dag,
     bash_command='/app/scripts/fast-full-bill-scrape'
 )
 
 event_scrape = BashOperator(
-    task_id='fast-full-event-scrape',
+    task_id='fast_full_event_scrape',
     dag=dag,
     bash_command='/app/scripts/fast-full-event-scrape'
 )
