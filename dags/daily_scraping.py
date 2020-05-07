@@ -3,7 +3,7 @@ import subprocess
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from base import DjangoOperator
+from airflow.operators import BashOperator
 
 
 default_args = {
@@ -17,22 +17,9 @@ dag = DAG(
     schedule_interval=None # Eventually 5 0 * * 0-6
 )
 
-def run(cmd):
-    try:
-        return subprocess.run(cmd, check=True, capture_output=True)
-    except subprocess.CalledProcessError as e:
-        print('Command: %s' % e.output)
-        raise(e)
 
-def daily_scraping():
-    if datetime.today().weekday == 5:
-        run("/app/scripts/person-scrape.sh")
-    else:
-        run("/app/scripts/full-scrape.sh")
-
-
-t1 = DjangoOperator(
+t1 = BashOperator(
     task_id='daily_scraping',
     dag=dag,
-    python_callable=daily_scraping
+    bash_command='/app/scripts/full-scrape.sh '
 )
