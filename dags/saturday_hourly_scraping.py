@@ -3,12 +3,11 @@ import subprocess
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from base import DjangoOperator
-
+from airflow.operators import BashOperator, BranchPythonOperator
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
-    'execution_timeout': timedelta(minutes=1)
+    'execution_timeout': timedelta(hours=1)
 }
 
 dag = DAG(
@@ -17,24 +16,29 @@ dag = DAG(
     schedule_interval=None # Eventually 0,5 0-5 * * 0-6
 )
 
-def run(cmd):
-    try:
-        return subprocess.run(cmd, check=True, capture_output=True)
-    except subprocess.CalledProcessError as e:
-        print('Command: %s' % e.output)
-        raise(e)
-
 def saturday_hourly_scraping():
     if datetime.now().minute < 5:
-        print("on the hour, full event scrape")
-        run('/app/scripts/fast-full-event-scrape.sh')
+        return 'fast-full-event-scrape'
     elif datetime.now().minute >= 5:
-        print("5past hour, full bill scrape")
-        run('/app/scripts/fast-full-bill-scrape.sh')
+        return 'fast-full-bill-scrape'
 
 
-t1 = DjangoOperator(
+branch = BranchPythonOperator(
     task_id='saturday_hourly_scraping',
     dag=dag,
     python_callable=saturday_hourly_scraping
 )
+
+bill_scrape = BashOperator(
+    task_id='fast-full-bill-scrape',
+    dag=dag,
+    bash_command='/app/scripts/fast-full-bill-scrape'
+)
+
+event_scrape = BashOperator(
+    task_id='fast-full-event-scrape',
+    dag=dag,
+    bash_command='/app/scripts/fast-full-event-scrape'
+)
+
+branch >> [bill_scrape, event_scrape]
