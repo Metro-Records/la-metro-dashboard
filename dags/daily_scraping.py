@@ -6,7 +6,7 @@ from airflow.operators import BashOperator
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
-    'execution_timeout': timedelta(minutes=1)
+    'execution_timeout': timedelta(hours=1)
 }
 
 dag = DAG(
