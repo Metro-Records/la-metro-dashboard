@@ -3,7 +3,7 @@ import subprocess
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from base import DjangoOperator
+from airflow.operators import BashOperator, BranchPythonOperator, DummyOperator
 
 
 default_args = {
@@ -17,27 +17,33 @@ dag = DAG(
     schedule_interval=None # Eventually 5,20,35,50 * * * 0-6
 )
 
-def run(cmd):
-    try:
-        return subprocess.run(cmd, check=True, capture_output=True)
-    except subprocess.CalledProcessError as e:
-        print('Command: %s' % e.output)
-        raise(e)
-
-def windowed_bill_scraping():
+def handle_scheduling():
     # SUNDAY THROUGH SATURDAY
     # 9pm FRIDAY through 5am SATURDAY, only run at 35,50 minutes
     now = datetime.now()
     if now.weekday == 5 and now.hour >= 9 and now.minute < 35:
-        pass
+        return 'no_scrape'
     elif now.weekday == 6 and now.hour <= 5 and now.minute < 35:
-        pass
+        return 'no_scrape'
     else:
-        run('/app/scripts/windowed-bill-scrape.sh')
+        return 'windowed_bill_scraping'
 
 
-t1 = DjangoOperator(
+branch = BranchPythonOperator(
+    task_id='handle_scheduling',
+    dag=dag,
+    python_callable=handle_scheduling
+)
+
+windowed_bill_scraping = BashOperator(
     task_id='windowed_bill_scraping',
     dag=dag,
-    python_callable=windowed_bill_scraping
+    bash_command='/app/scripts/windowed-bill-scrape.sh '
 )
+
+no_scrape = DummyOperator(
+    task_id='no_scrape',
+    dag=dag
+)
+
+branch >> [windowed_bill_scraping, no_scrape]
