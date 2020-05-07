@@ -19,7 +19,7 @@ dag = DAG(
 
 def friday_hourly_scraping():
     if datetime.now().minute < 5:
-        return 'fast_full-event_scrape'
+        return 'fast_full_event_scrape'
     elif datetime.now().minute >= 5:
         return 'fast_full_bill_scrape'
 
