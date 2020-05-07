@@ -33,13 +33,13 @@ branch = BranchPythonOperator(
 bill_scrape = BashOperator(
     task_id='fast_full_bill_scrape',
     dag=dag,
-    bash_command='/app/scripts/fast-full-bill-scrape'
+    bash_command='/app/scripts/fast-full-bill-scrape.sh '
 )
 
 event_scrape = BashOperator(
     task_id='fast_full_event_scrape',
     dag=dag,
-    bash_command='/app/scripts/fast-full-event-scrape'
+    bash_command='/app/scripts/fast-full-event-scrape.sh '
 )
 
 branch >> [bill_scrape, event_scrape]

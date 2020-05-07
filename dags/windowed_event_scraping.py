@@ -1,5 +1,3 @@
-import subprocess
-
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -17,7 +15,7 @@ dag = DAG(
     schedule_interval=None # Eventually 0,15,30,45 * * * 0-6
 )
 
-def windowed_event_scraping():
+def handle_scheduling():
     # SUNDAY THROUGH SATURDAY
     # 9pm FRIDAY through 5am SATURDAY, only run at 30,45 minutes
     now = datetime.now()
