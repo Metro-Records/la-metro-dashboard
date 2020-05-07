@@ -3,7 +3,7 @@ import subprocess
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from base import DjangoOperator
+from airflow.operators import BashOperator, BranchPythonOperator, DummyOperator
 
 
 default_args = {
