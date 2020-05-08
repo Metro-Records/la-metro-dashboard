@@ -1,27 +1,27 @@
-[program:{{ app_name }}]
+[program:la-metro-dashboard-staging]
 user=datamade
-process_name={{ app_name }}
-stdout_logfile=/var/log/{{ app_name }}-out.log
+process_name=la-metro-dashboard-staging
+stdout_logfile=/var/log/la-metro-dashboard-staging-out.log
 stdout_logfile_maxbytes=10MB
-stderr_logfile=/var/log/{{ app_name }}-err.log
+stderr_logfile=/var/log/la-metro-dashboard-staging-err.log
 stderr_logfile_maxbytes=10MB
-directory=/home/datamade/{{ app_name }}
+directory=/home/datamade/la-metro-dashboard-staging
 environment=
-    AIRFLOW_HOME=/home/datamade/{{ app_name }},
+    AIRFLOW_HOME=/home/datamade/la-metro-dashboard-staging,
     LA_METRO_DATABASE_URL=postgres://datamade@localhost:5432/lametro_staging,
     LA_METRO_SOLR_UR=http://localhost:8986/solr
-command=/home/datamade/.virtualenvs/{{ app_name }}/bin/airflow webserver -p 8080
+command=/home/datamade/.virtualenvs/la-metro-dashboard-staging/bin/airflow webserver -p 8080
 
-[program:{{ app_name }}-scheduler]
+[program:la-metro-dashboard-staging-scheduler]
 user=datamade
-process_name={{ app_name }}-scheduler
-stdout_logfile=/var/log/{{ app_name }}-scheduler-out.log
+process_name=la-metro-dashboard-staging-scheduler
+stdout_logfile=/var/log/la-metro-dashboard-staging-scheduler-out.log
 stdout_logfile_maxbytes=10MB
-stderr_logfile=/var/log/{{ app_name }}-scheduler-err.log
+stderr_logfile=/var/log/la-metro-dashboard-staging-scheduler-err.log
 stderr_logfile_maxbytes=10MB
-directory=/home/datamade/{{ app_name }}-scheduler
+directory=/home/datamade/la-metro-dashboard-staging-scheduler
 environment=
-    AIRFLOW_HOME=/home/datamade/{{ app_name }},
+    AIRFLOW_HOME=/home/datamade/la-metro-dashboard-staging,
     LA_METRO_DATABASE_URL=postgres://datamade@localhost:5432/lametro_staging,
     LA_METRO_SOLR_UR=http://localhost:8986/solr
-command=/home/datamade/.virtualenvs/{{ app_name }}-scheduler/bin/airflow scheduler
+command=/home/datamade/.virtualenvs/la-metro-dashboard-staging-scheduler/bin/airflow scheduler

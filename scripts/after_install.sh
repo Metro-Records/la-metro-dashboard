@@ -63,8 +63,3 @@ if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then
     service nginx reload
     certbot -n --nginx -d $DOMAIN -m devops@datamade.us --agree-tos
 fi
-
-# Install Jinja into the virtual environment and run the render_configs.py
-# script.
-$VENV_DIR/bin/pip install Jinja2==2.10
-$VENV_DIR/bin/python $PROJECT_DIR/scripts/render_configs.py $DEPLOYMENT_ID $DEPLOYMENT_GROUP_NAME $DOMAIN $APP_NAME
