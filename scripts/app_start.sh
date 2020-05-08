@@ -7,9 +7,7 @@ source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME-config.conf
 
 # Re-read supervisor config, and add new processes
 echo "Reloading supervisor"
-supervisorctl reread
-supervisorctl start $APP_NAME
-supervisorctl start $APP_NAME-scheduler
+supervisorctl update $APP_NAME $APP_NAME-scheduler
 
 echo "Reloading nginx"
 nginx -t

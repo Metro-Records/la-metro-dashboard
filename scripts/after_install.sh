@@ -63,3 +63,7 @@ if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then
     service nginx reload
     certbot -n --nginx -d $DOMAIN -m devops@datamade.us --agree-tos
 fi
+
+# Move configs files to correct location.
+mv -f $APP_PATH/configs/$APP_NAME.conf.nginx /etc/nginx/conf.d/$APP_NAME.conf
+mv -f $APP_PATH/configs/$APP_NAME.conf.supervisor /etc/supervisor/conf.d/$APP_NAME.conf

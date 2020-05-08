@@ -7,9 +7,9 @@ stderr_logfile=/var/log/la-metro-dashboard-staging-err.log
 stderr_logfile_maxbytes=10MB
 directory=/home/datamade/la-metro-dashboard-staging
 environment=
-    AIRFLOW_HOME=/home/datamade/la-metro-dashboard-staging,
-    LA_METRO_DATABASE_URL=postgres://datamade@localhost:5432/lametro_staging,
-    LA_METRO_SOLR_UR=http://localhost:8986/solr
+    AIRFLOW_HOME="/home/datamade/la-metro-dashboard-staging",
+    LA_METRO_DATABASE_URL="postgres://datamade@localhost:5432/lametro_staging",
+    LA_METRO_SOLR_URL="http://localhost:8986/solr"
 command=/home/datamade/.virtualenvs/la-metro-dashboard-staging/bin/airflow webserver -p 8080
 
 [program:la-metro-dashboard-staging-scheduler]
@@ -19,9 +19,9 @@ stdout_logfile=/var/log/la-metro-dashboard-staging-scheduler-out.log
 stdout_logfile_maxbytes=10MB
 stderr_logfile=/var/log/la-metro-dashboard-staging-scheduler-err.log
 stderr_logfile_maxbytes=10MB
-directory=/home/datamade/la-metro-dashboard-staging-scheduler
+directory=/home/datamade/la-metro-dashboard-staging
 environment=
-    AIRFLOW_HOME=/home/datamade/la-metro-dashboard-staging,
-    LA_METRO_DATABASE_URL=postgres://datamade@localhost:5432/lametro_staging,
-    LA_METRO_SOLR_UR=http://localhost:8986/solr
-command=/home/datamade/.virtualenvs/la-metro-dashboard-staging-scheduler/bin/airflow scheduler
+    AIRFLOW_HOME"=/home/datamade/la-metro-dashboard-staging",
+    LA_METRO_DATABASE_URL"=postgres://datamade@localhost:5432/lametro_staging",
+    LA_METRO_SOLR_URL="http://localhost:8986/solr"
+command=/home/datamade/.virtualenvs/la-metro-dashboard-staging/bin/airflow scheduler

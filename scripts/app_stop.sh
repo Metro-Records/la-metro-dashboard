@@ -6,5 +6,4 @@ set -euo pipefail
 source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME-config.conf
 
 echo "Stopping supervisor process"
-supervisorctl stop $APP_NAME
-supervisorctl stop $APP_NAME-scheduler
+supervisorctl stop $APP_NAME $APP_NAME-scheduler
