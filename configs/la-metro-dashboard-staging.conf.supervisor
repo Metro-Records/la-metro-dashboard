@@ -9,7 +9,8 @@ directory=/home/datamade/la-metro-dashboard-staging
 environment=
     AIRFLOW_HOME="/home/datamade/la-metro-dashboard-staging",
     LA_METRO_DATABASE_URL="postgres://datamade@localhost:5432/lametro_staging",
-    LA_METRO_SOLR_URL="http://localhost:8986/solr"
+    LA_METRO_SOLR_URL="http://localhost:8986/solr",
+    LA_METRO_DIR_PATH="/home/datamade/lametro-staging"
 command=/bin/bash -c 'source "$0" && exec "$@"' /home/datamade/.virtualenvs/la-metro-dashboard-staging/bin/activate airflow webserver -p 8080
 
 [program:la-metro-dashboard-staging-scheduler]
@@ -23,5 +24,6 @@ directory=/home/datamade/la-metro-dashboard-staging
 environment=
     AIRFLOW_HOME="/home/datamade/la-metro-dashboard-staging",
     LA_METRO_DATABASE_URL="postgres://datamade@localhost:5432/lametro_staging",
-    LA_METRO_SOLR_URL="http://localhost:8986/solr"
+    LA_METRO_SOLR_URL="http://localhost:8986/solr",
+    LA_METRO_DIR_PATH="/home/datamade/lametro-staging"
 command=/home/datamade/.virtualenvs/la-metro-dashboard-staging/bin/airflow scheduler

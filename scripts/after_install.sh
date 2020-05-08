@@ -32,6 +32,7 @@ sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade setuptools
 # Install the project requirements into the deployment specific virtual
 # environment.
 sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
+sudo -H -u datamade $VENV_DIR/bin/pip install -r /home/datamade/$LA_METRO_DIR/requirements.txt --upgrade
 
 # Move project configuration files into the appropriate locations within the project.
 mv $PROJECT_DIR/configs/airflow.$DEPLOYMENT_GROUP_NAME.cfg $PROJECT_DIR/airflow.cfg
