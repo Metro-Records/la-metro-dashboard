@@ -25,12 +25,13 @@ def handle_scheduling():
         if now.minute < 30:
             return 'no_scrape'
         return 'larger_window_event_scraping'
+        
     elif now.weekday == 6 and now.hour <= 5:
         if now.minute < 30:
             return 'no_scrape'
         return 'larger_window_event_scraping'
-    else:
-        return 'windowed_event_scraping'
+
+    return 'windowed_event_scraping'
 
 
 branch = BranchPythonOperator(
