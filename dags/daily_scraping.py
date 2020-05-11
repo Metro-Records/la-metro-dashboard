@@ -19,5 +19,5 @@ dag = DAG(
 t1 = BashOperator(
     task_id='daily_scraping',
     dag=dag,
-    bash_command='/app/scripts/full-scrape.sh '
+    bash_command='scripts/full-scrape.sh'
 )
