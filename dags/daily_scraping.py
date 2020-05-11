@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.operators import BashOperator
+from airflow.operators.bash_operator import BashOperator
 
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
-    'execution_timeout': timedelta(hours=1)
+    'execution_timeout': timedelta(hours=12)
 }
 
 dag = DAG(
