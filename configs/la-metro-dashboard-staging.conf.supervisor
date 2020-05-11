@@ -26,4 +26,4 @@ environment=
     LA_METRO_DATABASE_URL="postgres://datamade@localhost:5432/lametro_staging",
     LA_METRO_SOLR_URL="http://localhost:8986/solr",
     LA_METRO_DIR_PATH="/home/datamade/lametro-staging"
-command=/home/datamade/.virtualenvs/la-metro-dashboard-staging/bin/airflow scheduler
+command=/bin/bash -c 'source "$0" && exec "$@"' /home/datamade/.virtualenvs/la-metro-dashboard-staging/bin/activate airflow scheduler
