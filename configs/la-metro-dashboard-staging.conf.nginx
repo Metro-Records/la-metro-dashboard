@@ -5,8 +5,8 @@ server {
     # additional domains (such as the www subdomain of the root domain), add them
     # here as a space-delimited list, and adjust the second server block below similarly.
     server_name la-metro-dashboard.datamade.us;
-    access_log /var/log/nginx/la-metro-dashboard-staging-access.log;
-    error_log /var/log/nginx/la-metro-dashboard-staging-error.log;
+    access_log /var/log/nginx/la-metro-dashboard-access.log;
+    error_log /var/log/nginx/la-metro-dashboard-error.log;
     client_max_body_size 500m;
 
     ssl on;

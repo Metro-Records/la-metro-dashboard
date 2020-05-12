@@ -13,7 +13,7 @@ VENV_DIR="/home/datamade/.virtualenvs/$DEPLOYMENT_NAME"
 # Move the contents of the folder that CodeDeploy used to "Install" the app to
 # the deployment specific folder
 rm -Rf $PROJECT_DIR
-mv /home/datamade/la-metro-dashboard $PROJECT_DIR
+mv /home/datamade/la-metro-dashboard-deployment-root $PROJECT_DIR
 
 # Create a deployment specific virtual environment
 python3 -m venv $VENV_DIR
@@ -21,6 +21,10 @@ python3 -m venv $VENV_DIR
 # Set the ownership of the project files and the virtual environment
 chown -R datamade.www-data $PROJECT_DIR
 chown -R datamade.www-data $VENV_DIR
+
+# Make the log directory and set its ownership
+mkdir -p /var/log/la-metro-dashboard
+chown -R datamade.www-data /var/log/la-metro-dashboard
 
 # Upgrade pip and setuptools. This is needed because sometimes python packages
 # that we rely upon will use more recent packaging methods than the ones
