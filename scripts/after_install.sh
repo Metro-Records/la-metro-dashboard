@@ -3,7 +3,7 @@ set -euxo pipefail
 
 # Make sure the deployment group specific variables are available to this
 # script.
-source /home/datamade/la-metro-dashboard/configs/$DEPLOYMENT_GROUP_NAME-config.conf
+source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME-config.conf
 
 # Set some useful variables
 DEPLOYMENT_NAME="$APP_NAME"
