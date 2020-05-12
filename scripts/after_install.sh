@@ -70,5 +70,5 @@ if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then
 fi
 
 # Move configs files to correct location.
-mv -f $PROJECT_DIR/configs/$APP_NAME.conf.nginx /etc/nginx/conf.d/$APP_NAME.conf
-mv -f $PROJECT_DIR/configs/$APP_NAME.conf.supervisor /etc/supervisor/conf.d/$APP_NAME.conf
+mv -f $PROJECT_DIR/configs/$APP_NAME.$DEPLOYMENT_GROUP_NAME.conf.nginx /etc/nginx/conf.d/$APP_NAME.conf
+mv -f $PROJECT_DIR/configs/$APP_NAME.$DEPLOYMENT_GROUP_NAME.conf.supervisor /etc/supervisor/conf.d/$APP_NAME.conf
