@@ -19,6 +19,6 @@ dag = DAG(
 sample_windowed_bill_scraping = BashOperator(
     task_id='windowed_bill_scraping',
     dag=dag,
-    params={'window': 0.05},
-    bash_command='scripts/sample-windowed-bill-scrape.sh'
+    params={'window': 0.05, 'target': 'bills', 'rpm': 0},
+    bash_command='scripts/targetted-scrape.sh'
 )

@@ -43,15 +43,15 @@ branch = BranchPythonOperator(
 windowed_event_scraping = BashOperator(
     task_id='windowed_event_scraping',
     dag=dag,
-    params={'window': 0.05},
-    bash_command='scripts/windowed-event-scrape.sh'
+    params={'window': 0.05, 'target': 'events', 'rpm': 0},
+    bash_command='scripts/targetted-scrape.sh'
 )
 
 larger_window_event_scraping = BashOperator(
     task_id='larger_window_event_scraping',
     dag=dag,
-    params={'window': 1},
-    bash_command='scripts/windowed-event-scrape.sh'
+    params={'window': 1, 'target': 'events', 'rpm': 0},
+    bash_command='scripts/targetted-scrape.sh'
 )
 
 no_scrape = DummyOperator(
