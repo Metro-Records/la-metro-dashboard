@@ -32,14 +32,14 @@ bill_scrape = BashOperator(
     task_id='fast_full_bill_scrape',
     dag=dag,
     params={'window': 0, 'target': 'bills', 'rpm': 0},
-    bash_command='scripts/targetted-scrape.sh'
+    bash_command='scripts/targeted-scrape.sh'
 )
 
 event_scrape = BashOperator(
     task_id='fast_full_event_scrape',
     dag=dag,
     params={'window': 0, 'target': 'events', 'rpm': 0},
-    bash_command='scripts/targetted-scrape.sh'
+    bash_command='scripts/targeted-scrape.sh'
 )
 
 branch >> [bill_scrape, event_scrape]
