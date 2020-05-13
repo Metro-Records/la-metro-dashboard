@@ -46,24 +46,28 @@ t1 = DjangoOperator(
 t2 = DjangoOperator(
     task_id='compile_pdfs',
     dag=dag,
+    trigger_rule='all_done',
     python_callable=compile_pdfs
 )
 
 t3 = DjangoOperator(
     task_id='convert_attachment_text',
     dag=dag,
+    trigger_rule='all_done',
     python_callable=convert_attachment_text
 )
 
 t4 = DjangoOperator(
     task_id='update_index',
     dag=dag,
+    trigger_rule='all_done',
     python_callable=update_index
 )
 
 t5 = DjangoOperator(
     task_id='data_integrity',
     dag=dag,
+    trigger_rule='all_done',
     python_callable=data_integrity
 )
 
