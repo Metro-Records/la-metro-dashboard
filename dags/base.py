@@ -30,4 +30,7 @@ class DjangoOperator(PythonOperator):
             }
         }
 
+        settings.AWS_KEY = os.getenv('AWS_ACCESS_KEY_ID', '')
+        settings.AWS_SECRET = os.getenv('AWS_SECRET_ACCESS_KEY', '')
+
         django.setup()
