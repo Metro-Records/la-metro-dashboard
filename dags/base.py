@@ -15,7 +15,7 @@ class DjangoOperator(PythonOperator):
         '''
         super().pre_execute(*args, **kwargs)
 
-        sys.path.extend(["/la-metro-councilmatic/", "/scrapers-us-municipal/", "/la-metro-councilmatic/councilmatic/"])
+        sys.path.extend(["/la-metro-councilmatic/", "/scrapers-us-municipal/"])
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
 
@@ -30,7 +30,7 @@ class DjangoOperator(PythonOperator):
             }
         }
 
-        settings.AWS_KEY = ''
-        settings.AWS_SECRET = ''
+        settings.AWS_KEY = os.getenv('AWS_ACCESS_KEY_ID', '')
+        settings.AWS_SECRET = os.getenv('AWS_SECRET_ACCESS_KEY', '')
 
         django.setup()
