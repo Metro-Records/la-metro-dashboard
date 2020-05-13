@@ -50,7 +50,7 @@ windowed_bill_scraping = BashOperator(
 larger_window_bill_scraping = BashOperator(
     task_id='larger_window_bill_scraping',
     dag=dag,
-    params={'window': 1, 'target': 'bills', 'rpm': 0},
+    params={'window': 1, 'target': 'bills', 'rpm': 60},
     bash_command='scripts/targetted-scrape.sh'
 )
 
