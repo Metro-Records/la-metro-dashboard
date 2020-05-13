@@ -45,6 +45,14 @@ RUN wget -q https://github.com/datamade/la-metro-councilmatic/archive/v0.11.4.ta
        /la-metro-councilmatic/councilmatic/settings_deployment.py && \
     pip install -r /la-metro-councilmatic/requirements.txt
 
+# Install scrapers
+RUN wget -q https://github.com/datamade/scrapers-us-municipal/archive/master.tar.gz && \
+    tar -vxf master.tar.gz && \
+    rm -Rf master.tar.gz && \
+    mv scrapers-us-municipal-master/ /scrapers-us-municipal && \
+    pip install -r /scrapers-us-municipal/requirements.txt && \
+    echo "DATABASE_URL = 'postgresql://postgres:postgres@postgres/lametro'" >> /scrapers-us-municipal/pupa_settings.py
+
 # Copy the contents of the current host directory (i.e., our app code) into
 # the container.
 COPY . /app

@@ -65,6 +65,7 @@ services:
     tty: true
     environment:
       - AIRFLOW_HOME=/app
+      - DATABASE_URL=postgres://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
     networks:
       - app_net
     depends_on:
@@ -76,10 +77,10 @@ services:
       - .:/app
     command: airflow scheduler
 
-
 volumes:
   # Declare your named volume for Postgres.
   la-metro-dashboard-db-data:
+
 
 networks:
   app_net:
