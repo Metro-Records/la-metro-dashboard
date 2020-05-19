@@ -19,13 +19,13 @@ class DashboardView(BaseView):
         for d in all_dags:
             session = settings.Session()
             last_run = dag.get_last_dagrun(d.dag_id, session,include_externally_triggered=True) 
-            state = last_run.get_state() if last_run else 'Has Not Run'
-            current_task = [ti for ti in last_run.get_task_instances()] if last_run else 'N/A'
+            run_state = last_run.get_state() if last_run else 'Has Not Run'
+            ti_states = [ti for ti in last_run.get_task_instances()] if last_run else []
 
             dag_info = {
                 'name': d.dag_id,
-                'state': state,
-                'current_task': current_task
+                'state': run_state,
+                'scrapes_completed': ti_states
                 # 'last_run':
                 # 'next_scheduled':
             }
