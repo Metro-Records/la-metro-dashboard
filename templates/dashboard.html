@@ -17,21 +17,25 @@
 			<thead>
 				<tr>
 					<th class='column-header'>Name</th>
-					<th class='column-header'>Running</th>
+					<th class='column-header'>Most Recent Run State</th>
 					<th class='column-header'>Current Task</th>
-					<th class='column-header'>Last Successful</th>
-					<th class='column-header'>Last Failed</th>
+					<th class='column-header'>Previous Run Status</th>
+					<th class='column-header'>Last Successful Task</th>
 					<th class='column-header'>Next Scheduled</th>
 				</tr>
 			</thead>
-
+<!--     What scrapers are currently running? What are they scraping? E.g., bills updated in the last day.
+	When did each scraper last run successfully? What did it scrape?
+		Have any scrapers failed since their last successful run?
+	When will each scraper run next? Or maybe, what is the scraping schedule for the current hour?
+	Ditto the above questions for Metro ETL (though these scripts run on a more regular basis and fail significantly less often than the scrapers) -->
 			{% for dag in data %}
 				<tr>
 					<td>{{ dag.name }}</td>
-					<td>{{ dag.currently_running }}</td>
-					<td>task name if running, else "not running"</td>
+					<td>{{ dag.state }}</td>
+					<td>task name or "not running"</td>
 					<td>date of last successful run</td>
-					<td>date of last failed run</td>
+					<td>last successful task</td>
 					<td>date of next scheduled run</td>
 				</tr>
 			{% endfor %}
