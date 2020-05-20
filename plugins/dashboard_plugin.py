@@ -4,6 +4,7 @@ from airflow.models.dagbag import DagBag
 from airflow.plugins_manager import AirflowPlugin
 
 from datetime import datetime, timedelta
+from dateutil import tz
 
 from flask import Blueprint
 from flask_admin import BaseView, expose
@@ -24,12 +25,17 @@ class Dashboard(BaseView):
 
             if last_run:
                 run_state = last_run.get_state()
+
+                pst_tz = tz.gettz('America/Los_Angeles')
+                cst_tz = tz.gettz('America/Chicago')
                 
                 run_date = last_run.execution_date
+
+                pst_run_time = run_date.astimezone(pst_tz)
+                cst_run_time = run_date.astimezone(cst_tz)
                 run_date_info = {
-                    'date': run_date.date(),
-                    'hour': run_date.hour,
-                    'minute': run_date.minute
+                    'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
+                    'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
                 }
                 
                 ti_states = [ti for ti in last_run.get_task_instances()]
@@ -37,10 +43,12 @@ class Dashboard(BaseView):
                 now = datetime.now()
                 next_week = now + timedelta(days=7)
                 next_scheduled = d.get_run_dates(now, next_week)[0]
+
+                pst_next_scheduled = next_scheduled.astimezone(pst_tz)
+                cst_next_scheduled = next_scheduled.astimezone(cst_tz)                
                 next_scheduled_info = {
-                    'date': next_scheduled.date(),
-                    'hour': next_scheduled.hour,
-                    'minute': next_scheduled.minute
+                    'pst_time': datetime.strftime(pst_next_scheduled, "%m/%d/%y %I:%M %p"),
+                    'cst_time': datetime.strftime(cst_next_scheduled, "%m/%d/%y %I:%M %p")
                 }
 
             else:

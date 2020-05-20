@@ -29,7 +29,7 @@
           <td>{{ dag.name }}</td>
           <td>{{ dag.run_state }}</td>
           {% if dag.run_date != None %}
-            <td>{{ dag.run_date.date }} at {{ dag.run_date.hour }}:{{ dag.run_date.minute }}</td>
+            <td>{{ dag.run_date.pst_time }} PST<br /> {{ dag.run_date.cst_time }} CST</td>
           {% else %}
             <td></td>
           {% endif %}
@@ -39,7 +39,7 @@
             {% endfor %}
           </td>
           {% if dag.next_scheduled != None %}
-            <td>{{ dag.next_scheduled.date }} at {{ dag.next_scheduled.hour }}:{{ dag.next_scheduled.minute }}</td>
+            <td>{{ dag.next_scheduled.pst_time }} PST<br /> {{ dag.next_scheduled.cst_time }} CST</td>
           {% else %}
             <td></td>
           {% endif %}
