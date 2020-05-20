@@ -9,7 +9,7 @@ from flask import Blueprint
 from flask_admin import BaseView, expose
 
 
-class DashboardView(BaseView):
+class Dashboard(BaseView):
     @expose('/')
     def index(self):
         bag = DagBag()
@@ -61,7 +61,7 @@ class DashboardView(BaseView):
         return self.render('dashboard.html', data=data)
 
 
-admin_view_ = DashboardView(category='Dashboard Plugin', name='Dashboard View')
+admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
 
 blue_print_ = Blueprint('dashboard_plugin',
                         __name__,

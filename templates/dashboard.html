@@ -4,54 +4,54 @@
 {% import 'admin/model/layout.html' as model_layout with context %}
 
 {% block head %}
-	{{ super() }}
+  {{ super() }}
 {% endblock %}
 
 {% block body %}
-	<h2>Dashboard</h2>
-	{% block model_menu_bar %}
-	{% endblock %}
+  <h2>Dashboard</h2>
+  {% block model_menu_bar %}
+  {% endblock %}
 
-	{% block model_list_table %}
-		<table class='table table-striped table-bordered table-hover model-list'>
-			<thead>
-				<tr>
-					<th class='column-header'>Name</th>
-					<th class='column-header'>Most Recent Run Status</th>
-					<th class='column-header'>Most Recent Run Date (UTC)</th>
-					<th class='column-header'>Tasks Status</th>
-					<th class='column-header'>Next Scheduled</th>
-				</tr>
-			</thead>
+  {% block model_list_table %}
+    <table class='table table-striped table-bordered table-hover model-list'>
+      <thead>
+        <tr>
+          <th class='column-header'>Name</th>
+          <th class='column-header'>Most Recent Run Status</th>
+          <th class='column-header'>Most Recent Run Date (UTC)</th>
+          <th class='column-header'>Tasks Status</th>
+          <th class='column-header'>Next Scheduled</th>
+        </tr>
+      </thead>
 
-			{% for dag in data %}
-				<tr>
-					<td>{{ dag.name }}</td>
-					<td>{{ dag.run_state }}</td>
-					{% if dag.run_date != None %}
-						<td>{{ dag.run_date.date }} at {{ dag.run_date.hour }}:{{ dag.run_date.minute }}</td>
-					{% else %}
-						<td></td>
-					{% endif %}
-					<td>
-						{% for ti in dag.scrapes_completed %}
-							{{ ti.task_id }}: {{ ti.state }} <br />
-						{% endfor %}
-					</td>
-					{% if dag.next_scheduled != None %}
-						<td>{{ dag.next_scheduled.date }} at {{ dag.next_scheduled.hour }}:{{ dag.next_scheduled.minute }}</td>
-					{% else %}
-						<td></td>
-					{% endif %}
-				</tr>
-			{% endfor %}
-		</table>
-	{% endblock %}
+      {% for dag in data %}
+        <tr>
+          <td>{{ dag.name }}</td>
+          <td>{{ dag.run_state }}</td>
+          {% if dag.run_date != None %}
+            <td>{{ dag.run_date.date }} at {{ dag.run_date.hour }}:{{ dag.run_date.minute }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          <td>
+            {% for ti in dag.scrapes_completed %}
+              {{ ti.task_id }}: {{ ti.state }} <br />
+            {% endfor %}
+          </td>
+          {% if dag.next_scheduled != None %}
+            <td>{{ dag.next_scheduled.date }} at {{ dag.next_scheduled.hour }}:{{ dag.next_scheduled.minute }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </table>
+  {% endblock %}
 
 {% endblock %}
 
 {% block tail %}
-	{{ super() }}
-	<script src='{{ admin_static.url(filename="admin/js/filters.js") }}'></script>
-	{{ lib.form_js() }}
+  {{ super() }}
+  <script src='{{ admin_static.url(filename="admin/js/filters.js") }}'></script>
+  {{ lib.form_js() }}
 {% endblock %}
