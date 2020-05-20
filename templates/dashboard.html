@@ -29,7 +29,7 @@
 					<td>{{ dag.name }}</td>
 					<td>{{ dag.run_state }}</td>
 					{% if dag.run_date != None %}
-						<td>{{ dag.run_date.date }} at {{dag.run_date.hour }}:{{ dag.run_date.minute }}</td>
+						<td>{{ dag.run_date.date }} at {{ dag.run_date.hour }}:{{ dag.run_date.minute }}</td>
 					{% else %}
 						<td></td>
 					{% endif %}
@@ -38,7 +38,11 @@
 							{{ ti.task_id }}: {{ ti.state }} <br />
 						{% endfor %}
 					</td>
-					<td>date of next scheduled run</td>
+					{% if dag.next_scheduled != None %}
+						<td>{{ dag.next_scheduled.date }} at {{ dag.next_scheduled.hour }}:{{ dag.next_scheduled.minute }}</td>
+					{% else %}
+						<td></td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</table>

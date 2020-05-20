@@ -3,6 +3,8 @@ from airflow.models import dag, dagrun, taskinstance
 from airflow.models.dagbag import DagBag
 from airflow.plugins_manager import AirflowPlugin
 
+from datetime import datetime, timedelta
+
 from flask import Blueprint
 from flask_admin import BaseView, expose
 
@@ -19,21 +21,43 @@ class DashboardView(BaseView):
         for d in all_dags:
             session = settings.Session()
             last_run = dag.get_last_dagrun(d.dag_id, session,include_externally_triggered=True) 
-            run_state = last_run.get_state() if last_run else 'Has Not Run'
 
-            run_date = last_run.execution_date if last_run else None
-            run_date_info = {'date': run_date.date(), 'hour': run_date.hour, 'minute': run_date.minute} if last_run else None
-            
-            ti_states = [ti for ti in last_run.get_task_instances()] if last_run else []
+            if last_run:
+                run_state = last_run.get_state()
+                
+                run_date = last_run.execution_date
+                run_date_info = {
+                    'date': run_date.date(),
+                    'hour': run_date.hour,
+                    'minute': run_date.minute
+                }
+                
+                ti_states = [ti for ti in last_run.get_task_instances()]
+
+                now = datetime.now()
+                next_week = now + timedelta(days=7)
+                next_scheduled = d.get_run_dates(now, next_week)[0]
+                next_scheduled_info = {
+                    'date': next_scheduled.date(),
+                    'hour': next_scheduled.hour,
+                    'minute': next_scheduled.minute
+                }
+
+            else:
+                run_state = 'Has Not Run'
+                run_date_info = None
+                ti_states = []
+                next_scheduled_info = None
 
             dag_info = {
                 'name': d.dag_id,
                 'run_state': run_state,
                 'run_date': run_date_info,
-                'scrapes_completed': ti_states
-                # 'next_scheduled':
+                'scrapes_completed': ti_states,
+                'next_scheduled': next_scheduled_info
             }
             data.append(dag_info)
+
         return self.render('dashboard.html', data=data)
 
 
