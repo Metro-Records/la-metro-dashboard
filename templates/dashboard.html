@@ -17,8 +17,9 @@
 			<thead>
 				<tr>
 					<th class='column-header'>Name</th>
-					<th class='column-header'>Most Recent Run</th>
-					<th class='column-header'>Scrapes Completed</th>
+					<th class='column-header'>Most Recent Run Status</th>
+					<th class='column-header'>Most Recent Run Date (UTC)</th>
+					<th class='column-header'>Tasks Status</th>
 					<th class='column-header'>Next Scheduled</th>
 				</tr>
 			</thead>
@@ -26,11 +27,16 @@
 			{% for dag in data %}
 				<tr>
 					<td>{{ dag.name }}</td>
-					<td>{{ dag.state }}</td>
+					<td>{{ dag.run_state }}</td>
+					{% if dag.run_date != None %}
+						<td>{{ dag.run_date.date }} at {{dag.run_date.hour }}:{{ dag.run_date.minute }}</td>
+					{% else %}
+						<td></td>
+					{% endif %}
 					<td>
-					{% for ti in dag.scrapes_completed %}
-						{{ ti.task_id }}: {{ ti.state }} <br />
-					{% endfor %}
+						{% for ti in dag.scrapes_completed %}
+							{{ ti.task_id }}: {{ ti.state }} <br />
+						{% endfor %}
 					</td>
 					<td>date of next scheduled run</td>
 				</tr>
