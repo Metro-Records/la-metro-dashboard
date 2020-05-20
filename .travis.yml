@@ -1,0 +1,23 @@
+branches:
+  only:
+  - master
+  - "/^v[0-9].*$/"
+language: python
+python:
+- '3.7'
+install:
+- pip install --upgrade pip
+- pip install --upgrade -r requirements.txt
+addons:
+  postgresql: '9.4'
+script: airflow initdb
+deploy:
+  provider: codedeploy
+  access_key_id: AKIAJNYGDLOJKHOUWCAA
+  secret_access_key:
+    secure: R3e5JOoUiNJsQ0dyjWKqpF8Pt0FetjrimsJoVgcdgPmYgPNx7IlBZuOqsrnUj041znjeXb2Eahs2Gi5UNIbHJRe0O/QutiHyOD54JxzjLqU+defP9bcbMoqZJpzGXTF1nehDxD2bWTUWvXEoru+Hbxs/zXli95UhDkT2ujQS5G7EQKZuWmWDiGSWDN+mFZyeCHp+LpbpxJ0EjGrXhBf6qkN1S/YFP/Sxv0gfFSvZzD50gxP0Ze0aSSOQLSZHCWhNBypTBEpWffMLXsWmbJ0Ur0cggA3j1Zff164GnJri3asyox8fUe2xjwx6SZuedi1iV4RvqR0EJ64RjkHkC9zEG0JzKQUWnRPSu+JS6kqK9HLrSBuxOs1IQyjDxcLZoUVtfyqUHw6vas03DWO7so5Avsh3g8NhZGXLZnBNSWBdFMrUptOT4stYicF4J3KImh2yEOSaV6Uhroel3Nrfq3oR4Pt6utpQy0UOLkDvBoQiHbgDoYw9CivLGn+OvHVwJtemG7djHKii4NdvAtOdmDofI3pjB11ckB4505nD1zyUi4JkLyTKn3jUPBrBkQsPumjU715QOc7gTieL5/GAGijh2LwuZGUcC3k2c5P08U5oMnOPElygzUqFiagcOInuhv3FmCuc/dsFEEmbjs4mPzEZJaUE0IIs/QDrVzQTGWI4eIk=
+  application: la-metro-dashboard
+  deployment_group: staging
+  on:
+    repo: datamade/la-metro-dashboard
+    branch: master
