@@ -25,11 +25,11 @@
         </tr>
       </thead>
 
-      {% for dag in data %}
+      {% for dag in data.data %}
         <tr>
-          <td>{{ dag.name }} 
+          <td><strong>{{ dag.name }} </strong>
             <u><span class="dag-description" id="{{ loop.index }}">Click for More Info</span></u><br />
-            <span class="description-text" id="text-{{ loop.index }}"> {{ dag.description }} that's all for now, folks! </span>
+            <span class="description-text" id="text-{{ loop.index }}"> {{ dag.description }}</span>
           </td>
           <td>{{ dag.run_state }}</td>
           {% if dag.run_date != None %}

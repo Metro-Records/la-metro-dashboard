@@ -17,9 +17,16 @@ class Dashboard(BaseView):
         all_dag_ids = bag.dag_ids
         all_dags = [bag.get_dag(dag_id) for dag_id in all_dag_ids]
 
-        data = []
+        metadata = {
+            'all_dags': all_dags,
+            'data': []
+        }
+
 
         for d in all_dags:
+            if d.dag_id in ['councilmatic_showmigrations', 'hello_world', 'sample_windowed_bill_scraping', 'searchqueryset_count']:
+                continue
+
             session = settings.Session()
             last_run = dag.get_last_dagrun(d.dag_id, session,include_externally_triggered=True) 
 
@@ -59,14 +66,15 @@ class Dashboard(BaseView):
 
             dag_info = {
                 'name': d.dag_id,
+                'description': d.description,
                 'run_state': run_state,
                 'run_date': run_date_info,
                 'scrapes_completed': ti_states,
                 'next_scheduled': next_scheduled_info
             }
-            data.append(dag_info)
+            metadata['data'].append(dag_info)
 
-        return self.render('dashboard.html', data=data)
+        return self.render('dashboard.html', data=metadata)
 
 
 admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
