@@ -15,8 +15,8 @@ dag = DAG(
     default_args=default_args,
     schedule_interval=None, # Eventually 0,5 21-23 * * 5
     description=('Run a fast full event scrape on the hour and a fast full bill scrape '
-    'at 5 past the hour between 9pm and midnight UTC on Fridays (2pm to 5pm Fridays PST). \n'
-    'Event scrape window is 0; bill scrape window is 0.\n'
+    'at 5 past the hour between 9pm and midnight UTC on Fridays (2pm to 5pm Fridays PST). '
+    'Event scrape window is 0; bill scrape window is 0. '
     'Fast full scrapes scrape all bills or events quickly – that is, '
     'with requests issued as quickly as the server will respond to them. '
     'This generally takes less than 30 minutes.')

@@ -24,7 +24,7 @@ class Dashboard(BaseView):
 
 
         for d in all_dags:
-            if d.dag_id in ['councilmatic_showmigrations', 'hello_world', 'sample_windowed_bill_scraping', 'searchqueryset_count']:
+            if d.dag_id in ['councilmatic_showmigrations', 'hello_world', 'sample_windowed_bill_scraping', 'searchqueryset_count', 'sleep']:
                 continue
 
             session = settings.Session()

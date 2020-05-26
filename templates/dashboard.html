@@ -19,7 +19,7 @@
         <tr>
           <th class='column-header'>Name</th>
           <th class='column-header'>Most Recent Run Status</th>
-          <th class='column-header'>Most Recent Run Date (UTC)</th>
+          <th class='column-header'>Most Recent Run Date</th>
           <th class='column-header'>Tasks Status</th>
           <th class='column-header'>Next Scheduled</th>
         </tr>
@@ -31,7 +31,14 @@
             <u><span class="dag-description" id="{{ loop.index }}">Click for More Info</span></u><br />
             <span class="description-text" id="text-{{ loop.index }}"> {{ dag.description }}</span>
           </td>
-          <td>{{ dag.run_state }}</td>
+          {% if dag.run_state == 'failed' %}
+            <td class="text-center"><span style="color: red"><i class="fas fa-times-circle"></i></span></td>
+          {% elif dag.run_state == 'success' %}
+            <td class="text-center"><span style="color: green"><i class="fas fa-check-circle"></i></span></td>
+          {% else %}
+            <td>{{ dag.run_state }}</td>
+          {% endif %}
+
           {% if dag.run_date != None %}
             <td>{{ dag.run_date.pst_time }} PST<br /> {{ dag.run_date.cst_time }} CST</td>
           {% else %}
@@ -58,10 +65,12 @@
   {{ super() }}
   <link href="/a{{ url_for('static', filename='css/datatables.min.css') }}" rel="stylesheet">
   <script src="/a{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+  <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" data-auto-replace-svg="nest"></script>
   <script type="text/javascript">
     $(document).ready(function() {
       $('#dashboard-table').DataTable({
-        "order": [[2, "desc"]]
+        "order": [[2, "desc"]],
+        "table-layout": "fixed"
       });
 
       $('.description-text').hide()
@@ -83,6 +92,5 @@
       }
     })
   </script>
-  <script src='{{ admin_static.url(filename="admin/js/filters.js") }}'></script>
   {{ lib.form_js() }}
 {% endblock %}
