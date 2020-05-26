@@ -17,7 +17,7 @@
     <table class='table table-striped table-bordered table-hover model-list' id='dashboard-table'>
       <thead>
         <tr>
-          <th class='column-header' id="test">Name</th>
+          <th class='column-header'>Name</th>
           <th class='column-header'>Most Recent Run Status</th>
           <th class='column-header'>Most Recent Run Date (UTC)</th>
           <th class='column-header'>Tasks Status</th>
@@ -27,7 +27,10 @@
 
       {% for dag in data %}
         <tr>
-          <td>{{ dag.name }}</td>
+          <td>{{ dag.name }} 
+            <u><span class="dag-description" id="{{ loop.index }}">Click for More Info</span></u><br />
+            <span class="description-text" id="text-{{ loop.index }}"> {{ dag.description }} that's all for now, folks! </span>
+          </td>
           <td>{{ dag.run_state }}</td>
           {% if dag.run_date != None %}
             <td>{{ dag.run_date.pst_time }} PST<br /> {{ dag.run_date.cst_time }} CST</td>
@@ -60,8 +63,26 @@
       $('#dashboard-table').DataTable({
         "order": [[2, "desc"]]
       });
+
+      $('.description-text').hide()
     });
+
+    $('.dag-description').click(function() {
+      currentSpan = $(`#${this.id}`)
+      currentText = currentSpan.text()
+      if (currentText.includes("More")) { 
+        currentSpan.text(function() {
+          return "Click for Less Info"
+        })
+        $(`#text-${this.id}`).show()
+      } else {
+        currentSpan.text(function() {
+          return `Click for More Info`
+        })
+        $(`#text-${this.id}`).hide()
+      }
+    })
   </script>
-  <!-- <script src='{{ admin_static.url(filename="admin/js/filters.js") }}'></script> -->
+  <script src='{{ admin_static.url(filename="admin/js/filters.js") }}'></script>
   {{ lib.form_js() }}
 {% endblock %}
