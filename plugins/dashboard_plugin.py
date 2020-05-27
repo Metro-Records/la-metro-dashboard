@@ -21,44 +21,77 @@ class Dashboard(BaseView):
         dag_info = self.get_dag_info(all_dags, session)
 
         latest_dagruns = dagrun.DagRun.get_latest_runs(session)
-        latest_event_tis = []
-        latest_bill_tis = []
-        import pdb
-        pdb.set_trace()
+        event_dags = []
+        bill_dags = []
         for dr in latest_dagruns:
+            current_dag = bag.get_dag(dr.dag_id)
             for ti in dr.get_task_instances():
-                if 'event' in ti.task_id:
-                    latest_event_tis.append(ti)
-                elif 'bill' in ti.task_id:
-                    latest_bill_tis.append(ti)
-                elif 'daily' in ti.task_id:
-                    latest_event_tis.append(ti)
-                    latest_bill_tis.append(ti)
+                if 'event' in ti.task_id and current_dag not in event_dags:
+                    event_dags.append(current_dag)
+                elif 'bill' in ti.task_id and current_dag not in bill_dags:
+                    bill_dags.append(current_dag)
+                elif 'daily' in ti.task_id and current_dag not in bill_dags and current_dag not in event_dags:
+                    event_dags.append(current_dag)
+                    bill_dags.append(current_dag)
 
-        last_successful_event_tis = []
-        last_successful_bill_tis = []
-        for ti in latest_event_tis:
-            if ti.state == 'success':
-                last_successful_event_tis.append(ti)
-            else:
-                last_successful_event_tis.append(ti.previous_ti_success())
+        successful_event_runs = []
+        for dag in event_dags:
+            successful_run = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
+            if successful_run:
+                successful_event_runs.append(successful_runs[0])
 
-        for ti in latest_bill_tis:
-            if ti.state == 'success':
-                last_successful_bill_tis.append(ti)
-            else:
-                last_successful_bill_tis.append(ti.previous_ti_success())
+        successful_bill_runs = []
+        for dag in bill_dags:
+            successful_runs = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
+            if successful_runs:
+                successful_bill_runs.append(successful_runs[0])
 
-        event_last_run = last_successful_event_tis.sort(key=lambda ti: ti.end_date)[0]
-        bill_last_run = last_successful_bill_tis.sort(key=lambda ti: ti.end_date)[0]
+        successful_event_runs.sort(key=lambda x: x.end_date)
+        successful_bill_runs.sort(key=lambda x: x.end_date)
+
+        pst_tz = tz.gettz('America/Los_Angeles')
+        cst_tz = tz.gettz('America/Chicago')
+
+        if successful_event_runs != []:
+            event_last_run = successful_event_runs[0]
+            run_date = event_last_run.execution_date
+
+            pst_run_time = run_date.astimezone(pst_tz)
+            cst_run_time = run_date.astimezone(cst_tz)
+
+            event_last_run_time = {
+                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
+                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
+            }
+        else:
+            event_last_run = None
+            event_last_run_time = None
+
+        if successful_bill_runs != []:
+            bill_last_run = successful_bill_runs[0]
+            run_date = bill_last_run.execution_date
+
+            pst_run_time = run_date.astimezone(pst_tz)
+            cst_run_time = run_date.astimezone(cst_tz)
+
+            bill_last_run_time = {
+                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
+                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
+            }
+        else:
+            bill_last_run = None
+            bill_last_run_time = None
+
 
         metadata = {
             'all_dags': all_dags,
             'data': dag_info,
             'event_last_run': event_last_run,
+            'event_last_run_time': event_last_run_time,
             # 'event_next_run': ,
             # 'events_in_db': ,
-            'bill_last_run': bill_last_run
+            'bill_last_run': bill_last_run,
+            'bill_last_run_time': bill_last_run_time
             # 'bill_next_run': ,
             # 'bills_in_db': ,
             # 'bills_in_index': ,

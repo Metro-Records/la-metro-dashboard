@@ -10,8 +10,18 @@
 
 {% block body %}
   <h2>Dashboard</h2>
-  <p><strong>Last Bill Run: </strong>{{ data.bill_last_run }}</p>
-  <p><strong>Last Event Run: </strong>{{ data.event_last_run }}</p>
+  <p><strong>Last Bill Run: </strong>
+    {% if data.bill_last_run %}
+      {{ data.bill_last_run.dag_id }} at {{ data.bill_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)</p>
+    {% else %}
+      No Bill Scrapes Completed </p>
+    {% endif %}
+  <p><strong>Last Event Run: </strong>
+    {% if data.event_last_run %}
+      {{ data.event_last_run.dag_id }} at {{data.event_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)</p>
+    {% else %}
+      No Event Scrapes Completed </p>
+    {% endif %}
   {% block model_menu_bar %}
   {% endblock %}
 
