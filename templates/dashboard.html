@@ -94,7 +94,11 @@
     $(document).ready(function() {
       $('#dashboard-table').DataTable({
         "order": [[2, "desc"]],
-        "table-layout": "fixed"
+        "table-layout": "fixed",
+        "columnDefs": [
+            { "width": 200, "targets": 0 }
+        ],
+        "fixedColumns": true
       });
 
       $('.description-text').hide()
