@@ -92,6 +92,12 @@
   <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" data-auto-replace-svg="nest"></script>
   <script type="text/javascript">
     $(document).ready(function() {
+      // edit header
+      $('.navbar-header a.navbar-brand').attr('href', '/admin/dashboard/')
+      $('.navbar-nav').hide()
+      $('.navbar-right').show()
+
+      // DataTable
       $('#dashboard-table').DataTable({
         "order": [[2, "desc"]],
         "table-layout": "fixed",
@@ -102,6 +108,7 @@
       });
 
       $('.description-text').hide()
+      
     });
 
     $('.dag-description').click(function() {
@@ -119,6 +126,7 @@
         $(`#text-${this.id}`).hide()
       }
     })
+
   </script>
   {{ lib.form_js() }}
 {% endblock %}
