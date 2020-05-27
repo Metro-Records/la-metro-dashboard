@@ -10,6 +10,8 @@
 
 {% block body %}
   <h2>Dashboard</h2>
+  <p><strong>Last Bill Run: </strong>{{ data.bill_last_run }}</p>
+  <p><strong>Last Event Run: </strong>{{ data.event_last_run }}</p>
   {% block model_menu_bar %}
   {% endblock %}
 

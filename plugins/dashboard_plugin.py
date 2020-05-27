@@ -13,21 +13,66 @@ from flask_admin import BaseView, expose
 class Dashboard(BaseView):
     @expose('/')
     def index(self):
+        session = settings.Session()
         bag = DagBag()
         all_dag_ids = bag.dag_ids
         all_dags = [bag.get_dag(dag_id) for dag_id in all_dag_ids]
 
+        dag_info = self.get_dag_info(all_dags, session)
+
+        latest_dagruns = dagrun.DagRun.get_latest_runs(session)
+        latest_event_tis = []
+        latest_bill_tis = []
+        import pdb
+        pdb.set_trace()
+        for dr in latest_dagruns:
+            for ti in dr.get_task_instances():
+                if 'event' in ti.task_id:
+                    latest_event_tis.append(ti)
+                elif 'bill' in ti.task_id:
+                    latest_bill_tis.append(ti)
+                elif 'daily' in ti.task_id:
+                    latest_event_tis.append(ti)
+                    latest_bill_tis.append(ti)
+
+        last_successful_event_tis = []
+        last_successful_bill_tis = []
+        for ti in latest_event_tis:
+            if ti.state == 'success':
+                last_successful_event_tis.append(ti)
+            else:
+                last_successful_event_tis.append(ti.previous_ti_success())
+
+        for ti in latest_bill_tis:
+            if ti.state == 'success':
+                last_successful_bill_tis.append(ti)
+            else:
+                last_successful_bill_tis.append(ti.previous_ti_success())
+
+        event_last_run = last_successful_event_tis.sort(key=lambda ti: ti.end_date)[0]
+        bill_last_run = last_successful_bill_tis.sort(key=lambda ti: ti.end_date)[0]
+
         metadata = {
             'all_dags': all_dags,
-            'data': []
+            'data': dag_info,
+            'event_last_run': event_last_run,
+            # 'event_next_run': ,
+            # 'events_in_db': ,
+            'bill_last_run': bill_last_run
+            # 'bill_next_run': ,
+            # 'bills_in_db': ,
+            # 'bills_in_index': ,
+            # 'people_in_db':
         }
 
+        return self.render('dashboard.html', data=metadata)
 
-        for d in all_dags:
+    def get_dag_info(self, dags, session):
+        data = []
+        for d in dags:
             if d.dag_id in ['councilmatic_showmigrations', 'hello_world', 'sample_windowed_bill_scraping', 'searchqueryset_count', 'sleep']:
                 continue
 
-            session = settings.Session()
             last_run = dag.get_last_dagrun(d.dag_id, session,include_externally_triggered=True) 
 
             if last_run:
@@ -72,9 +117,10 @@ class Dashboard(BaseView):
                 'scrapes_completed': ti_states,
                 'next_scheduled': next_scheduled_info
             }
-            metadata['data'].append(dag_info)
 
-        return self.render('dashboard.html', data=metadata)
+            data.append(dag_info)
+
+        return data
 
 
 admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
