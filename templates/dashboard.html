@@ -51,7 +51,7 @@
 
       {% for dag in data.data %}
         <tr>
-          <td><strong>{{ dag.name }} </strong>
+          <td><strong>{{ dag.name }} </strong><br />
             <u><span class="dag-description" id="{{ loop.index }}">Click for More Info</span></u><br />
             <span class="description-text" id="text-{{ loop.index }}"> {{ dag.description }}</span>
           </td>

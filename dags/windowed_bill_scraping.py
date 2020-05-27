@@ -15,7 +15,7 @@ dag = DAG(
     'windowed_bill_scraping',
     default_args=default_args,
     schedule_interval=None, # Eventually 5,20,35,50 * * * 0-6
-    description=('Run a bill scrape with a window of 0.05. Between 9pm Friday and 6am Saturday '
+    description=('Run a bill scrape with a window of 0.05 at 5, 20, 35, and 50 minutes every hour. Between 9pm Friday and 6am Saturday '
         '(2pm to 11pm Friday PST), run a bill scrape with a window of 1 only at 35 and 50 minutes past the hour. '
         'Windowed bill scrapes scrape bills where specific dates are within the given window, '
         'or in the future. This generally takes somewhere between a few seconds and a few minutes, '
