@@ -46,8 +46,8 @@ class Dashboard(BaseView):
             if successful_runs:
                 successful_bill_runs.append(successful_runs[0])
 
-        successful_event_runs.sort(key=lambda x: x.end_date)
-        successful_bill_runs.sort(key=lambda x: x.end_date)
+        successful_event_runs.sort(key=lambda x: x.end_date, reverse=True)
+        successful_bill_runs.sort(key=lambda x: x.end_date, reverse=True)
 
         pst_tz = tz.gettz('America/Los_Angeles')
         cst_tz = tz.gettz('America/Chicago')
@@ -82,16 +82,52 @@ class Dashboard(BaseView):
             bill_last_run = None
             bill_last_run_time = None
 
+        event_next_runs = [dag for dag in dag_info if dag['name'] in event_dags]
+        event_next_runs.sort(key=lambda x: x.next_scheduled)
+        if event_next_runs != []:
+            event_next_run = event_next_runs[0]
+            run_date = event_next_run.execution_date
+
+            pst_run_time = run_date.astimezone(pst_tz)
+            cst_run_time = run_date.astimezone(cst_tz)
+
+            event_next_run_time = {
+                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
+                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
+            }
+        else:
+            event_next_run = None
+            event_next_run_time = None
+
+        bill_next_runs = [dag for dag in dag_info if dag['name'] in bill_dags]
+        bill_next_runs.sort(key=lambda x: x.next_scheduled)
+        if bill_next_runs != []:
+            bill_next_run = bill_next_runs[0]
+            run_date = bill_next_run.execution_date
+
+            pst_run_time = run_date.astimezone(pst_tz)
+            cst_run_time = run_date.astimezone(cst_tz)
+
+            bill_next_run_time = {
+                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
+                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
+            }
+        else:
+            bill_next_run = None
+            bill_next_run_time = None
 
         metadata = {
             'all_dags': all_dags,
             'data': dag_info,
             'event_last_run': event_last_run,
             'event_last_run_time': event_last_run_time,
-            # 'event_next_run': ,
+            'event_next_run': event_next_run,
+            'event_next_run_time': event_next_run_time,
             # 'events_in_db': ,
             'bill_last_run': bill_last_run,
-            'bill_last_run_time': bill_last_run_time
+            'bill_last_run_time': bill_last_run_time,
+            'bill_next_run': bill_next_run,
+            'bill_next_run_time': bill_next_run_time
             # 'bill_next_run': ,
             # 'bills_in_db': ,
             # 'bills_in_index': ,
