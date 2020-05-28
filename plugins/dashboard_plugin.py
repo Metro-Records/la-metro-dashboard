@@ -1,4 +1,5 @@
 import os
+import sys
 
 from airflow import settings
 from airflow.models import dag, dagrun, taskinstance, xcom
@@ -120,7 +121,7 @@ class Dashboard(BaseView):
             bill_next_run = None
             bill_next_run_time = None
 
-        django_db_models = self.get_db_info()
+        events_in_db, bills_in_db, people_in_db = self.get_db_info()
 
         aware_now = datetime.now().replace(tzinfo=pst_tz)
         bills_in_index = xcom.XCom.get_one(execution_date=aware_now,\
@@ -134,14 +135,14 @@ class Dashboard(BaseView):
             'event_last_run_time': event_last_run_time,
             'event_next_run': event_next_run,
             'event_next_run_time': event_next_run_time,
-            'events_in_db': django_db_models,
+            'events_in_db': events_in_db,
             'bill_last_run': bill_last_run,
             'bill_last_run_time': bill_last_run_time,
             'bill_next_run': bill_next_run,
             'bill_next_run_time': bill_next_run_time,
-            # 'bills_in_db': ,
-            'bills_in_index': bills_in_index
-            # 'people_in_db':
+            'bills_in_db': bills_in_db,
+            'bills_in_index': bills_in_index,
+            'people_in_db': people_in_db
         }
 
         return self.render('dashboard.html', data=metadata)
@@ -202,12 +203,22 @@ class Dashboard(BaseView):
         return data
 
     def get_db_info(self):
-        django.conf.settings.configure()
+        sys.path.append(os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/'))
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
         django.setup()
+        sys.path.append(os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/'))
+        django.apps.apps.populate(django.conf.settings.INSTALLED_APPS)
 
-        # LAMetroEventManager = django.db.models.LAMetroEventManager
-        # return len(LAMetroEventManager.objects.get_queryset())
-        return django.db.models
+        Events = django.apps.apps.get_model('lametro', 'LAMetroEvent')
+        total_events = len(Events.objects.get_queryset())
+
+        Bills = django.apps.apps.get_model('lametro', 'LAMetroBill')
+        total_bills = len(Bills.objects.get_queryset())
+
+        People = django.apps.apps.get_model('lametro', 'LAMetroPerson')
+        total_people = len(People.objects.get_queryset())
+
+        return (total_events, total_bills, total_people)
 
 
 admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
