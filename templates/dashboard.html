@@ -44,7 +44,6 @@
           <th class='column-header'>Name</th>
           <th class='column-header'>Most Recent Run Status</th>
           <th class='column-header'>Most Recent Run Date</th>
-          <th class='column-header'>Tasks Status</th>
           <th class='column-header'>Next Scheduled</th>
         </tr>
       </thead>
@@ -68,11 +67,6 @@
           {% else %}
             <td></td>
           {% endif %}
-          <td>
-            {% for ti in dag.scrapes_completed %}
-              {{ ti.task_id }}: {{ ti.state }} <br />
-            {% endfor %}
-          </td>
           {% if dag.next_scheduled != None %}
             <td>{{ dag.next_scheduled.pst_time }} PST<br /> {{ dag.next_scheduled.cst_time }} CST</td>
           {% else %}
@@ -102,7 +96,7 @@
         "order": [[2, "desc"]],
         "table-layout": "fixed",
         "columnDefs": [
-            { "width": 200, "targets": 0 }
+            { "width": 300, "targets": 0 }
         ],
         "fixedColumns": true
       });
