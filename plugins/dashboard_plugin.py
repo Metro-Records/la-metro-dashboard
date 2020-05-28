@@ -1,5 +1,5 @@
 from airflow import settings
-from airflow.models import dag, dagrun, taskinstance
+from airflow.models import dag, dagrun, taskinstance, xcom
 from airflow.models.dagbag import DagBag
 from airflow.plugins_manager import AirflowPlugin
 
@@ -116,6 +116,12 @@ class Dashboard(BaseView):
             bill_next_run = None
             bill_next_run_time = None
 
+        aware_now = datetime.now().replace(tzinfo=pst_tz)
+        bills_in_index = xcom.XCom.get_one(execution_date=aware_now,\
+                                           task_id='searchqueryset_count',\
+                                           dag_id='searchqueryset_count',\
+                                           include_prior_dates=True)
+
         metadata = {
             'all_dags': all_dags,
             'data': dag_info,
@@ -127,10 +133,9 @@ class Dashboard(BaseView):
             'bill_last_run': bill_last_run,
             'bill_last_run_time': bill_last_run_time,
             'bill_next_run': bill_next_run,
-            'bill_next_run_time': bill_next_run_time
-            # 'bill_next_run': ,
+            'bill_next_run_time': bill_next_run_time,
             # 'bills_in_db': ,
-            # 'bills_in_index': ,
+            'bills_in_index': bills_in_index,
             # 'people_in_db':
         }
 

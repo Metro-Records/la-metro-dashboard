@@ -10,30 +10,37 @@
 
 {% block body %}
   <h2>Dashboard</h2>
-  <p><strong>Last Bill Run: </strong>
+  <h4>Bills Summary</h4>
+  <li><strong>Last Bill Run: </strong>
     {% if data.bill_last_run %}
-      {{ data.bill_last_run.dag_id }} at {{ data.bill_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)</p>
+      {{ data.bill_last_run.dag_id }} at {{ data.bill_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)
     {% else %}
-      No Bill Scrapes Completed </p>
+      No Bill Scrapes Completed
     {% endif %}
-  <p><strong>Upcoming Bill Run: </strong>
+  </li>
+  <li><strong>Upcoming Bill Run: </strong>
     {% if data.bill_next_run %}
-      {{ data.bill_next_run.dag_id }} at {{ data.bill_next_run_time.pst_time }} PST ({{ data.bill_next_run_time.cst_time }} CST)</p>
+      {{ data.bill_next_run.dag_id }} at {{ data.bill_next_run_time.pst_time }} PST ({{ data.bill_next_run_time.cst_time }} CST)
     {% else %}
-      No Bill Scrapes Scheduled </p>
+      No Bill Scrapes Scheduled
     {% endif %}
-  <p><strong>Last Event Run: </strong>
+  </li>
+  <li><strong>Bills in Search Index: </strong>{{ data.bills_in_index }}</li>
+  <h4>Events Summary</h4>
+  <li><strong>Last Event Run: </strong>
     {% if data.event_last_run %}
-      {{ data.event_last_run.dag_id }} at {{data.event_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)</p>
+      {{ data.event_last_run.dag_id }} at {{data.event_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)
     {% else %}
-      No Event Scrapes Completed </p>
+      No Event Scrapes Completed
     {% endif %}
-    <p><strong>Upcoming Event Run: </strong>
+  </li>
+  <li><strong>Upcoming Event Run: </strong>
     {% if data.event_next_run %}
-      {{ data.event_next_run.dag_id }} at {{ data.event_next_run_time.pst_time }} PST ({{ data.event_next_run_time.cst_time }} CST)</p>
+      {{ data.event_next_run.dag_id }} at {{ data.event_next_run_time.pst_time }} PST ({{ data.event_next_run_time.cst_time }} CST)
     {% else %}
-      No Event Scrapes Scheduled </p>
+      No Event Scrapes Scheduled
     {% endif %}
+  </li>
   {% block model_menu_bar %}
   {% endblock %}
 
@@ -86,12 +93,12 @@
   <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" data-auto-replace-svg="nest"></script>
   <script type="text/javascript">
     $(document).ready(function() {
-      // edit header
       $('.navbar-header a.navbar-brand').attr('href', '/admin/dashboard/')
       $('.navbar-nav').hide()
       $('.navbar-right').show()
 
-      // DataTable
+      $('.description-text').hide()
+
       $('#dashboard-table').DataTable({
         "order": [[2, "desc"]],
         "table-layout": "fixed",
@@ -100,8 +107,6 @@
         ],
         "fixedColumns": true
       });
-
-      $('.description-text').hide()
       
     });
 
