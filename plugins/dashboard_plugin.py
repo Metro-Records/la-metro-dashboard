@@ -1,3 +1,5 @@
+import os
+
 from airflow import settings
 from airflow.models import dag, dagrun, taskinstance, xcom
 from airflow.models.dagbag import DagBag
@@ -5,6 +7,8 @@ from airflow.plugins_manager import AirflowPlugin
 
 from datetime import datetime, timedelta
 from dateutil import tz
+
+import django
 
 from flask import Blueprint
 from flask_admin import BaseView, expose
@@ -116,6 +120,8 @@ class Dashboard(BaseView):
             bill_next_run = None
             bill_next_run_time = None
 
+        django_db_models = self.get_db_info()
+
         aware_now = datetime.now().replace(tzinfo=pst_tz)
         bills_in_index = xcom.XCom.get_one(execution_date=aware_now,\
                                            task_id='searchqueryset_count',\
@@ -123,19 +129,18 @@ class Dashboard(BaseView):
                                            include_prior_dates=True)
 
         metadata = {
-            'all_dags': all_dags,
             'data': dag_info,
             'event_last_run': event_last_run,
             'event_last_run_time': event_last_run_time,
             'event_next_run': event_next_run,
             'event_next_run_time': event_next_run_time,
-            # 'events_in_db': ,
+            'events_in_db': django_db_models,
             'bill_last_run': bill_last_run,
             'bill_last_run_time': bill_last_run_time,
             'bill_next_run': bill_next_run,
             'bill_next_run_time': bill_next_run_time,
             # 'bills_in_db': ,
-            'bills_in_index': bills_in_index,
+            'bills_in_index': bills_in_index
             # 'people_in_db':
         }
 
@@ -195,6 +200,14 @@ class Dashboard(BaseView):
             data.append(dag_info)
 
         return data
+
+    def get_db_info(self):
+        django.conf.settings.configure()
+        django.setup()
+
+        # LAMetroEventManager = django.db.models.LAMetroEventManager
+        # return len(LAMetroEventManager.objects.get_queryset())
+        return django.db.models
 
 
 admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
