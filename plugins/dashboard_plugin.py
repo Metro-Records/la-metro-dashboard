@@ -224,7 +224,7 @@ admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
 
 blue_print_ = Blueprint('dashboard_plugin',
                         __name__,
-                        template_folder='/app/templates',
+                        template_folder=os.path.join(os.environ['AIRFLOW_HOME'], 'templates'),
                         static_folder='static',
                         static_url_path='/static/dashboard_plugin')
 
