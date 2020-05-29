@@ -41,8 +41,8 @@ class Dashboard(BaseView):
 
         successful_event_runs = []
         for dag in event_dags:
-            successful_run = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
-            if successful_run:
+            successful_runs = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
+            if successful_runs:
                 successful_event_runs.append(successful_runs[0])
 
         successful_bill_runs = []
@@ -206,7 +206,6 @@ class Dashboard(BaseView):
         sys.path.append(os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/'))
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
         django.setup()
-        sys.path.append(os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/'))
         django.apps.apps.populate(django.conf.settings.INSTALLED_APPS)
 
         Events = django.apps.apps.get_model('lametro', 'LAMetroEvent')
