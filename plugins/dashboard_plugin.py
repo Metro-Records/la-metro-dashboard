@@ -66,14 +66,8 @@ class Dashboard(BaseView):
         bill_next_runs.sort(key=lambda x: x.next_scheduled)
         bill_next_run, bill_next_run_time = self.get_run_info(bill_next_runs)
 
-        events_in_db, bills_in_db, people_in_db = self.get_db_info()
-
-        aware_now = datetime.now().replace(tzinfo=pst_tz)
-        bills_in_index = xcom.XCom.get_one(execution_date=aware_now,\
-                                           task_id='searchqueryset_count',\
-                                           dag_id='searchqueryset_count',\
-                                           include_prior_dates=True)
-
+        events_in_db, bills_in_db, people_in_db, bills_in_index = self.get_db_info()
+        
         metadata = {
             'data': dag_info,
             'event_last_run': event_last_run,
@@ -162,7 +156,10 @@ class Dashboard(BaseView):
         People = django.apps.apps.get_model('lametro', 'LAMetroPerson')
         total_people = len(People.objects.get_queryset())
 
-        return (total_events, total_bills, total_people)
+        from haystack.query import SearchQuerySet
+        bills_in_index = len(SearchQuerySet().all())
+
+        return (total_events, total_bills, total_people, bills_in_index)
 
     def get_run_info(self, runs):
         if len(runs) > 0:
