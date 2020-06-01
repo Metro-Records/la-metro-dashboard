@@ -2,7 +2,7 @@ import os
 import sys
 
 from airflow import settings
-from airflow.models import dag, dagrun, taskinstance, xcom
+from airflow.models import dag, dagrun, taskinstance
 from airflow.models.dagbag import DagBag
 from airflow.plugins_manager import AirflowPlugin
 
@@ -25,6 +25,9 @@ class Dashboard(BaseView):
 
         dag_info = self.get_dag_info(all_dags, session)
 
+        pst_tz = tz.gettz('America/Los_Angeles')
+        cst_tz = tz.gettz('America/Chicago')
+
         latest_dagruns = dagrun.DagRun.get_latest_runs(session)
         event_dags = []
         bill_dags = []
@@ -44,82 +47,24 @@ class Dashboard(BaseView):
             successful_runs = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
             if successful_runs:
                 successful_event_runs.append(successful_runs[0])
+        successful_event_runs.sort(key=lambda x: x.end_date, reverse=True)
+        event_last_run, event_last_run_time = self.get_run_info(successful_event_runs)
 
         successful_bill_runs = []
         for dag in bill_dags:
             successful_runs = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
             if successful_runs:
                 successful_bill_runs.append(successful_runs[0])
-
-        successful_event_runs.sort(key=lambda x: x.end_date, reverse=True)
         successful_bill_runs.sort(key=lambda x: x.end_date, reverse=True)
-
-        pst_tz = tz.gettz('America/Los_Angeles')
-        cst_tz = tz.gettz('America/Chicago')
-
-        if successful_event_runs != []:
-            event_last_run = successful_event_runs[0]
-            run_date = event_last_run.execution_date
-
-            pst_run_time = run_date.astimezone(pst_tz)
-            cst_run_time = run_date.astimezone(cst_tz)
-
-            event_last_run_time = {
-                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
-                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
-            }
-        else:
-            event_last_run = None
-            event_last_run_time = None
-
-        if successful_bill_runs != []:
-            bill_last_run = successful_bill_runs[0]
-            run_date = bill_last_run.execution_date
-
-            pst_run_time = run_date.astimezone(pst_tz)
-            cst_run_time = run_date.astimezone(cst_tz)
-
-            bill_last_run_time = {
-                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
-                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
-            }
-        else:
-            bill_last_run = None
-            bill_last_run_time = None
+        bill_last_run, bill_last_run_time = self.get_run_info(successful_bill_runs)
 
         event_next_runs = [dag for dag in dag_info if dag['name'] in event_dags]
         event_next_runs.sort(key=lambda x: x.next_scheduled)
-        if event_next_runs != []:
-            event_next_run = event_next_runs[0]
-            run_date = event_next_run.execution_date
-
-            pst_run_time = run_date.astimezone(pst_tz)
-            cst_run_time = run_date.astimezone(cst_tz)
-
-            event_next_run_time = {
-                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
-                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
-            }
-        else:
-            event_next_run = None
-            event_next_run_time = None
+        event_next_run, event_next_run_time = self.get_run_info(event_next_runs)
 
         bill_next_runs = [dag for dag in dag_info if dag['name'] in bill_dags]
         bill_next_runs.sort(key=lambda x: x.next_scheduled)
-        if bill_next_runs != []:
-            bill_next_run = bill_next_runs[0]
-            run_date = bill_next_run.execution_date
-
-            pst_run_time = run_date.astimezone(pst_tz)
-            cst_run_time = run_date.astimezone(cst_tz)
-
-            bill_next_run_time = {
-                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
-                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
-            }
-        else:
-            bill_next_run = None
-            bill_next_run_time = None
+        bill_next_run, bill_next_run_time = self.get_run_info(bill_next_runs)
 
         events_in_db, bills_in_db, people_in_db = self.get_db_info()
 
@@ -218,6 +163,27 @@ class Dashboard(BaseView):
         total_people = len(People.objects.get_queryset())
 
         return (total_events, total_bills, total_people)
+
+    def get_run_info(self, runs):
+        if len(runs) > 0:
+            run = runs[0]
+            run_date = run.execution_date
+
+            pst_tz = tz.gettz('America/Los_Angeles')
+            cst_tz = tz.gettz('America/Chicago')
+
+            pst_run_time = run_date.astimezone(pst_tz)
+            cst_run_time = run_date.astimezone(cst_tz)
+
+            run_time = {
+                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
+                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
+            }
+        else:
+            run = None
+            run_time = None
+
+        return (run, run_time)
 
 
 admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
