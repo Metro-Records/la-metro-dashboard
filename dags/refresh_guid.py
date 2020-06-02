@@ -12,7 +12,7 @@ default_args = {
 dag = DAG(
     'guid_log',
     default_args=default_args,
-    schedule_interval=None, # eventually '0 1 * * *'
+    schedule_interval='0 1 * * *',
     description="Refresh GUID log."
 )
 
