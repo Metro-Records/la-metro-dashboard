@@ -20,10 +20,10 @@ def searchqueryset_count():
     # Importing Haystack requires Django settings to be configured, so delay
     # the import until DAG runtime
     from haystack.query import SearchQuerySet
-    print(len(SearchQuerySet().all()))
+    return len(SearchQueryset().all())
 
 
-t1 = DjangoOperator(
+searchqueryset_count = DjangoOperator(
     task_id='searchqueryset_count',
     dag=dag,
     python_callable=searchqueryset_count

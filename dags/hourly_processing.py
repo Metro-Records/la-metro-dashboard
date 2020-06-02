@@ -15,7 +15,8 @@ default_args = {
 dag = DAG(
     'hourly_processing',
     default_args=default_args,
-    schedule_interval=None # eventually '10,25,40,55 * * * * '
+    schedule_interval=None, # eventually '10,25,40,55 * * * * '
+    description="Update all pictures, pdfs, and text. Verify data integrity."
 )
 
 def refresh_pic():

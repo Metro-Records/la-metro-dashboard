@@ -12,7 +12,10 @@ default_args = {
 dag = DAG(
     'daily_scraping',
     default_args=default_args,
-    schedule_interval=None # Eventually 5 0 * * 0-6
+    schedule_interval=None, # Eventually 5 0 * * 0-6
+    description=('Scrape all people and committees, bills, and events “politely” '
+    '– that is, with requests throttled to 60 per minute, or 1 per second. '
+    'This generally takes 6-7 hours.')
 )
 
 
