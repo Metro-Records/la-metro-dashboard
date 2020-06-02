@@ -1,18 +1,21 @@
 import os
 import sys
 
+import pytz
 from airflow import settings
 from airflow.models import dag, dagrun, taskinstance
 from airflow.models.dagbag import DagBag
 from airflow.plugins_manager import AirflowPlugin
 
 from datetime import datetime, timedelta
-from dateutil import tz
 
 import django
 
 from flask import Blueprint
 from flask_admin import BaseView, expose
+
+PACIFIC_TIMEZONE = pytz.timezone('US/Pacific')
+CENTRAL_TIMEZONE = pytz.timezone('US/Central')
 
 
 class Dashboard(BaseView):
@@ -24,9 +27,6 @@ class Dashboard(BaseView):
         all_dags = [bag.get_dag(dag_id) for dag_id in all_dag_ids]
 
         dag_info = self.get_dag_info(all_dags, session)
-
-        pst_tz = tz.gettz('America/Los_Angeles')
-        cst_tz = tz.gettz('America/Chicago')
 
         latest_dagruns = dagrun.DagRun.get_latest_runs(session)
         event_dags = []
@@ -89,21 +89,15 @@ class Dashboard(BaseView):
     def get_dag_info(self, dags, session):
         data = []
         for d in dags:
-            if d.dag_id in ['councilmatic_showmigrations', 'hello_world', 'sample_windowed_bill_scraping', 'searchqueryset_count', 'sleep']:
-                continue
-
             last_run = dag.get_last_dagrun(d.dag_id, session,include_externally_triggered=True) 
 
             if last_run:
                 run_state = last_run.get_state()
 
-                pst_tz = tz.gettz('America/Los_Angeles')
-                cst_tz = tz.gettz('America/Chicago')
-                
                 run_date = last_run.execution_date
 
-                pst_run_time = run_date.astimezone(pst_tz)
-                cst_run_time = run_date.astimezone(cst_tz)
+                pst_run_time = run_date.astimezone(PACIFIC_TIMEZONE)
+                cst_run_time = run_date.astimezone(CENTRAL_TIMEZONE)
                 run_date_info = {
                     'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
                     'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
@@ -111,19 +105,17 @@ class Dashboard(BaseView):
                 
                 ti_states = [ti for ti in last_run.get_task_instances()]
 
-                now = datetime.now()
+                now = datetime.now(pytz.utc)
                 next_week = now + timedelta(days=7)
                 next_scheduled = d.get_run_dates(now, next_week)[0]
 
-                pst_next_scheduled = next_scheduled.astimezone(pst_tz)
-                cst_next_scheduled = next_scheduled.astimezone(cst_tz)                
+                pst_next_scheduled = next_scheduled.astimezone(PACIFIC_TIMEZONE)
+                cst_next_scheduled = next_scheduled.astimezone(CENTRAL_TIMEZONE)
                 next_scheduled_info = {
                     'pst_time': datetime.strftime(pst_next_scheduled, "%m/%d/%y %I:%M %p"),
                     'cst_time': datetime.strftime(cst_next_scheduled, "%m/%d/%y %I:%M %p")
                 }
 
-            else:
-                run_state = 'Has Not Run'
                 run_date_info = None
                 ti_states = []
                 next_scheduled_info = None
@@ -166,11 +158,8 @@ class Dashboard(BaseView):
             run = runs[0]
             run_date = run.execution_date
 
-            pst_tz = tz.gettz('America/Los_Angeles')
-            cst_tz = tz.gettz('America/Chicago')
-
-            pst_run_time = run_date.astimezone(pst_tz)
-            cst_run_time = run_date.astimezone(cst_tz)
+            pst_run_time = run_date.astimezone(PACIFIC_TIMEZONE)
+            cst_run_time = run_date.astimezone(CENTRAL_TIMEZONE)
 
             run_time = {
                 'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),

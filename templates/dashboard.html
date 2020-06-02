@@ -11,42 +11,59 @@
   <h2>Dashboard</h2>
   <div class='container'>
     <div class='row'>
-      <div class='col-sm-6'>
-        <h4>Bills ({{ data.bills_in_db }} Total)</h4>
-        <li><strong>Last Bill Run: </strong>
-          {% if data.bill_last_run %}
-            {{ data.bill_last_run.dag_id }} at {{ data.bill_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)
-          {% else %}
-            No Bill Scrapes Completed
-          {% endif %}
-        </li>
-        <li><strong>Upcoming Bill Run: </strong>
-          {% if data.bill_next_run %}
-            {{ data.bill_next_run.dag_id }} at {{ data.bill_next_run_time.pst_time }} PST ({{ data.bill_next_run_time.cst_time }} CST)
-          {% else %}
-            No Bill Scrapes Scheduled
-          {% endif %}
-        </li>
-        <li><strong>Bills in Search Index: </strong>{{ data.bills_in_index }}</li>
+      <div class='col-sm-4'>
+        <div style='margin-bottom: 1em'>
+          <h4>
+            <i class="fa fa-book"></i>
+            Bills ({{ data.bills_in_db }} Total)
+          </h4>
+          <li><strong>Last Bill Run: </strong>
+            {% if data.bill_last_run %}
+              {{ data.bill_last_run.dag_id }} at {{ data.bill_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)
+            {% else %}
+              No Bill Scrapes Completed
+            {% endif %}
+          </li>
+          <li><strong>Upcoming Bill Run: </strong>
+            {% if data.bill_next_run %}
+              {{ data.bill_next_run.dag_id }} at {{ data.bill_next_run_time.pst_time }} PST ({{ data.bill_next_run_time.cst_time }} CST)
+            {% else %}
+              No Bill Scrapes Scheduled
+            {% endif %}
+          </li>
+          <li><strong>Bills in Search Index: </strong>{{ data.bills_in_index }}</li>
+        </div>
       </div>
 
-      <div class='col-sm-6'>
-        <h4>Events ({{ data.events_in_db }} Total)</h4>
-        <li><strong>Last Event Run: </strong>
-          {% if data.event_last_run %}
-            {{ data.event_last_run.dag_id }} at {{data.event_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)
-          {% else %}
-            No Event Scrapes Completed
-          {% endif %}
-        </li>
-        <li><strong>Upcoming Event Run: </strong>
-          {% if data.event_next_run %}
-            {{ data.event_next_run.dag_id }} at {{ data.event_next_run_time.pst_time }} PST ({{ data.event_next_run_time.cst_time }} CST)
-          {% else %}
-            No Event Scrapes Scheduled
-          {% endif %}
-        </li>
-        <h4>People ({{ data.people_in_db }} Total)</h4>
+      <div class='col-sm-4'>
+        <div style='margin-bottom: 1em'>
+          <h4>
+            <i class="fa fa-calendar-alt"></i>
+            Events ({{ data.events_in_db }} Total)
+          </h4>
+          <li><strong>Last Event Run: </strong>
+            {% if data.event_last_run %}
+              {{ data.event_last_run.dag_id }} at {{data.event_last_run_time.pst_time }} PST ({{ data.bill_last_run_time.cst_time }} CST)
+            {% else %}
+              No Event Scrapes Completed
+            {% endif %}
+          </li>
+          <li><strong>Upcoming Event Run: </strong>
+            {% if data.event_next_run %}
+              {{ data.event_next_run.dag_id }} at {{ data.event_next_run_time.pst_time }} PST ({{ data.event_next_run_time.cst_time }} CST)
+            {% else %}
+              No Event Scrapes Scheduled
+            {% endif %}
+          </li>
+        </div>
+      </div>
+
+      <div class='col-sm-4'>
+        <div style='margin-bottom: 1em'>
+          <h4>
+            <i class='fa fa-users'></i>
+            People ({{ data.people_in_db }} Total)</h4>
+        </div>
       </div>
     </div>
   </div>
@@ -73,6 +90,8 @@
             <td class="text-center"><span style="color: red"><i class="fas fa-times-circle"></i><br />Failed</span></td>
           {% elif dag.run_state == 'success' %}
             <td class="text-center"><span style="color: green"><i class="fas fa-check-circle"></i><br />Succeeded</span></td>
+          {% elif dag.run_state == 'running' %}
+            <td class="text-center"><i class="fa fa-spinner fa-spin"></i><br />Running</td>
           {% else %}
             <td class="text-center">{{ dag.run_state }}</td>
           {% endif %}
