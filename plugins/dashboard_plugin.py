@@ -7,7 +7,7 @@ from airflow.models import dag, dagrun, taskinstance
 from airflow.models.dagbag import DagBag
 from airflow.plugins_manager import AirflowPlugin
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import django
 
@@ -66,7 +66,7 @@ class Dashboard(BaseView):
         bill_next_runs.sort(key=lambda x: x.next_scheduled)
         bill_next_run, bill_next_run_time = self.get_run_info(bill_next_runs)
 
-        events_in_db, bills_in_db, people_in_db, bills_in_index = self.get_db_info()
+        events_in_db, bills_in_db, bills_in_index = self.get_db_info()
         
         metadata = {
             'data': dag_info,
@@ -81,7 +81,6 @@ class Dashboard(BaseView):
             'bill_next_run_time': bill_next_run_time,
             'bills_in_db': bills_in_db,
             'bills_in_index': bills_in_index,
-            'people_in_db': people_in_db
         }
 
         return self.render('dashboard.html', data=metadata)
@@ -106,8 +105,7 @@ class Dashboard(BaseView):
                 ti_states = [ti for ti in last_run.get_task_instances()]
 
                 now = datetime.now(pytz.utc)
-                next_week = now + timedelta(days=7)
-                next_scheduled = d.get_run_dates(now, next_week)[0]
+                next_scheduled = d.following_schedule(now)
 
                 pst_next_scheduled = next_scheduled.astimezone(PACIFIC_TIMEZONE)
                 cst_next_scheduled = next_scheduled.astimezone(CENTRAL_TIMEZONE)
@@ -145,13 +143,10 @@ class Dashboard(BaseView):
         Bills = django.apps.apps.get_model('lametro', 'LAMetroBill')
         total_bills = len(Bills.objects.get_queryset())
 
-        People = django.apps.apps.get_model('lametro', 'LAMetroPerson')
-        total_people = len(People.objects.get_queryset())
-
         from haystack.query import SearchQuerySet
         bills_in_index = len(SearchQuerySet().all())
 
-        return (total_events, total_bills, total_people, bills_in_index)
+        return (total_events, total_bills, bills_in_index)
 
     def get_run_info(self, runs):
         if len(runs) > 0:
