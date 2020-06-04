@@ -113,7 +113,8 @@ class Dashboard(BaseView):
                     'pst_time': datetime.strftime(pst_next_scheduled, "%m/%d/%y %I:%M %p"),
                     'cst_time': datetime.strftime(cst_next_scheduled, "%m/%d/%y %I:%M %p")
                 }
-
+            else:
+                run_state = None
                 run_date_info = None
                 ti_states = []
                 next_scheduled_info = None

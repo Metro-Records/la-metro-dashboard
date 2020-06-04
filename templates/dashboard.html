@@ -85,7 +85,7 @@
           {% elif dag.run_state == 'running' %}
             <td class="text-center"><i class="fa fa-spinner fa-spin"></i><br />Running</td>
           {% else %}
-            <td class="text-center">{{ dag.run_state }}</td>
+            <td class="text-center">{{ dag.run_state or '' }}</td>
           {% endif %}
 
           {% if dag.run_date != None %}
