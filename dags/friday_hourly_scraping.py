@@ -13,7 +13,7 @@ default_args = {
 dag = DAG(
     'friday_hourly_scraping',
     default_args=default_args,
-    schedule_interval=None, # Eventually 0,5 21-23 * * 5
+    schedule_interval='0,5 21-23 * * 5',
     description=('Run a fast full event scrape on the hour and a fast full bill scrape '
     'at 5 past the hour between 9pm and midnight UTC on Fridays (2pm to 5pm Fridays PST). '
     'Event scrape window is 0; bill scrape window is 0. '
