@@ -151,3 +151,4 @@ airflow-webserver.pid
 /.blackbox/pubring.gpg~
 /.blackbox/pubring.kbx~
 /.blackbox/secring.gpg
+/configs/la-metro-dashboard.staging.conf.supervisor
