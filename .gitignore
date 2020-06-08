@@ -148,3 +148,6 @@ airflow-webserver.pid
 
 # MacOS
 .DS_Store
+/.blackbox/pubring.gpg~
+/.blackbox/pubring.kbx~
+/.blackbox/secring.gpg
