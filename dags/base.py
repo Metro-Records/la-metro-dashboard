@@ -6,6 +6,9 @@ import dj_database_url
 from airflow.operators.python_operator import PythonOperator
 from django.conf import settings
 
+SCRAPERS_DIR_PATH = os.getenv('SCRAPERS_DIR_PATH', '/scrapers-us-municipal/')
+LA_METRO_DIR_PATH = os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/')
+
 
 class DjangoOperator(PythonOperator):
 
@@ -15,8 +18,8 @@ class DjangoOperator(PythonOperator):
         '''
         super().pre_execute(*args, **kwargs)
 
-        sys.path.append(os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/'))
-        sys.path.append(os.getenv('SCRAPERS_DIR_PATH', '/scrapers-us-municipal/'))
+        sys.path.append(LA_METRO_DIR_PATH)
+        sys.path.append(SCRAPERS_DIR_PATH)
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
 

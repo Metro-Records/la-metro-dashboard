@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 
+from base import SCRAPERS_DIR_PATH
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
@@ -22,5 +23,6 @@ dag = DAG(
 t1 = BashOperator(
     task_id='daily_scraping',
     dag=dag,
+    params={'scrapers_dir_path': SCRAPERS_DIR_PATH},
     bash_command='scripts/full-scrape.sh'
 )
