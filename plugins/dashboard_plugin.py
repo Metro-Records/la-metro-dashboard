@@ -37,27 +37,30 @@ class Dashboard(BaseView):
         for dr in latest_dagruns:
             current_dag = bag.get_dag(dr.dag_id)
             for ti in dr.get_task_instances():
-                if 'event' in ti.task_id and current_dag not in event_dags:
+                if 'event' in ti.task_id:
                     event_dags.append(current_dag)
-                elif 'bill' in ti.task_id and current_dag not in bill_dags:
+                    break
+                elif 'bill' in ti.task_id:
                     bill_dags.append(current_dag)
-                elif 'daily' in ti.task_id and current_dag not in bill_dags and current_dag not in event_dags:
+                    break
+                elif 'daily' in ti.task_id:
                     event_dags.append(current_dag)
                     bill_dags.append(current_dag)
+                    break
 
         successful_event_runs = []
-        for dag in event_dags:
-            successful_runs = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
-            if successful_runs:
-                successful_event_runs.append(successful_runs[0])
+        for event_dag in event_dags:
+            last_successful_run = self.get_last_successful_run(event_dag.dag_id, session)
+            if last_successful_run:
+                successful_event_runs.append(last_successful_run)
         successful_event_runs.sort(key=lambda x: x.end_date, reverse=True)
         event_last_run, event_last_run_time = self.get_run_info(successful_event_runs)
 
         successful_bill_runs = []
-        for dag in bill_dags:
-            successful_runs = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
-            if successful_runs:
-                successful_bill_runs.append(successful_runs[0])
+        for bill_dag in bill_dags:
+            last_successful_run = self.get_last_successful_run(bill_dag.dag_id, session)
+            if last_successful_run:
+                successful_bill_runs.append(last_successful_run)
         successful_bill_runs.sort(key=lambda x: x.end_date, reverse=True)
         bill_last_run, bill_last_run_time = self.get_run_info(successful_bill_runs)
 
@@ -104,8 +107,6 @@ class Dashboard(BaseView):
                     'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
                     'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
                 }
-                
-                ti_states = [ti for ti in last_run.get_task_instances()]
 
                 now = datetime.now(pytz.utc)
                 next_scheduled = d.following_schedule(now)
@@ -119,7 +120,6 @@ class Dashboard(BaseView):
             else:
                 run_state = None
                 run_date_info = None
-                ti_states = []
                 next_scheduled_info = None
 
             dag_info = {
@@ -127,7 +127,6 @@ class Dashboard(BaseView):
                 'description': d.description,
                 'run_state': run_state,
                 'run_date': run_date_info,
-                'scrapes_completed': ti_states,
                 'next_scheduled': next_scheduled_info
             }
 
@@ -139,13 +138,13 @@ class Dashboard(BaseView):
         DjangoOperator.setup_django()
 
         Events = django.apps.apps.get_model('lametro', 'LAMetroEvent')
-        total_events = len(Events.objects.get_queryset())
+        total_events = Events.objects.count()
 
         Bills = django.apps.apps.get_model('lametro', 'LAMetroBill')
-        total_bills = len(Bills.objects.get_queryset())
+        total_bills = Bills.objects.count()
 
         from haystack.query import SearchQuerySet
-        bills_in_index = len(SearchQuerySet().all())
+        bills_in_index = SearchQuerySet().count()
 
         return (total_events, total_bills, bills_in_index)
 
@@ -166,6 +165,17 @@ class Dashboard(BaseView):
             run_time = None
 
         return (run, run_time)
+
+    def get_last_successful_run(self, dag_id, session):
+        """
+        Given a DAG ID and a SQLAlchemy Session object, return the last successful
+        DagRun.
+        """
+        return session.query(dagrun.DagRun)\
+                      .filter(dagrun.DagRun.dag_id == dag_id)\
+                      .filter(dagrun.DagRun.state == 'success')\
+                      .order_by(dagrun.DagRun.execution_date.desc())\
+                      .first()
 
 
 admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
