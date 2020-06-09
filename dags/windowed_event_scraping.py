@@ -5,7 +5,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
-from base import SCRAPERS_DIR_PATH
+from base import SCRAPERS_DIR_PATH, LA_METRO_DATABASE_URL
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
@@ -49,14 +49,26 @@ branch = BranchPythonOperator(
 windowed_event_scraping = BashOperator(
     task_id='windowed_event_scraping',
     dag=dag,
-    params={'window': 0.05, 'target': 'events', 'rpm': 60, 'scrapers_dir_path': SCRAPERS_DIR_PATH},
+    params={
+        'window': 0.05,
+        'target': 'events',
+        'rpm': 60,
+        'scrapers_dir_path': SCRAPERS_DIR_PATH,
+        'la_metro_database_url': LA_METRO_DATABASE_URL
+    },
     bash_command='scripts/targeted-scrape.sh'
 )
 
 larger_window_event_scraping = BashOperator(
     task_id='larger_window_event_scraping',
     dag=dag,
-    params={'window': 1, 'target': 'events', 'rpm': 60, 'scrapers_dir_path': SCRAPERS_DIR_PATH},
+    params={
+        'window': 1,
+        'target': 'events',
+        'rpm': 60,
+        'scrapers_dir_path': SCRAPERS_DIR_PATH,
+        'la_metro_database_url': LA_METRO_DATABASE_URL
+    },
     bash_command='scripts/targeted-scrape.sh'
 )
 
