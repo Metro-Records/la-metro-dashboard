@@ -14,6 +14,9 @@ import django
 from flask import Blueprint
 from flask_admin import BaseView, expose
 
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+from dags.base import DjangoOperator
+
 PACIFIC_TIMEZONE = pytz.timezone('US/Pacific')
 CENTRAL_TIMEZONE = pytz.timezone('US/Central')
 
@@ -133,10 +136,7 @@ class Dashboard(BaseView):
         return data
 
     def get_db_info(self):
-        sys.path.append(os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/'))
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
-        django.setup()
-        django.apps.apps.populate(django.conf.settings.INSTALLED_APPS)
+        DjangoOperator.setup_django()
 
         Events = django.apps.apps.get_model('lametro', 'LAMetroEvent')
         total_events = len(Events.objects.get_queryset())

@@ -18,25 +18,23 @@ class DjangoOperator(PythonOperator):
         '''
         super().pre_execute(*args, **kwargs)
 
+        self.setup_django()
+
+    @classmethod
+    def setup_django(cls):
+        """
+        Run django.setup() with appropriate values for running commands against
+        la-metro-councilmatic and scrapers-us-municipal.
+        """
         sys.path.append(LA_METRO_DIR_PATH)
         sys.path.append(SCRAPERS_DIR_PATH)
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
 
-        settings.DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': 'lametro',
-                'USER': 'postgres',
-                'PASSWORD': '',
-                'HOST': 'postgres',
-                'PORT': 5432,
-            }
-        }
-
         settings.AWS_KEY = os.getenv('AWS_ACCESS_KEY_ID', '')
         settings.AWS_SECRET = os.getenv('AWS_SECRET_ACCESS_KEY', '')
 
+        settings.DATABASES = {}
         settings.DATABASES['default'] = dj_database_url.parse(
             os.getenv(
                 'LA_METRO_DATABASE_URL',
