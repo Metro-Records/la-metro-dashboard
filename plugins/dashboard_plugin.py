@@ -12,7 +12,7 @@ from datetime import datetime
 import django
 
 from flask import Blueprint
-from flask_admin import BaseView, expose
+from flask_appbuilder import BaseView, expose
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 from dags.base import DjangoOperator
@@ -22,8 +22,10 @@ CENTRAL_TIMEZONE = pytz.timezone('US/Central')
 
 
 class Dashboard(BaseView):
+    template_folder = os.path.join(os.path.dirname(__file__), 'templates')
+
     @expose('/')
-    def index(self):
+    def list(self):
         session = settings.Session()
         bag = DagBag()
         all_dag_ids = bag.dag_ids
@@ -89,7 +91,7 @@ class Dashboard(BaseView):
             'bills_in_index': bills_in_index,
         }
 
-        return self.render('dashboard.html', data=metadata)
+        return self.render_template('dashboard.html', **metadata)
 
     def get_dag_info(self, dags, session):
         data = []
@@ -178,16 +180,13 @@ class Dashboard(BaseView):
                       .first()
 
 
-admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
-
-blue_print_ = Blueprint('dashboard_plugin',
-                        __name__,
-                        template_folder=os.path.join(os.environ['AIRFLOW_HOME'], 'templates'),
-                        static_folder='static',
-                        static_url_path='/static/dashboard_plugin')
+dashboard_package = {
+    'name': 'Dashboard View',
+    'category': 'Dashboard Plugin',
+    'view': Dashboard()
+}
 
 
 class AirflowDashboardPlugin(AirflowPlugin):
     name = 'dashboard_plugin'
-    admin_views = [admin_view_]
-    flask_blueprints = [blue_print_]
+    appbuilder_views = [dashboard_package]
