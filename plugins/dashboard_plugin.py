@@ -66,13 +66,22 @@ class Dashboard(BaseView):
         successful_bill_runs.sort(key=lambda x: x.end_date, reverse=True)
         bill_last_run, bill_last_run_time = self.get_run_info(successful_bill_runs)
 
-        event_next_runs = [dag for dag in dag_info if dag['name'] in event_dags]
-        event_next_runs.sort(key=lambda x: x.next_scheduled)
-        event_next_run, event_next_run_time = self.get_run_info(event_next_runs)
+        bill_dag_ids = [bill_dag.dag_id for bill_dag in bill_dags]
+        event_dag_ids = [event_dag.dag_id for event_dag in event_dags]
 
-        bill_next_runs = [dag for dag in dag_info if dag['name'] in bill_dags]
-        bill_next_runs.sort(key=lambda x: x.next_scheduled)
-        bill_next_run, bill_next_run_time = self.get_run_info(bill_next_runs)
+        event_next_runs = [dag for dag in dag_info if dag['name'] in event_dag_ids]
+        event_next_runs.sort(key=lambda x: x['next_scheduled']['pst_time'])
+        if len(event_next_runs) > 0:
+            event_next_run = event_next_runs[0]
+        else:
+            event_next_run = None
+
+        bill_next_runs = [dag for dag in dag_info if dag['name'] in bill_dag_ids]
+        bill_next_runs.sort(key=lambda x: x['next_scheduled']['pst_time'])
+        if len(bill_next_runs) > 0:
+            bill_next_run = bill_next_runs[0]
+        else:
+            bill_next_run = None
 
         events_in_db, bills_in_db, bills_in_index = self.get_db_info()
         
@@ -81,12 +90,10 @@ class Dashboard(BaseView):
             'event_last_run': event_last_run,
             'event_last_run_time': event_last_run_time,
             'event_next_run': event_next_run,
-            'event_next_run_time': event_next_run_time,
             'events_in_db': events_in_db,
             'bill_last_run': bill_last_run,
             'bill_last_run_time': bill_last_run_time,
             'bill_next_run': bill_next_run,
-            'bill_next_run_time': bill_next_run_time,
             'bills_in_db': bills_in_db,
             'bills_in_index': bills_in_index,
         }
