@@ -12,7 +12,7 @@ It will serve all files under ./static/ available under /a/static/ (The "a" come
 bp = Blueprint(
     "test_plugin", __name__,
     url_prefix="/a",
-    static_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static')),
+    static_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), 'static')),
     static_url_path='/static')
 
 

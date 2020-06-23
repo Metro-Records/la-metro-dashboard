@@ -12,15 +12,20 @@ from datetime import datetime
 import django
 
 from flask import Blueprint
-from flask_admin import BaseView, expose
+from flask_appbuilder import BaseView, expose
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+from dags.base import DjangoOperator
 
 PACIFIC_TIMEZONE = pytz.timezone('US/Pacific')
 CENTRAL_TIMEZONE = pytz.timezone('US/Central')
 
 
 class Dashboard(BaseView):
+    template_folder = os.path.join(os.path.dirname(__file__), 'templates')
+
     @expose('/')
-    def index(self):
+    def list(self):
         session = settings.Session()
         bag = DagBag()
         all_dag_ids = bag.dag_ids
@@ -34,37 +39,49 @@ class Dashboard(BaseView):
         for dr in latest_dagruns:
             current_dag = bag.get_dag(dr.dag_id)
             for ti in dr.get_task_instances():
-                if 'event' in ti.task_id and current_dag not in event_dags:
+                if 'event' in ti.task_id:
                     event_dags.append(current_dag)
-                elif 'bill' in ti.task_id and current_dag not in bill_dags:
+                    break
+                elif 'bill' in ti.task_id:
                     bill_dags.append(current_dag)
-                elif 'daily' in ti.task_id and current_dag not in bill_dags and current_dag not in event_dags:
+                    break
+                elif 'daily' in ti.task_id:
                     event_dags.append(current_dag)
                     bill_dags.append(current_dag)
+                    break
 
         successful_event_runs = []
-        for dag in event_dags:
-            successful_runs = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
-            if successful_runs:
-                successful_event_runs.append(successful_runs[0])
+        for event_dag in event_dags:
+            last_successful_run = self.get_last_successful_run(event_dag.dag_id, session)
+            if last_successful_run:
+                successful_event_runs.append(last_successful_run)
         successful_event_runs.sort(key=lambda x: x.end_date, reverse=True)
         event_last_run, event_last_run_time = self.get_run_info(successful_event_runs)
 
         successful_bill_runs = []
-        for dag in bill_dags:
-            successful_runs = dagrun.DagRun.find(dag_id=dag.dag_id, state='success', session=session, external_trigger=True)
-            if successful_runs:
-                successful_bill_runs.append(successful_runs[0])
+        for bill_dag in bill_dags:
+            last_successful_run = self.get_last_successful_run(bill_dag.dag_id, session)
+            if last_successful_run:
+                successful_bill_runs.append(last_successful_run)
         successful_bill_runs.sort(key=lambda x: x.end_date, reverse=True)
         bill_last_run, bill_last_run_time = self.get_run_info(successful_bill_runs)
 
-        event_next_runs = [dag for dag in dag_info if dag['name'] in event_dags]
-        event_next_runs.sort(key=lambda x: x.next_scheduled)
-        event_next_run, event_next_run_time = self.get_run_info(event_next_runs)
+        bill_dag_ids = [bill_dag.dag_id for bill_dag in bill_dags]
+        event_dag_ids = [event_dag.dag_id for event_dag in event_dags]
 
-        bill_next_runs = [dag for dag in dag_info if dag['name'] in bill_dags]
-        bill_next_runs.sort(key=lambda x: x.next_scheduled)
-        bill_next_run, bill_next_run_time = self.get_run_info(bill_next_runs)
+        event_next_runs = [dag for dag in dag_info if dag['name'] in event_dag_ids]
+        event_next_runs.sort(key=lambda x: x['next_scheduled']['pst_time'])
+        if len(event_next_runs) > 0:
+            event_next_run = event_next_runs[0]
+        else:
+            event_next_run = None
+
+        bill_next_runs = [dag for dag in dag_info if dag['name'] in bill_dag_ids]
+        bill_next_runs.sort(key=lambda x: x['next_scheduled']['pst_time'])
+        if len(bill_next_runs) > 0:
+            bill_next_run = bill_next_runs[0]
+        else:
+            bill_next_run = None
 
         events_in_db, bills_in_db, bills_in_index = self.get_db_info()
         
@@ -73,17 +90,15 @@ class Dashboard(BaseView):
             'event_last_run': event_last_run,
             'event_last_run_time': event_last_run_time,
             'event_next_run': event_next_run,
-            'event_next_run_time': event_next_run_time,
             'events_in_db': events_in_db,
             'bill_last_run': bill_last_run,
             'bill_last_run_time': bill_last_run_time,
             'bill_next_run': bill_next_run,
-            'bill_next_run_time': bill_next_run_time,
             'bills_in_db': bills_in_db,
             'bills_in_index': bills_in_index,
         }
 
-        return self.render('dashboard.html', data=metadata)
+        return self.render_template('dashboard.html', **metadata)
 
     def get_dag_info(self, dags, session):
         data = []
@@ -101,8 +116,6 @@ class Dashboard(BaseView):
                     'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
                     'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
                 }
-                
-                ti_states = [ti for ti in last_run.get_task_instances()]
 
                 now = datetime.now(pytz.utc)
                 next_scheduled = d.following_schedule(now)
@@ -116,7 +129,6 @@ class Dashboard(BaseView):
             else:
                 run_state = None
                 run_date_info = None
-                ti_states = []
                 next_scheduled_info = None
 
             dag_info = {
@@ -124,7 +136,6 @@ class Dashboard(BaseView):
                 'description': d.description,
                 'run_state': run_state,
                 'run_date': run_date_info,
-                'scrapes_completed': ti_states,
                 'next_scheduled': next_scheduled_info
             }
 
@@ -133,19 +144,16 @@ class Dashboard(BaseView):
         return data
 
     def get_db_info(self):
-        sys.path.append(os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/'))
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "councilmatic.settings")
-        django.setup()
-        django.apps.apps.populate(django.conf.settings.INSTALLED_APPS)
+        DjangoOperator.setup_django()
 
         Events = django.apps.apps.get_model('lametro', 'LAMetroEvent')
-        total_events = len(Events.objects.get_queryset())
+        total_events = Events.objects.count()
 
         Bills = django.apps.apps.get_model('lametro', 'LAMetroBill')
-        total_bills = len(Bills.objects.get_queryset())
+        total_bills = Bills.objects.count()
 
         from haystack.query import SearchQuerySet
-        bills_in_index = len(SearchQuerySet().all())
+        bills_in_index = SearchQuerySet().count()
 
         return (total_events, total_bills, bills_in_index)
 
@@ -167,17 +175,25 @@ class Dashboard(BaseView):
 
         return (run, run_time)
 
+    def get_last_successful_run(self, dag_id, session):
+        """
+        Given a DAG ID and a SQLAlchemy Session object, return the last successful
+        DagRun.
+        """
+        return session.query(dagrun.DagRun)\
+                      .filter(dagrun.DagRun.dag_id == dag_id)\
+                      .filter(dagrun.DagRun.state == 'success')\
+                      .order_by(dagrun.DagRun.execution_date.desc())\
+                      .first()
 
-admin_view_ = Dashboard(category='Dashboard Plugin', name='Dashboard View')
 
-blue_print_ = Blueprint('dashboard_plugin',
-                        __name__,
-                        template_folder=os.path.join(os.environ['AIRFLOW_HOME'], 'templates'),
-                        static_folder='static',
-                        static_url_path='/static/dashboard_plugin')
+dashboard_package = {
+    'name': 'Dashboard View',
+    'category': 'Dashboard Plugin',
+    'view': Dashboard()
+}
 
 
 class AirflowDashboardPlugin(AirflowPlugin):
     name = 'dashboard_plugin'
-    admin_views = [admin_view_]
-    flask_blueprints = [blue_print_]
+    appbuilder_views = [dashboard_package]

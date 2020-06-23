@@ -140,7 +140,6 @@ cython_debug/
 
 # static files generated from Django application using `collectstatic`
 media
-static
 
 # airflow documents
 logs/
@@ -148,3 +147,7 @@ airflow-webserver.pid
 
 # MacOS
 .DS_Store
+/.blackbox/pubring.gpg~
+/.blackbox/pubring.kbx~
+/.blackbox/secring.gpg
+/configs/la-metro-dashboard.staging.conf.supervisor
