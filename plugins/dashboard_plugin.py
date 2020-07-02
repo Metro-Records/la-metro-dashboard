@@ -29,7 +29,8 @@ class Dashboard(BaseView):
         session = settings.Session()
         bag = DagBag()
         all_dag_ids = bag.dag_ids
-        all_dags = [bag.get_dag(dag_id) for dag_id in all_dag_ids]
+        all_dags = [bag.get_dag(dag_id) for dag_id in all_dag_ids
+                    if not dag_id.startswith('airflow_')]  # Filter meta-DAGs
 
         dag_info = self.get_dag_info(all_dags, session)
 
