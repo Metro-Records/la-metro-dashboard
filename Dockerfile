@@ -23,6 +23,17 @@ RUN apt-get update && \
                        tesseract-ocr flac ffmpeg lame libmad0 \
                        libsox-fmt-mp3 sox libjpeg-dev swig gdal-bin postgresql-client
 
+# Install Docker
+RUN apt-get install -y \
+      apt-transport-https \
+      ca-certificates \
+      curl \
+      gnupg-agent \
+      software-properties-common && \
+    curl -fsSL https://get.docker.com -o get-docker.sh && \
+    sh get-docker.sh && \
+    dockerd
+
 # Inside the container, create an app directory and switch into it
 RUN mkdir /app
 WORKDIR /app
