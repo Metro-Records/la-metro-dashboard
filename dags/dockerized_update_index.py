@@ -23,7 +23,8 @@ with DAG('dockerized_update_index', default_args=default_args, schedule_interval
 
     t1 = BashOperator(
         task_id='docker_build',
-        bash_command='docker build {} -t lametro:latest'.format(LA_METRO_DIR_PATH)
+        bash_command='docker build {} -t lametro:latest'.format(LA_METRO_DIR_PATH),
+        run_as_user='datamade'
     )
 
     t2 = DockerOperator(
@@ -34,7 +35,8 @@ with DAG('dockerized_update_index', default_args=default_args, schedule_interval
             'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
             'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
         },
-        network_mode=DOCKER_NETWORK
+        network_mode=DOCKER_NETWORK,
+        run_as_user='datamade'
     )
 
     t1 >> t2
