@@ -8,7 +8,8 @@ from airflow.operators.docker_operator import DockerOperator
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
-    'execution_timeout': timedelta(minutes=15)
+    'execution_timeout': timedelta(minutes=15),
+    'run_as_user': 'datamade',
 }
 
 LA_METRO_DIR_PATH = os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/')
@@ -23,8 +24,7 @@ with DAG('dockerized_update_index', default_args=default_args, schedule_interval
 
     t1 = BashOperator(
         task_id='docker_build',
-        bash_command='docker build {} -t lametro:latest'.format(LA_METRO_DIR_PATH),
-        run_as_user='datamade'
+        bash_command='docker build {} -t lametro:latest'.format(LA_METRO_DIR_PATH)
     )
 
     t2 = DockerOperator(
@@ -35,8 +35,7 @@ with DAG('dockerized_update_index', default_args=default_args, schedule_interval
             'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
             'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
         },
-        network_mode=DOCKER_NETWORK,
-        run_as_user='datamade'
+        network_mode=DOCKER_NETWORK
     )
 
     t1 >> t2
