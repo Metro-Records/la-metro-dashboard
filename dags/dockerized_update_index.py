@@ -29,7 +29,7 @@ with DAG('dockerized_update_index', default_args=default_args, schedule_interval
     t2 = DockerOperator(
         task_id='update_index',
         image='lametro:latest',
-        command='python manage.py update_index --batch-size=100',
+        command='python manage.py update_index --batch-size=100 --age=7',
         environment={
             'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
             'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
