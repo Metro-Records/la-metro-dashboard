@@ -9,7 +9,6 @@ from airflow.operators.docker_operator import DockerOperator
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
     'execution_timeout': timedelta(minutes=15),
-    'run_as_user': 'datamade',
 }
 
 LA_METRO_DIR_PATH = os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/')
