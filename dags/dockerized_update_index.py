@@ -43,7 +43,7 @@ with DAG('dockerized_update_index', default_args=default_args, schedule_interval
     t1 = DockerOperator(
         task_id='update_index',
         image='datamade/la-metro-councilmatic:staging',
-        command="/bin/bash -ce 'airflow_scripts/concat_settings.sh; python manage.py update_index --batch-size=100 --age=7'",
+        command="/bin/bash -ce 'airflow_scripts/concat_settings.sh; python manage.py update_index --batch-size=100 --age=90'",
         environment={
             'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
             'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
