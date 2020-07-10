@@ -33,19 +33,6 @@ RUN apt-get install -y \
     curl -fsSL https://get.docker.com -o get-docker.sh && \
     sh get-docker.sh
 
-# Inside the container, create an app directory and switch into it
-RUN mkdir /app
-WORKDIR /app
-
-# Copy the requirements file into the app directory, and install them. Copy
-# only the requirements file, so Docker can cache this build step. Otherwise,
-# the requirements must be reinstalled every time you build the image after
-# the app code changes. See this post for further discussion of strategies
-# for building lean and efficient containers:
-# https://blog.realkinetic.com/building-minimal-docker-containers-for-python-applications-37d0272c52f3
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
 # Install LA Metro Councilmatic
 RUN wget -q https://github.com/datamade/la-metro-councilmatic/archive/v0.11.4.tar.gz && \
     tar -vxf v0.11.4.tar.gz && \
@@ -62,6 +49,19 @@ RUN wget -q https://github.com/datamade/scrapers-us-municipal/archive/master.tar
     mv scrapers-us-municipal-master/ /scrapers-us-municipal && \
     pip install -r /scrapers-us-municipal/requirements.txt && \
     echo "DATABASE_URL = 'postgresql://postgres:postgres@postgres/lametro'" >> /scrapers-us-municipal/pupa_settings.py
+
+# Inside the container, create an app directory and switch into it
+RUN mkdir /app
+WORKDIR /app
+
+# Copy the requirements file into the app directory, and install them. Copy
+# only the requirements file, so Docker can cache this build step. Otherwise,
+# the requirements must be reinstalled every time you build the image after
+# the app code changes. See this post for further discussion of strategies
+# for building lean and efficient containers:
+# https://blog.realkinetic.com/building-minimal-docker-containers-for-python-applications-37d0272c52f3
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the contents of the current host directory (i.e., our app code) into
 # the container.
