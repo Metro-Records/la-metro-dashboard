@@ -36,6 +36,8 @@ AIRFLOW_DIR_PATH = os.getenv(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
 )
 
+print('\n'.join([AIRFLOW_DIR_PATH, GPG_KEYRING_PATH]))
+
 with DAG('dockerized_update_index', default_args=default_args, schedule_interval='0 1 * * *') as dag:
 
     t1 = DockerOperator(
