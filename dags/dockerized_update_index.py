@@ -54,4 +54,5 @@ with DAG('dockerized_update_index', default_args=default_args, schedule_interval
             '{}:/app/airflow_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'scripts'))
         ],
         network_mode=DOCKER_NETWORK,
+        force_pull=True,
     )
