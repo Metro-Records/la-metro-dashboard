@@ -69,6 +69,7 @@ services:
     environment:
       - AIRFLOW_HOME=/app
       - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
+      - DOCKER_NETWORK=la-metro-councilmatic_default
     networks:
       - app_net
     depends_on:
@@ -78,6 +79,7 @@ services:
       # Mount the development directory as a volume into the container, so
       # Docker automatically recognizes your changes.
       - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
     command: airflow scheduler
 
 volumes:
