@@ -29,6 +29,9 @@ class BlackboxDockerOperator(DockerOperator):
             '{}:/app/airflow_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'scripts'))
         ]
 
+        if not all(k in self.environment for k in ('DECRYPTED_SETTINGS', 'DESTINATION_SETTINGS')):
+            raise ValueError('Must set decrypted_settings and destination_settings environment variables')
+
         # TODO: Is this safe? (In other words, can self.command be something
         # that would break this?)
-        self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(self.get_command())
+        self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(self.command)

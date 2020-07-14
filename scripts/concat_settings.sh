@@ -1,6 +1,15 @@
 #!/bin/sh
 set -e
 
+echo $DECRYPTED_SETTINGS
+echo $DESTINATION_SETTINGS
+
 blackbox_postdeploy
-cp configs/settings_deployment.staging.py councilmatic/settings_deployment.py
-cat airflow_configs/connection_settings.py >> councilmatic/settings_deployment.py
+
+if [ "$DECRYPTED_SETTINGS" != "$DESTINATION_SETTINGS" ]; then
+    cp $DECRYPTED_SETTINGS $DESTINATION_SETTINGS
+fi
+
+cat airflow_configs/connection_settings.py >> $DESTINATION_SETTINGS
+
+cat $DESTINATION_SETTINGS

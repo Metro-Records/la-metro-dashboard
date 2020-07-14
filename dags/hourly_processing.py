@@ -14,6 +14,8 @@ default_args = {
     'environment': {
         'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
         'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
+        'DECRYPTED_SETTINGS': 'configs/settings_deployment.staging.py',
+        'DESTINATION_SETTINGS': 'councilmatic/settings_deployment.py',
     },
 }
 
