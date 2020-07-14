@@ -9,6 +9,8 @@ from airflow.operators.bash_operator import BashOperator
 # - https://pypi.org/project/apache-airflow-backport-providers-docker/
 from airflow.providers.docker.operators.docker import DockerOperator
 
+from dags.constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH
+
 
 class BlackboxDockerOperator(DockerOperator):
 
@@ -16,27 +18,10 @@ class BlackboxDockerOperator(DockerOperator):
 
         super().__init__(*args, **kwargs)
 
-        # Configure DAG container to connect to specific Docker network, useful for
-        # local development (not necessary in production)
-        DOCKER_NETWORK = os.getenv('DOCKER_NETWORK', None)
-
         if not self.network_mode:  # Give DAG-configured network precedence
             self.network_mode = DOCKER_NETWORK
 
         self.force_pull = True
-
-        # Configure the location of the GPG keyring to mount into the container for
-        # decrypting secrets
-        GPG_KEYRING_PATH = os.getenv('GPG_KEYRING_PATH', '/home/datamade/.gnupg')
-
-        # Configure the Airflow directory path. For local development, this should
-        # be the root directory of your Airflow project. This has to be configured
-        # because the Docker daemon creates containers from the host, not from within
-        # the application container.
-        AIRFLOW_DIR_PATH = os.getenv(
-            'AIRFLOW_DIR_PATH',
-            os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
-        )
 
         self.volumes += [
             '{}:/root/.gnupg'.format(GPG_KEYRING_PATH),
