@@ -17,7 +17,7 @@ default_args = {
     },
 }
 
-with DAG('hourly_processing', default_args=default_args, schedule_interval='0 1 * * *') as dag:
+with DAG('hourly_processing', default_args=default_args, schedule_interval='10,25,40,55 * * * *') as dag:
 
     t1 = BlackboxDockerOperator(
         task_id='refresh_pic',
