@@ -14,7 +14,8 @@ default_args = {
     'environment': {
         'DECRYPTED_SETTINGS': 'pupa_settings.py',
         'DESTINATION_SETTINGS': 'pupa_settings.py',
-        'DATABASE_URL': LA_METRO_DATABASE_URL,
+        'DATABASE_URL': LA_METRO_DATABASE_URL,  # For use by entrypoint
+        'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,  # For use in scraping scripts
     },
     'volumes': [
         '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
