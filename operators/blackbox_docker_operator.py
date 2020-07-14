@@ -10,7 +10,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 
 
-class GPGDockerOperator(DockerOperator):
+class BlackboxDockerOperator(DockerOperator):
 
     def __init__(self, *args, **kwargs):
 
@@ -19,6 +19,11 @@ class GPGDockerOperator(DockerOperator):
         # Configure DAG container to connect to specific Docker network, useful for
         # local development (not necessary in production)
         DOCKER_NETWORK = os.getenv('DOCKER_NETWORK', None)
+
+        if not self.network_mode:  # Give DAG-configured network precedence
+            self.network_mode = DOCKER_NETWORK
+
+        self.force_pull = True
 
         # Configure the location of the GPG keyring to mount into the container for
         # decrypting secrets
@@ -39,11 +44,6 @@ class GPGDockerOperator(DockerOperator):
             '{}:/app/airflow_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'scripts'))
         ]
 
-        if not self.network_mode:  # Give DAG-configured network precedence
-            self.network_mode = DOCKER_NETWORK
-
-        self.force_pull = True
-
         # TODO: Is this safe? (In other words, can self.command be something
         # that would break this?)
-        self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(self.command)
+        self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(self.get_command())
