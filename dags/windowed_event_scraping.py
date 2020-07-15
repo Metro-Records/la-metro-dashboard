@@ -33,16 +33,16 @@ docker_base_environment = {
 
 def handle_scheduling():
     # SUNDAY THROUGH SATURDAY
-    # 9pm FRIDAY through 5am SATURDAY, only run at 35,50 minutes
+    # 9pm FRIDAY through 5am SATURDAY, only run at 30,45 minutes
     now = datetime.now()
 
     if now.weekday == 5 and now.hour >= 9:
-        if now.minute < 35:
+        if now.minute < 30:
             return 'no_scrape'
         return 'larger_windowed_event_scrape'
 
     elif now.weekday == 6 and now.hour <= 5:
-        if now.minute < 35:
+        if now.minute < 30:
             return 'no_scrape'
         return 'larger_windowed_event_scrape'
 
