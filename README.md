@@ -17,10 +17,13 @@ Perform the following steps from your terminal.
     git clone --recursive https://github.com/datamade/la-metro-dashboard.git
     cd la-metro-dashboard
     ```
-2. Build and run the la-metro-dashboard applicaton.
+2. Build la-metro-dashboard application, and create a local `.env` file. Fill
+in the absolute location of your GPG keyring, usually the absolute path for ` ~/.gnupg`.
 
     ```bash
     docker-compose build
+    cp .env.example .env
+    # Fill in the correct value for GPG_KEYRING_PATH
     ```
 
 3. Once the command exits, follow the instructions to build the [LA Metro Councilmatic application](https://github.com/datamade/la-metro-councilmatic#setup)
@@ -72,10 +75,12 @@ appropriate keys to decrypt Metro application secrets.
 
 If you must work locally, you can follow steps 1-5 in our instructions for
 [moving keys between servers](https://github.com/datamade/how-to/blob/master/shell/moving-keys-between-servers.md)
-to export the public key, then log out of the server and `scp` it down to your
+to export the private key, then log out of the server and `scp` it down to your
 computer:
 
 ```bash
+# pubkey.txt is a misnomer from the linked documentation – this is a text file
+# containing the *private* key you exported using gpg --export-secret-key
 scp ubuntu@lametro-upgrade.datamade.us:/home/ubuntu/pubkey.txt .
 gpg --import pubkey.txt
 ```
