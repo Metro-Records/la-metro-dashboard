@@ -22,6 +22,7 @@ class BlackboxDockerOperator(DockerOperator):
             self.network_mode = DOCKER_NETWORK
 
         self.force_pull = True
+        self.auto_remove = True
 
         self.volumes += [
             '{}:/root/.gnupg'.format(GPG_KEYRING_PATH),
