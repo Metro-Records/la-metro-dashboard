@@ -18,6 +18,7 @@ docker_default_args = {
     'volumes': [
         '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
     ],
+    'command': 'scraper_scripts/targeted-scrape.sh',
 }
 
 docker_base_environment = {
@@ -57,7 +58,6 @@ with DAG(
 
     bill_scrape = BlackboxDockerOperator(
         task_id='fast_full_bill_scrape',
-        command='scraper_scripts/targeted-scrape.sh',
         environment=bill_environment,
         **docker_default_args
     )
@@ -67,7 +67,6 @@ with DAG(
 
     event_scrape = BlackboxDockerOperator(
         task_id='fast_full_event_scrape',
-        command='scraper_scripts/targeted-scrape.sh',
         environment=event_environment,
         **docker_default_args
     )
