@@ -1,27 +1,32 @@
 from datetime import datetime, timedelta
+import os
 
 from airflow import DAG
-from base import DjangoOperator
-from django.core.management import call_command
+
+from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL
+from operators.blackbox_docker_operator import BlackboxDockerOperator
+
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
-    'execution_timeout': timedelta(minutes=1)
+    'execution_timeout': timedelta(minutes=5),
+    'image': 'datamade/la-metro-councilmatic:staging',
+    'environment': {
+        'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
+        'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
+        'DECRYPTED_SETTINGS': 'configs/settings_deployment.staging.py',
+        'DESTINATION_SETTINGS': 'councilmatic/settings_deployment.py',
+    },
 }
 
-dag = DAG(
-    'guid_log',
+with DAG(
+    'refresh_guid',
     default_args=default_args,
     schedule_interval='0 1 * * *',
-    description="Refresh GUID log."
-)
+    description='Sync Metro subjects with SmartLogic terms'
+) as dag:
 
-def refresh_guid():
-    call_command('refresh_guid')
-
-
-t1 = DjangoOperator(
-    task_id='refresh_guid',
-    dag=dag,
-    python_callable=refresh_guid
-)
+    t1 = BlackboxDockerOperator(
+        task_id='refresh_guid',
+        command='python manage.py refresh_guid',
+    )
