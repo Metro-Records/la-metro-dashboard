@@ -33,23 +33,6 @@ RUN apt-get install -y \
     curl -fsSL https://get.docker.com -o get-docker.sh && \
     sh get-docker.sh
 
-# Install LA Metro Councilmatic
-RUN wget -q https://github.com/datamade/la-metro-councilmatic/archive/v0.11.4.tar.gz && \
-    tar -vxf v0.11.4.tar.gz && \
-    rm -Rf v0.11.14.tar.gz && \
-    mv la-metro-councilmatic-0.11.4/ /la-metro-councilmatic && \
-    cp /la-metro-councilmatic/councilmatic/settings_deployment.py.example \
-       /la-metro-councilmatic/councilmatic/settings_deployment.py && \
-    pip install -r /la-metro-councilmatic/requirements.txt
-
-# Install scrapers
-RUN wget -q https://github.com/datamade/scrapers-us-municipal/archive/master.tar.gz && \
-    tar -vxf master.tar.gz && \
-    rm -Rf master.tar.gz && \
-    mv scrapers-us-municipal-master/ /scrapers-us-municipal && \
-    pip install -r /scrapers-us-municipal/requirements.txt && \
-    echo "DATABASE_URL = 'postgresql://postgres:postgres@postgres/lametro'" >> /scrapers-us-municipal/pupa_settings.py
-
 # Inside the container, create an app directory and switch into it
 RUN mkdir /app
 WORKDIR /app
