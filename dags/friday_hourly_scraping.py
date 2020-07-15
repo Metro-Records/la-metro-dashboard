@@ -1,17 +1,41 @@
+import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import BranchPythonOperator
 
-from base import SCRAPERS_DIR_PATH, LA_METRO_DATABASE_URL
+from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH
+from operators.blackbox_docker_operator import BlackboxDockerOperator
+
 
 default_args = {
     'start_date': datetime.now() - timedelta(hours=1),
-    'execution_timeout': timedelta(hours=3)
+    'execution_timeout': timedelta(hours=1),
 }
 
-dag = DAG(
+docker_default_args = {
+    'image': 'datamade/scrapers-us-municipal:staging',
+    'volumes': [
+        '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
+    ],
+}
+
+docker_base_environment = {
+    'DECRYPTED_SETTINGS': 'pupa_settings.py',
+    'DESTINATION_SETTINGS': 'pupa_settings.py',
+    'DATABASE_URL': LA_METRO_DATABASE_URL,  # For use by entrypoint
+    'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,  # For use in scraping scripts
+    'WINDOW': 0,
+    'RPM': 0,
+}
+
+def friday_hourly_scraping():
+    if datetime.now().minute < 5:
+        return 'fast_full_event_scrape'
+    elif datetime.now().minute >= 5:
+        return 'fast_full_bill_scrape'
+
+with DAG(
     'friday_hourly_scraping',
     default_args=default_args,
     schedule_interval='0,5 21-23 * * 5',
@@ -21,45 +45,31 @@ dag = DAG(
     'Fast full scrapes scrape all bills or events quickly – that is, '
     'with requests issued as quickly as the server will respond to them. '
     'This generally takes less than 30 minutes.')
-)
+) as dag:
 
-def friday_hourly_scraping():
-    if datetime.now().minute < 5:
-        return 'fast_full_event_scrape'
-    elif datetime.now().minute >= 5:
-        return 'fast_full_bill_scrape'
+    branch = BranchPythonOperator(
+        task_id='friday_hourly_scraping',
+        python_callable=friday_hourly_scraping
+    )
 
+    bill_environment = docker_base_environment.copy()
+    bill_environment['TARGET'] = 'bills'
 
-branch = BranchPythonOperator(
-    task_id='friday_hourly_scraping',
-    dag=dag,
-    python_callable=friday_hourly_scraping
-)
+    bill_scrape = BlackboxDockerOperator(
+        task_id='fast_full_bill_scrape',
+        command='scraper_scripts/targeted-scrape.sh',
+        environment=bill_environment,
+        **docker_default_args
+    )
 
-bill_scrape = BashOperator(
-    task_id='fast_full_bill_scrape',
-    dag=dag,
-    params={
-        'window': 0,
-        'target': 'bills',
-        'rpm': 0,
-        'scrapers_dir_path': SCRAPERS_DIR_PATH,
-        'la_metro_database_url': LA_METRO_DATABASE_URL
-    },
-    bash_command='scripts/targeted-scrape.sh'
-)
+    event_environment = docker_base_environment.copy()
+    event_environment['TARGET'] = 'events'
 
-event_scrape = BashOperator(
-    task_id='fast_full_event_scrape',
-    dag=dag,
-    params={
-        'window': 0,
-        'target': 'events',
-        'rpm': 0,
-        'scrapers_dir_path': SCRAPERS_DIR_PATH,
-        'la_metro_database_url': LA_METRO_DATABASE_URL
-    },
-    bash_command='scripts/targeted-scrape.sh'
-)
+    event_scrape = BlackboxDockerOperator(
+        task_id='fast_full_event_scrape',
+        command='scraper_scripts/targeted-scrape.sh',
+        environment=event_environment,
+        **docker_default_args
+    )
 
-branch >> [bill_scrape, event_scrape]
+    branch >> [bill_scrape, event_scrape]
