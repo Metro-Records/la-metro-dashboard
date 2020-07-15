@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator
 
-from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH
+from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, DAG_DESCRIPTIONS
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -39,12 +39,7 @@ with DAG(
     'friday_hourly_scraping',
     default_args=default_args,
     schedule_interval='0,5 21-23 * * 5',
-    description=('Run a fast full event scrape on the hour and a fast full bill scrape '
-    'at 5 past the hour between 9pm and midnight UTC on Fridays (2pm to 5pm Fridays PST). '
-    'Event scrape window is 0; bill scrape window is 0. '
-    'Fast full scrapes scrape all bills or events quickly – that is, '
-    'with requests issued as quickly as the server will respond to them. '
-    'This generally takes less than 30 minutes.')
+    description=DAG_DESCRIPTIONS['friday_hourly_scraping']
 ) as dag:
 
     branch = BranchPythonOperator(

@@ -5,7 +5,7 @@ from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
-from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH
+from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, DAG_DESCRIPTIONS
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -52,11 +52,7 @@ with DAG(
     'windowed_event_scraping',
     default_args=default_args,
     schedule_interval='0,15,30,45 * * * 0-6',
-    description=('Run an event scrape with a window of 0.05 at 0, 15, 30, and 45 minutes every hour. Between 9pm Friday and 6am Saturday UTC '
-        '(2pm to 11pm Friday PST), run an event scrape with a window of 1 only at 30 and 45 minutes past the hour. '
-        'Windowed event scrapes scrape events where specific dates are within the given window, '
-        'or in the future. This generally takes somewhere between a few seconds and a few minutes, '
-        'depending on the volume of updates.')
+    description=DAG_DESCRIPTIONS['windowed_event_scraping']
 ) as dag:
 
     branch = BranchPythonOperator(
