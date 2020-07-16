@@ -23,10 +23,11 @@ CENTRAL_TIMEZONE = pytz.timezone('US/Central')
 class Dashboard(BaseView):
     template_folder = os.path.join(os.path.dirname(__file__), 'templates')
     AIRFLOW_SESSION = settings.Session()
+    AIRFLOW_DAG_BAG = DagBag()
 
     @expose('/')
     def list(self):
-        dag_info = self.get_dag_info(self.AIRFLOW_SESSION)
+        dag_info = self.get_dag_info()
 
         event_dags, bill_dags = self.get_dags()
 
@@ -56,16 +57,15 @@ class Dashboard(BaseView):
 
         return self.render_template('dashboard.html', **metadata)
 
-    def get_dag_info(self, session):
-        bag = DagBag()
+    def get_dag_info(self):
 
-        dags = [bag.get_dag(dag_id) for dag_id in bag.dag_ids
+        dags = [self.AIRFLOW_DAG_BAG.get_dag(dag_id) for dag_id in self.AIRFLOW_DAG_BAG.dag_ids
                 if not dag_id.startswith('airflow_')]  # Filter meta-DAGs
 
         data = []
 
         for d in dags:
-            last_run = dag.get_last_dagrun(d.dag_id, session, include_externally_triggered=True)
+            last_run = dag.get_last_dagrun(d.dag_id, self.AIRFLOW_SESSION, include_externally_triggered=True)
 
             if last_run:
                 run_state = last_run.get_state()
@@ -112,7 +112,7 @@ class Dashboard(BaseView):
         bill_dags = []
 
         for dr in latest_dagruns:
-            current_dag = bag.get_dag(dr.dag_id)
+            current_dag = self.AIRFLOW_DAG_BAG.get_dag(dr.dag_id)
 
             for ti in dr.get_task_instances():
                 if 'event' in ti.task_id:
@@ -132,7 +132,11 @@ class Dashboard(BaseView):
         successful_runs = []
 
         for dag in dags:
-            last_successful_run = self.get_last_successful_run(dag.dag_id, self.AIRFLOW_SESSION)
+            last_successful_run = self.AIRFLOW_SESSION.query(dagrun.DagRun)\
+                                                      .filter(dagrun.DagRun.dag_id == dag.dag_id)\
+                                                      .filter(dagrun.DagRun.state == 'success')\
+                                                      .order_by(dagrun.DagRun.execution_date.desc())\
+                                                      .first()
 
             if last_successful_run:
                 successful_runs.append(last_successful_run)
@@ -143,7 +147,7 @@ class Dashboard(BaseView):
         return last_run, last_run_time
 
     def get_next_scheduled_run(self, runs):
-        runs.sort(key=lambda x: x['next_scheduled']['pst_time'], reverse=True)
+        runs.sort(key=lambda x: x['next_scheduled']['pst_time'])
 
         if len(runs) > 0:
             return runs[0]
@@ -194,17 +198,6 @@ class Dashboard(BaseView):
             run_time = None
 
         return (run, run_time)
-
-    def get_last_successful_run(self, dag_id, self.AIRFLOW_SESSION):
-        """
-        Given a DAG ID and a SQLAlchemy Session object, return the last successful
-        DagRun.
-        """
-        return self.AIRFLOW_SESSION.query(dagrun.DagRun)\
-                                   .filter(dagrun.DagRun.dag_id == dag_id)\
-                                   .filter(dagrun.DagRun.state == 'success')\
-                                   .order_by(dagrun.DagRun.execution_date.desc())\
-                                   .first()
 
 
 dashboard_package = {
