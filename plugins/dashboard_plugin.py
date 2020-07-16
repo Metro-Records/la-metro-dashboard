@@ -24,54 +24,6 @@ class Dashboard(BaseView):
     template_folder = os.path.join(os.path.dirname(__file__), 'templates')
     AIRFLOW_SESSION = settings.Session()
 
-    def get_dags(self):
-        latest_dagruns = dagrun.DagRun.get_latest_runs(self.AIRFLOW_SESSION)
-
-        event_dags = []
-        bill_dags = []
-
-        for dr in latest_dagruns:
-            current_dag = bag.get_dag(dr.dag_id)
-
-            for ti in dr.get_task_instances():
-                if 'event' in ti.task_id:
-                    event_dags.append(current_dag)
-                    break
-                elif 'bill' in ti.task_id:
-                    bill_dags.append(current_dag)
-                    break
-                elif 'daily' in ti.task_id:
-                    event_dags.append(current_dag)
-                    bill_dags.append(current_dag)
-                    break
-
-        return event_dags, bill_dags
-
-    def get_last_successful_run(self, dags):
-        successful_runs = []
-
-        for dag in dags:
-            last_successful_run = self.get_last_successful_run(dag.dag_id, self.AIRFLOW_SESSION)
-
-            if last_successful_run:
-                successful_runs.append(last_successful_run)
-
-        successful_runs.sort(key=lambda x: x.end_date, reverse=True)
-        last_run, last_run_time = self.get_run_info(successful_runs)
-
-        return last_run, last_run_time
-
-    def get_next_scheduled_run(self, runs):
-        runs.sort(key=lambda x: x['next_scheduled']['pst_time'], reverse=True)
-
-        if len(runs) > 0:
-            return runs[0]
-        else:
-            return None
-
-    def get_dag_ids(self, dags):
-        return [getattr(dag, 'dag_id') for dag in dags]
-
     @expose('/')
     def list(self):
         dag_info = self.get_dag_info(self.AIRFLOW_SESSION)
@@ -152,6 +104,54 @@ class Dashboard(BaseView):
             data.append(dag_info)
 
         return data
+
+    def get_dags(self):
+        latest_dagruns = dagrun.DagRun.get_latest_runs(self.AIRFLOW_SESSION)
+
+        event_dags = []
+        bill_dags = []
+
+        for dr in latest_dagruns:
+            current_dag = bag.get_dag(dr.dag_id)
+
+            for ti in dr.get_task_instances():
+                if 'event' in ti.task_id:
+                    event_dags.append(current_dag)
+                    break
+                elif 'bill' in ti.task_id:
+                    bill_dags.append(current_dag)
+                    break
+                elif 'daily' in ti.task_id:
+                    event_dags.append(current_dag)
+                    bill_dags.append(current_dag)
+                    break
+
+        return event_dags, bill_dags
+
+    def get_last_successful_run(self, dags):
+        successful_runs = []
+
+        for dag in dags:
+            last_successful_run = self.get_last_successful_run(dag.dag_id, self.AIRFLOW_SESSION)
+
+            if last_successful_run:
+                successful_runs.append(last_successful_run)
+
+        successful_runs.sort(key=lambda x: x.end_date, reverse=True)
+        last_run, last_run_time = self.get_run_info(successful_runs)
+
+        return last_run, last_run_time
+
+    def get_next_scheduled_run(self, runs):
+        runs.sort(key=lambda x: x['next_scheduled']['pst_time'], reverse=True)
+
+        if len(runs) > 0:
+            return runs[0]
+        else:
+            return None
+
+    def get_dag_ids(self, dags):
+        return [getattr(dag, 'dag_id') for dag in dags]
 
     def get_db_info(self):
         url_parts = {
