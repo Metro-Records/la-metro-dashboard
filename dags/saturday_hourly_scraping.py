@@ -39,7 +39,7 @@ def saturday_hourly_scraping():
 with DAG(
     'saturday_hourly_scraping',
     default_args=default_args,
-    schedule_interval='0,5 0-5 * * 0-6',
+    schedule_interval='0,5 0-5 * * 6',
     description=DAG_DESCRIPTIONS['saturday_hourly_scraping']
 ) as dag:
 
