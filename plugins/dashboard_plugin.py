@@ -201,10 +201,10 @@ class Dashboard(BaseView):
         DagRun.
         """
         return self.AIRFLOW_SESSION.query(dagrun.DagRun)\
-                      .filter(dagrun.DagRun.dag_id == dag_id)\
-                      .filter(dagrun.DagRun.state == 'success')\
-                      .order_by(dagrun.DagRun.execution_date.desc())\
-                      .first()
+                                   .filter(dagrun.DagRun.dag_id == dag_id)\
+                                   .filter(dagrun.DagRun.state == 'success')\
+                                   .order_by(dagrun.DagRun.execution_date.desc())\
+                                   .first()
 
 
 dashboard_package = {
