@@ -14,6 +14,12 @@ from dags.constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH
 
 class BlackboxDockerOperator(DockerOperator):
 
+    DEFAULT_VOLUMES = [
+        '{}:/root/.gnupg'.format(GPG_KEYRING_PATH),
+        '{}:/app/airflow_configs'.format(os.path.join(AIRFLOW_DIR_PATH, 'configs')),
+        '{}:/app/airflow_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'scripts')),
+    ]
+
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
@@ -23,14 +29,9 @@ class BlackboxDockerOperator(DockerOperator):
 
         self.force_pull = True
         self.auto_remove = True
-
-        self.volumes += [
-            '{}:/root/.gnupg'.format(GPG_KEYRING_PATH),
-            '{}:/app/airflow_configs'.format(os.path.join(AIRFLOW_DIR_PATH, 'configs')),
-            '{}:/app/airflow_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'scripts'))
-        ]
+        self.volumes = list(set(self.DEFAULT_VOLUMES + self.volumes))
 
         if not all(k in self.environment for k in ('DECRYPTED_SETTINGS', 'DESTINATION_SETTINGS')):
-            raise ValueError('Must set decrypted_settings and destination_settings environment variables')
+            raise ValueError('Must set DECRYPTED_SETTINGS and DESTINATION_SETTINGS environment variables')
 
         self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(self.command)

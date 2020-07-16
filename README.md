@@ -1,5 +1,6 @@
-# la-metro-dashboard
-An Airflow-based dashboard for LA Metro
+# 🌀 la-metro-dashboard
+
+An Airflow-based dashboard for the LA Metro ETL pipeline!
 
 ## Running the app locally
 
@@ -17,7 +18,7 @@ Perform the following steps from your terminal.
     git clone --recursive https://github.com/datamade/la-metro-dashboard.git
     cd la-metro-dashboard
     ```
-2. Build la-metro-dashboard application, and create a local `.env` file. Fill
+2. Build `la-metro-dashboard` application, and create a local `.env` file. Fill
 in the absolute location of your GPG keyring, usually the absolute path for ` ~/.gnupg`.
 
     ```bash
@@ -28,7 +29,9 @@ in the absolute location of your GPG keyring, usually the absolute path for ` ~/
 
 3. Once the command exits, follow the instructions to build the [LA Metro Councilmatic application](https://github.com/datamade/la-metro-councilmatic#setup)
 
-4. In order to run the la-metro-dashboard application, the la-metro-councilmatic app must already be running. Open a new shell, move into the la-metro-councilmatic application, and run it.
+4. In order to run the `la-metro-dashboard` application, the `la-metro-councilmatic`
+app must already be running. Open a new shell, move into the `la-metro-councilmatic`
+application, and run it.
 
 	```bash
     cd la-metro-councilmatic && docker-compose up app
@@ -40,17 +43,42 @@ in the absolute location of your GPG keyring, usually the absolute path for ` ~/
 	docker-compose up
 	```
 
-5. Finally, to visit the dashboard app, go to http://localhost:8080/admin/. The councilmatic app runs on http://localhost:8000/.
+5. Finally, to visit the dashboard app, go to http://localhost:8080/admin/. The
+Councilmatic app runs on http://localhost:8001/.
 
-### Managing dependency secrets
+See the Airflow documentation for more on [navigating the UI](https://airflow.apache.org/docs/stable/ui.html)
+and [development](https://airflow.apache.org/docs/stable/tutorial.html).
 
-The dashboard runs DAGs from two application images stored in Dockerhub:
+## Application dependencies
+
+Dashboard DAGS are based on one of two applications:
+
+- [`scrapers-us-municipal`](https://github.com/datamade/scrapers-us-municipal/)
+- [LA Metro Councilmatic](https://github.com/datamade/la-metro-councilmatic)
+
+The conversation on how to ensure DAGs are running against the current version
+of these applications is captured [in this issue](https://github.com/datamade/server-la-metro-dashboard/issues/1).
+
+tl;dr - Application dependencies are packaged as Docker images and pushed to
+Dockerhub. When a task starts, it pulls the corresponding image, runs a custom
+script to decrypt the bundled secrets and append dashboard-specific connection
+strings, then executes its command in a container.
+
+### Managing code
+
+The dashboard runs DAGs from application images stored in Dockerhub:
 
 - [`scrapers-us-municipal`](https://hub.docker.com/repository/docker/datamade/scrapers-us-municipal)
 - [LA Metro Councilmatic](https://hub.docker.com/repository/docker/datamade/la-metro-councilmatic)
 
+Both images are configured to build automatically from their corresponding
+GitHub repositories. Commits to `master` build a `staging` tag, and releases
+matching the `v0.*` pattern build a `production` tag.
+
+### Managing secrets
+
 When DAGs are run, [our custom Docker operator](operators/blackbox_docker_operator.py)
-tries to decrypt the bundled application secrets using your local GPG keyring.
+tries to decrypt the secrets bundled the application image using your local GPG keyring.
 This does not seem to work for GPG keys with a passphrase, i.e., your personal
 GPG key. If decryption fails, the dashboard will fall back to using the example
 settings files. (See [`scripts/concat_settings.sh`](scripts/concat_settings.sh).)

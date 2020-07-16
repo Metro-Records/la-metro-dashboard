@@ -1,21 +1,20 @@
+from datetime import datetime
+import json
+
 import os
 import sys
 
-import pytz
 from airflow import settings
 from airflow.models import dag, dagrun, taskinstance
 from airflow.models.dagbag import DagBag
 from airflow.plugins_manager import AirflowPlugin
-
-from datetime import datetime
-
-import django
-
 from flask import Blueprint
 from flask_appbuilder import BaseView, expose
+import pytz
+import requests
+
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
-from dags.base import DjangoOperator
 
 PACIFIC_TIMEZONE = pytz.timezone('US/Pacific')
 CENTRAL_TIMEZONE = pytz.timezone('US/Central')
@@ -85,7 +84,7 @@ class Dashboard(BaseView):
             bill_next_run = None
 
         events_in_db, bills_in_db, bills_in_index = self.get_db_info()
-        
+
         metadata = {
             'data': dag_info,
             'event_last_run': event_last_run,
@@ -104,7 +103,7 @@ class Dashboard(BaseView):
     def get_dag_info(self, dags, session):
         data = []
         for d in dags:
-            last_run = dag.get_last_dagrun(d.dag_id, session,include_externally_triggered=True) 
+            last_run = dag.get_last_dagrun(d.dag_id, session,include_externally_triggered=True)
 
             if last_run:
                 run_state = last_run.get_state()
@@ -145,18 +144,28 @@ class Dashboard(BaseView):
         return data
 
     def get_db_info(self):
-        DjangoOperator.setup_django()
+        url_parts = {
+            'hostname': os.getenv('LA_METRO_HOST', 'http://app:8000'),
+            'api_key': os.getenv('LA_METRO_API_KEY', 'test key'),
+        }
 
-        Events = django.apps.apps.get_model('lametro', 'LAMetroEvent')
-        total_events = Events.objects.count()
+        endpoint = '{hostname}/object-counts/{api_key}'.format(**url_parts)
 
-        Bills = django.apps.apps.get_model('lametro', 'LAMetroBill')
-        total_bills = Bills.objects.count()
+        response = requests.get(endpoint)
 
-        from haystack.query import SearchQuerySet
-        bills_in_index = SearchQuerySet().count()
+        try:
+            response_json = response.json()
 
-        return (total_events, total_bills, bills_in_index)
+        except json.decoder.JSONDecodeError:
+            print(response.text)
+
+        else:
+            if response_json['status_code'] == 200:
+                return (response_json['event_count'],
+                        response_json['bill_count'],
+                        response_json['search_index_count'])
+
+        return None, None, None
 
     def get_run_info(self, runs):
         if len(runs) > 0:

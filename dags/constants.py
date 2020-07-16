@@ -18,9 +18,16 @@ AIRFLOW_DIR_PATH = os.getenv(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
 )
 
-SCRAPERS_DIR_PATH = os.getenv('SCRAPERS_DIR_PATH', '/scrapers-us-municipal/')
-LA_METRO_DIR_PATH = os.getenv('LA_METRO_DIR_PATH', '/la-metro-councilmatic/')
-
 # Configure connection strings for the Metro database and Solr index
 LA_METRO_DATABASE_URL = os.getenv('LA_METRO_DATABASE_URL', 'postgres://postgres:postgres@postgres:5432/lametro')
 LA_METRO_SOLR_URL = os.getenv('LA_METRO_SOLR_URL', 'http://solr:8983/solr/lametro')
+
+DAG_DESCRIPTIONS = {
+    'daily_scraping': 'Scrape all people and committees, bills, and events "politely" – that is, with requests throttled to 60 per minute, or 1 per second. This generally takes 6-7 hours.',
+    'windowed_bill_scraping': 'Scrape bills with a window of 0.05 at 5, 20, 35, and 50 minutes past the hour. Between 9 p.m. UTC Friday and 6 a.m. UTC Saturday, scrape bills with a window of 1 at 35 and 50 minutes past the hour. Windowed scrapes capture bills with timestamps within a given window or in the future. This generally takes somewhere between a few seconds and a few minutes, depending on the volume of updates.',
+    'windowed_event_scraping': 'Scrape events with a window of 0.05 at 0, 15, 30, and 45 minutes past the hour. Between 9 p.m. UTC Friday and 6 a.m. UTC Saturday, scrape events with a window of 1 at 35 and 50 minutes past the hour. Windowed scrapes capture events with timestamps within a given window or in the future. This generally takes somewhere between a few seconds and a few minutes, depending on the volume of updates.',
+    'friday_hourly_scraping': 'Scrape all events quickly on the hour and all bills quickly at 5 past the hour between 9 p.m. and midnight UTC on Fridays. Fast scrapes scrape all bills or events quickly – that is, with requests issues as quickly as the server will respond to them. This generally takes less than 30 minutes.',
+    'saturday_hourly_scraping': 'Scrape all events quickly on the hour and all bills quickly at 5 past the hour between midnight and 6 a.m. UTC on Saturdays. Fast scrapes scrape all bills or events quickly – that is, with requests issues as quickly as the server will respond to them. This generally takes less than 30 minutes.',
+    'hourly_processing': 'Refresh the document cache, compile bill and event packets, extract attachment text, update the search index, and confirm the search index and database contain the same number of bills at 10, 25, 40, and 55 minutes past the hour.',
+    'refresh_guid': 'Sync Metro subjects with SmartLogic terms once nightly.',
+}

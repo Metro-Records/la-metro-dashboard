@@ -3,7 +3,7 @@ import os
 
 from airflow import DAG
 
-from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL
+from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, DAG_DESCRIPTIONS
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -19,7 +19,12 @@ default_args = {
     },
 }
 
-with DAG('hourly_processing', default_args=default_args, schedule_interval='10,25,40,55 * * * *') as dag:
+with DAG(
+    'hourly_processing',
+    default_args=default_args,
+    schedule_interval='10,25,40,55 * * * *',
+    description=DAG_DESCRIPTIONS['hourly_processing']
+) as dag:
 
     t1 = BlackboxDockerOperator(
         task_id='refresh_pic',

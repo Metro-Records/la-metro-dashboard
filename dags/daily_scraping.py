@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 
-from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH
+from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, DAG_DESCRIPTIONS
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -26,9 +26,7 @@ with DAG(
     'daily_scraping',
     default_args=default_args,
     schedule_interval='5 0 * * 0-5',
-    description=('Scrape all people and committees, bills, and events “politely” '
-    '– that is, with requests throttled to 60 per minute, or 1 per second. '
-    'This generally takes 6-7 hours.')
+    description=DAG_DESCRIPTIONS['daily_scraping']
 ) as dag:
 
     t1 = BlackboxDockerOperator(
