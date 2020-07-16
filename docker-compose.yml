@@ -18,6 +18,7 @@ services:
       - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
       - AIRFLOW_DIR_PATH=${PWD}
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
+      - LA_METRO_HOST=app://app:8000
     networks:
       - app_net
     ports:

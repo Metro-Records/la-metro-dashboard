@@ -9,13 +9,11 @@ from airflow.plugins_manager import AirflowPlugin
 
 from datetime import datetime
 
-import django
-
 from flask import Blueprint
 from flask_appbuilder import BaseView, expose
 
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
-from dags.base import DjangoOperator
 
 PACIFIC_TIMEZONE = pytz.timezone('US/Pacific')
 CENTRAL_TIMEZONE = pytz.timezone('US/Central')
@@ -145,18 +143,10 @@ class Dashboard(BaseView):
         return data
 
     def get_db_info(self):
-        DjangoOperator.setup_django()
+        print(os.getenv(LA_METRO_HOST))
 
-        Events = django.apps.apps.get_model('lametro', 'LAMetroEvent')
-        total_events = Events.objects.count()
-
-        Bills = django.apps.apps.get_model('lametro', 'LAMetroBill')
-        total_bills = Bills.objects.count()
-
-        from haystack.query import SearchQuerySet
-        bills_in_index = SearchQuerySet().count()
-
-        return (total_events, total_bills, bills_in_index)
+        #return (total_events, total_bills, bills_in_index)
+        return 0, 0, 0
 
     def get_run_info(self, runs):
         if len(runs) > 0:
