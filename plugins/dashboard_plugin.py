@@ -25,20 +25,34 @@ class Dashboard(BaseView):
     AIRFLOW_SESSION = settings.Session()
     AIRFLOW_DAG_BAG = DagBag()
 
+    BILL_DAGS = (
+        'windowed_bill_scraping',
+        'daily_scraping',
+        'friday_hourly_scraping',
+        'saturday_hourly_scraping',
+    )
+
+    EVENT_DAGS = (
+        'windowed_event_scraping',
+        'daily_scraping',
+        'friday_hourly_scraping',
+        'saturday_hourly_scraping',
+    )
+
+    DATETIME_FORMAT = '%m/%d/%y %I:%M %p'
+
     @expose('/')
     def list(self):
         dag_info = self.get_dag_info()
 
-        event_dags, bill_dags = self.get_dags()
+        event_dags = [dag for dag in dag_info if dag['name'] in self.EVENT_DAGS]
+        bill_dags = [dag for dag in dag_info if dag['name'] in self.BILL_DAGS]
 
-        event_last_run, event_last_run_time = self.get_last_successful_run(event_dags)
-        bill_last_run, bill_last_run_time = self.get_last_successful_run(bill_dags)
+        event_last_run, event_last_run_time = self.get_last_successful_dagrun(event_dags)
+        bill_last_run, bill_last_run_time = self.get_last_successful_dagrun(bill_dags)
 
-        event_next_runs = [dag for dag in dag_info if dag['name'] in self.get_dag_ids(event_dags)]
-        event_next_run = self.get_next_scheduled_run(event_next_runs)
-
-        bill_next_runs = [dag for dag in dag_info if dag['name'] in self.get_dag_ids(bill_dags)]
-        bill_next_run = self.get_next_scheduled_run(bill_next_runs)
+        event_next_run = self.get_next_dagrun(event_dags)
+        bill_next_run = self.get_next_dagrun(bill_dags)
 
         events_in_db, bills_in_db, bills_in_index = self.get_db_info()
 
@@ -65,39 +79,35 @@ class Dashboard(BaseView):
         data = []
 
         for d in dags:
-            last_run = dag.get_last_dagrun(d.dag_id, self.AIRFLOW_SESSION, include_externally_triggered=True)
+            last_run = dag.get_last_dagrun(d.dag_id,
+                                           self.AIRFLOW_SESSION,
+                                           include_externally_triggered=True)
 
             if last_run:
                 run_state = last_run.get_state()
+                run_date_info = self._get_localized_time(last_run.execution_date)
 
-                run_date = last_run.execution_date
+                last_successful, last_successful_info = self._get_last_successful_dagrun(d)
 
-                pst_run_time = run_date.astimezone(PACIFIC_TIMEZONE)
-                cst_run_time = run_date.astimezone(CENTRAL_TIMEZONE)
-                run_date_info = {
-                    'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
-                    'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
-                }
+                next_scheduled = d.following_schedule(datetime.now(pytz.utc))
+                next_scheduled_info = self._get_localized_time(next_scheduled)
 
-                now = datetime.now(pytz.utc)
-                next_scheduled = d.following_schedule(now)
-
-                pst_next_scheduled = next_scheduled.astimezone(PACIFIC_TIMEZONE)
-                cst_next_scheduled = next_scheduled.astimezone(CENTRAL_TIMEZONE)
-                next_scheduled_info = {
-                    'pst_time': datetime.strftime(pst_next_scheduled, "%m/%d/%y %I:%M %p"),
-                    'cst_time': datetime.strftime(cst_next_scheduled, "%m/%d/%y %I:%M %p")
-                }
             else:
                 run_state = None
-                run_date_info = None
-                next_scheduled_info = None
+                run_date_info = self._get_localized_time(None)
+
+                last_successful = None
+                last_successful_info = self._get_localized_time(None)
+
+                next_scheduled_info = self._get_localized_time(None)
 
             dag_info = {
                 'name': d.dag_id,
                 'description': d.description,
                 'run_state': run_state,
                 'run_date': run_date_info,
+                'last_successful': last_successful,
+                'last_successful_date': last_successful_info,
                 'next_scheduled': next_scheduled_info
             }
 
@@ -105,57 +115,12 @@ class Dashboard(BaseView):
 
         return data
 
-    def get_dags(self):
-        latest_dagruns = dagrun.DagRun.get_latest_runs(self.AIRFLOW_SESSION)
+    def get_last_successful_dagrun(self, dags):
+        last = max(dags, key=lambda x: x['last_successful_date']['pst_time'])
+        return last['last_successful'], last['last_successful_date']
 
-        event_dags = []
-        bill_dags = []
-
-        for dr in latest_dagruns:
-            current_dag = self.AIRFLOW_DAG_BAG.get_dag(dr.dag_id)
-
-            for ti in dr.get_task_instances():
-                if 'event' in ti.task_id:
-                    event_dags.append(current_dag)
-                    break
-                elif 'bill' in ti.task_id:
-                    bill_dags.append(current_dag)
-                    break
-                elif 'daily' in ti.task_id:
-                    event_dags.append(current_dag)
-                    bill_dags.append(current_dag)
-                    break
-
-        return event_dags, bill_dags
-
-    def get_last_successful_run(self, dags):
-        successful_runs = []
-
-        for dag in dags:
-            last_successful_run = self.AIRFLOW_SESSION.query(dagrun.DagRun)\
-                                                      .filter(dagrun.DagRun.dag_id == dag.dag_id)\
-                                                      .filter(dagrun.DagRun.state == 'success')\
-                                                      .order_by(dagrun.DagRun.execution_date.desc())\
-                                                      .first()
-
-            if last_successful_run:
-                successful_runs.append(last_successful_run)
-
-        successful_runs.sort(key=lambda x: x.end_date, reverse=True)
-        last_run, last_run_time = self.get_run_info(successful_runs)
-
-        return last_run, last_run_time
-
-    def get_next_scheduled_run(self, runs):
-        runs.sort(key=lambda x: x['next_scheduled']['pst_time'])
-
-        if len(runs) > 0:
-            return runs[0]
-        else:
-            return None
-
-    def get_dag_ids(self, dags):
-        return [getattr(dag, 'dag_id') for dag in dags]
+    def get_next_dagrun(self, dags):
+        return min(dags, key=lambda x: x['next_scheduled']['pst_time'])
 
     def get_db_info(self):
         url_parts = {
@@ -181,21 +146,30 @@ class Dashboard(BaseView):
 
         return None, None, None
 
-    def get_run_info(self, runs):
-        if len(runs) > 0:
-            run = runs[0]
-            run_date = run.execution_date
+    def _get_localized_time(self, date):
+        if date:
+            pst_time = datetime.strftime(date.astimezone(PACIFIC_TIMEZONE), self.DATETIME_FORMAT)
+            cst_time = datetime.strftime(date.astimezone(CENTRAL_TIMEZONE), self.DATETIME_FORMAT)
 
-            pst_run_time = run_date.astimezone(PACIFIC_TIMEZONE)
-            cst_run_time = run_date.astimezone(CENTRAL_TIMEZONE)
-
-            run_time = {
-                'pst_time': datetime.strftime(pst_run_time, "%m/%d/%y %I:%M %p"),
-                'cst_time': datetime.strftime(cst_run_time, "%m/%d/%y %I:%M %p")
-            }
         else:
-            run = None
-            run_time = None
+            pst_time, cst_time = None, None
+
+        return {
+            'pst_time': pst_time,
+            'cst_time': cst_time,
+        }
+
+    def _get_last_successful_dagrun(self, dag):
+        run = self.AIRFLOW_SESSION.query(dagrun.DagRun)\
+                                  .filter(dagrun.DagRun.dag_id == dag.dag_id)\
+                                  .filter(dagrun.DagRun.state == 'success')\
+                                  .order_by(dagrun.DagRun.execution_date.desc())\
+                                  .first()
+
+        if run:
+            run_time = self._get_localized_time(run.execution_date)
+        else:
+            run_time = self._get_localized_time(None)
 
         return (run, run_time)
 
