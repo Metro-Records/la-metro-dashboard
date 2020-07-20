@@ -5,12 +5,13 @@ from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
-from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, DAG_DESCRIPTIONS
+from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, \
+    DAG_DESCRIPTIONS, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
 default_args = {
-    'start_date': datetime.now() - timedelta(hours=1),
+    'start_date': START_DATE,
     'execution_timeout': timedelta(hours=3)
 }
 

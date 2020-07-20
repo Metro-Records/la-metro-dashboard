@@ -1,5 +1,8 @@
+from datetime import datetime
 import os
 
+
+START_DATE = datetime(2020, 7, 15)
 
 # Configure DAG container to connect to specific Docker network, useful for
 # local development (not necessary in production)
