@@ -31,7 +31,7 @@ ALERT_EMAIL_ADDRESSES = []
 # Length to retain the log files if not already provided in the conf. If this
 # is set to 30, the job will remove those files that are 30 days old or older
 DEFAULT_MAX_LOG_AGE_IN_DAYS = Variable.get(
-    "airflow_log_cleanup__max_log_age_in_days", 30
+    "airflow_log_cleanup__max_log_age_in_days", 14
 )
 # Whether the job should delete the logs or not. Included if you want to
 # temporarily avoid deleting the logs
