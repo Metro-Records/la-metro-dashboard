@@ -42,7 +42,7 @@ ALERT_EMAIL_ADDRESSES = []
 # is set to 30, the job will remove those files that arE 30 days old or older.
 
 DEFAULT_MAX_DB_ENTRY_AGE_IN_DAYS = int(
-    Variable.get("airflow_db_cleanup__max_db_entry_age_in_days", 30)
+    Variable.get("airflow_db_cleanup__max_db_entry_age_in_days", 14)
 )
 # Whether the job should delete the db entries or not. Included if you want to
 # temporarily avoid deleting the db entries.
