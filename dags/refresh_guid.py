@@ -3,12 +3,13 @@ import os
 
 from airflow import DAG
 
-from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, DAG_DESCRIPTIONS
+from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
+    DAG_DESCRIPTIONS, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
 default_args = {
-    'start_date': datetime.now() - timedelta(hours=1),
+    'start_date': START_DATE,
     'execution_timeout': timedelta(minutes=5),
     'image': 'datamade/la-metro-councilmatic:staging',
     'environment': {
