@@ -116,18 +116,20 @@ class Dashboard(BaseView):
         return data
 
     def get_last_successful_dagrun(self, dags):
-        try:
-            last = max(
-                (dag for dag in dags if dag['last_successful_date']['pst_time']),
-                key=lambda x: x['last_successful_date']['pst_time']
-            )
-        except:
-            raise Exception(dags)
+        import pprint
+        pprint.pprint(dags)
+        pprint.pprint(list(dag for dag in dags if dag['last_successful_date']['pst_time'] is not None))
+
+        last = max(
+            (dag for dag in dags if dag['last_successful_date']['pst_time'] is not None),
+            key=lambda x: x['last_successful_date']['pst_time']
+        )
+
         return last['last_successful'], last['last_successful_date']
 
     def get_next_dagrun(self, dags):
         return min(
-            (dag for dag in dags if dag['next_scheduled']['pst_time']),
+            (dag for dag in dags if dag['next_scheduled']['pst_time'] is not None),
             key=lambda x: x['next_scheduled']['pst_time']
         )
 
