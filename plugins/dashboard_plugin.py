@@ -67,6 +67,7 @@ class Dashboard(BaseView):
             'bill_next_run': bill_next_run,
             'bills_in_db': bills_in_db,
             'bills_in_index': bills_in_index,
+            'datetime_format': self.DATETIME_FORMAT,
         }
 
         return self.render_template('dashboard.html', **metadata)
@@ -94,12 +95,12 @@ class Dashboard(BaseView):
 
             else:
                 run_state = None
-                run_date_info = self._get_localized_time(None)
+                run_date_info = {}
 
                 last_successful = None
-                last_successful_info = self._get_localized_time(None)
+                last_successful_info = {}
 
-                next_scheduled_info = self._get_localized_time(None)
+                next_scheduled_info = {}
 
             dag_info = {
                 'name': d.dag_id,
@@ -116,12 +117,8 @@ class Dashboard(BaseView):
         return data
 
     def get_last_successful_dagrun(self, dags):
-        import pprint
-        pprint.pprint(dags)
-        pprint.pprint(list(dag for dag in dags if dag['last_successful_date']['pst_time'] is not None))
-
         last = max(
-            (dag for dag in dags if dag['last_successful_date']['pst_time'] is not None),
+            (dag for dag in dags if dag['last_successful_date'].get('pst_time')),
             key=lambda x: x['last_successful_date']['pst_time']
         )
 
@@ -129,7 +126,7 @@ class Dashboard(BaseView):
 
     def get_next_dagrun(self, dags):
         return min(
-            (dag for dag in dags if dag['next_scheduled']['pst_time'] is not None),
+            (dag for dag in dags if dag['next_scheduled'].get('pst_time')),
             key=lambda x: x['next_scheduled']['pst_time']
         )
 
@@ -158,12 +155,8 @@ class Dashboard(BaseView):
         return None, None, None
 
     def _get_localized_time(self, date):
-        if date:
-            pst_time = datetime.strftime(date.astimezone(PACIFIC_TIMEZONE), self.DATETIME_FORMAT)
-            cst_time = datetime.strftime(date.astimezone(CENTRAL_TIMEZONE), self.DATETIME_FORMAT)
-
-        else:
-            pst_time, cst_time = None, None
+        pst_time = date.astimezone(PACIFIC_TIMEZONE)
+        cst_time = date.astimezone(CENTRAL_TIMEZONE)
 
         return {
             'pst_time': pst_time,
@@ -180,7 +173,7 @@ class Dashboard(BaseView):
         if run:
             run_time = self._get_localized_time(run.execution_date)
         else:
-            run_time = self._get_localized_time(None)
+            run_time = {}
 
         return (run, run_time)
 
