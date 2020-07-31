@@ -116,11 +116,17 @@ class Dashboard(BaseView):
         return data
 
     def get_last_successful_dagrun(self, dags):
-        last = max(dags, key=lambda x: x['last_successful_date']['pst_time'])
+        last = max(
+            dag for dag in dags if dag['last_successful_date']['pst_time'],
+            key=lambda x: x['last_successful_date']['pst_time']
+        )
         return last['last_successful'], last['last_successful_date']
 
     def get_next_dagrun(self, dags):
-        return min(dags, key=lambda x: x['next_scheduled']['pst_time'])
+        return min(
+            dag for dag in dags if dag['last_successful_date']['pst_time'],
+            key=lambda x: x['next_scheduled']['pst_time']
+        )
 
     def get_db_info(self):
         url_parts = {
