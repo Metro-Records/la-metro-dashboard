@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import os
 
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
+from airflow.exceptions import AirflowException
 
 # Use backported operator containing bug fix:
 # - https://github.com/apache/airflow/issues/8629#issuecomment-641461423
@@ -35,3 +35,15 @@ class BlackboxDockerOperator(DockerOperator):
             raise ValueError('Must set DECRYPTED_SETTINGS and DESTINATION_SETTINGS environment variables')
 
         self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(self.command)
+
+    def _run_image(self):
+        '''
+        Remove containers, even if the command fails.
+        '''
+        try:
+            return super()._run_image()
+
+        except AirflowException as e:
+            self.cli.remove_container(self.container['Id'])
+
+            raise e
