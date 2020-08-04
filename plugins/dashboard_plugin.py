@@ -95,8 +95,6 @@ class Dashboard(BaseView):
                 next_scheduled = d.following_schedule(datetime.now(pytz.utc))
                 next_scheduled_info = self._get_localized_time(next_scheduled)
 
-                print(next_scheduled_info)
-
             else:
                 run_state = None
 
