@@ -44,6 +44,7 @@ class BlackboxDockerOperator(DockerOperator):
             return super()._run_image()
 
         except AirflowException as e:
-            self.cli.remove_container(self.container['Id'])
+            if self.auto_remove:
+                self.cli.remove_container(self.container['Id'])
 
             raise e
