@@ -7,12 +7,12 @@ hooks:
   ApplicationStop:
   - location: scripts/app_stop.sh
     runas: root
- BeforeInstall:
+  BeforeInstall:
   - location: scripts/before_install.sh
     runas: root
- ApplicationStart:
+  ApplicationStart:
   - location: scripts/app_start.sh
     runas: root
- AfterInstall:
+  AfterInstall:
   - location: scripts/after_install.sh
     runas: root
