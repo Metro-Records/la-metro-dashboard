@@ -23,11 +23,11 @@
             </thead>
             <tr>
               <td>
-                {{ bill_last_run.dag_id }}
+                {{ bill_last_run.name }}
               </td>
               <td>
-                {{ bill_last_run_time.pst_time.strftime(datetime_format) }} PST<br />
-                {{ bill_last_run_time.cst_time.strftime(datetime_format) }} CST
+                {{ bill_last_run.last_successful_date.pst_time.strftime(datetime_format) }} PST<br />
+                {{ bill_last_run.last_successful_date.cst_time.strftime(datetime_format) }} CST
               </td>
             </tr>
           </table>
@@ -47,8 +47,8 @@
                   {{ bill_next_run.name }}
                 </td>
                 <td>
-                  {{ bill_next_run.next_scheduled.pst_time.strftime(datetime_format) }} PST<br />
-                  {{ bill_next_run.next_scheduled.cst_time.strftime(datetime_format) }} CST
+                  {{ bill_next_run.next_scheduled_date.pst_time.strftime(datetime_format) }} PST<br />
+                  {{ bill_next_run.next_scheduled_date.cst_time.strftime(datetime_format) }} CST
                 </td>
               </tr>
             </table>
@@ -75,11 +75,11 @@
             </thead>
             <tr>
               <td>
-                {{ event_last_run.dag_id }}
+                {{ event_last_run.name }}
               </td>
               <td>
-                {{ event_last_run_time.pst_time.strftime(datetime_format) }} PST<br />
-                {{ event_last_run_time.cst_time.strftime(datetime_format) }} CST
+                {{ event_last_run.last_successful_date.pst_time.strftime(datetime_format) }} PST<br />
+                {{ event_last_run.last_successful_date.cst_time.strftime(datetime_format) }} CST
               </td>
             </tr>
           </table>
@@ -99,8 +99,8 @@
                   {{ event_next_run.name }}
                 </td>
                 <td>
-                  {{ event_next_run.next_scheduled.pst_time.strftime(datetime_format) }} PST<br />
-                  {{ event_next_run.next_scheduled.cst_time.strftime(datetime_format) }} CST
+                  {{ event_next_run.next_scheduled_date.pst_time.strftime(datetime_format) }} PST<br />
+                  {{ event_next_run.next_scheduled_date.cst_time.strftime(datetime_format) }} CST
                 </td>
               </tr>
             </table>
@@ -152,8 +152,8 @@
               {% else %}
                 <td></td>
               {% endif %}
-              {% if dag.next_scheduled %}
-                <td>{{ dag.next_scheduled.pst_time.strftime(datetime_format) }} PST<br /> {{ dag.next_scheduled.cst_time.strftime(datetime_format) }} CST</td>
+              {% if dag.next_scheduled_date.pst_time %}
+                <td>{{ dag.next_scheduled_date.pst_time.strftime(datetime_format) }} PST<br /> {{ dag.next_scheduled_date.cst_time.strftime(datetime_format) }} CST</td>
               {% else %}
                 <td></td>
               {% endif %}
