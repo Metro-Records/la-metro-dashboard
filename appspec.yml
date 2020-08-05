@@ -4,12 +4,15 @@ files:
  - source: /
    destination: /home/datamade/la-metro-dashboard-deployment-root
 hooks:
- BeforeInstall:
+  ApplicationStop:
+  - location: scripts/app_stop.sh
+    runas: root
+  BeforeInstall:
   - location: scripts/before_install.sh
     runas: root
- ApplicationStart:
+  ApplicationStart:
   - location: scripts/app_start.sh
     runas: root
- AfterInstall:
+  AfterInstall:
   - location: scripts/after_install.sh
     runas: root
