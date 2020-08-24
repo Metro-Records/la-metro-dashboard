@@ -11,7 +11,7 @@ from operators.blackbox_docker_operator import BlackboxDockerOperator
 default_args = {
     'start_date': START_DATE,
     'execution_timeout': timedelta(minutes=15),
-    'image': 'datamade/la-metro-councilmatic:staging',
+    'image': 'datamade/la-metro-councilmatic',
     'environment': {
         'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
         'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,

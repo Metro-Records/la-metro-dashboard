@@ -25,6 +25,9 @@ AIRFLOW_DIR_PATH = os.getenv(
 LA_METRO_DATABASE_URL = os.getenv('LA_METRO_DATABASE_URL', 'postgres://postgres:postgres@postgres:5432/lametro')
 LA_METRO_SOLR_URL = os.getenv('LA_METRO_SOLR_URL', 'http://solr:8983/solr/lametro')
 
+# Grab the correct image tag
+LA_METRO_DOCKER_IMAGE_TAG = os.getenv('LA_METRO_DOCKER_IMAGE_TAG', 'staging')
+
 DAG_DESCRIPTIONS = {
     'daily_scraping': 'Scrape all people and committees, bills, and events "politely" – that is, with requests throttled to 60 per minute, or 1 per second. This generally takes 6-7 hours.',
     'windowed_bill_scraping': 'Scrape bills with a window of 0.05 at 5, 20, 35, and 50 minutes past the hour. Between 9 p.m. UTC Friday and 6 a.m. UTC Saturday, scrape bills with a window of 1 at 35 and 50 minutes past the hour. Windowed scrapes capture bills with timestamps within a given window or in the future. This generally takes somewhere between a few seconds and a few minutes, depending on the volume of updates.',

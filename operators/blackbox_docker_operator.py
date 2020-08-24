@@ -9,7 +9,8 @@ from airflow.exceptions import AirflowException
 # - https://pypi.org/project/apache-airflow-backport-providers-docker/
 from airflow.providers.docker.operators.docker import DockerOperator
 
-from dags.constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH
+from dags.constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH, \
+    LA_METRO_DOCKER_IMAGE_TAG
 
 
 class BlackboxDockerOperator(DockerOperator):
@@ -21,6 +22,14 @@ class BlackboxDockerOperator(DockerOperator):
     ]
 
     def __init__(self, *args, **kwargs):
+        print(args, kwargs)
+
+        try:
+            image = kwargs.pop('image')
+        except KeyError:
+            pass
+        else:
+            kwargs['image'] = '{image}:{tag}'.format(image=image, tag=LA_METRO_DOCKER_IMAGE_TAG)
 
         super().__init__(*args, **kwargs)
 

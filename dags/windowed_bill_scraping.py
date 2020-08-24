@@ -16,7 +16,7 @@ default_args = {
 }
 
 docker_default_args = {
-    'image': 'datamade/scrapers-us-municipal:staging',
+    'image': 'datamade/scrapers-us-municipal',
     'volumes': [
         '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
     ],
