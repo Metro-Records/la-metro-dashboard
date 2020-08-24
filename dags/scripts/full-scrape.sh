@@ -21,5 +21,5 @@ import_to_staging
 
 # Scrape all bills.
 pupa update lametro --scrape bills window=0
-DATABASE_URL=$LA_METRO_DATABASE_URL pupa update lametro --import
+SHARED_DB=True DATABASE_URL=$LA_METRO_DATABASE_URL pupa update lametro --import
 import_to_staging
