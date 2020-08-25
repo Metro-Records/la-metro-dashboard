@@ -144,6 +144,7 @@ media
 # airflow documents
 logs/
 airflow-webserver.pid
+webserver_config.py
 
 # MacOS
 .DS_Store
