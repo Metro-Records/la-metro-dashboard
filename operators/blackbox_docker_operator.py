@@ -22,8 +22,6 @@ class BlackboxDockerOperator(DockerOperator):
     ]
 
     def __init__(self, *args, **kwargs):
-        print(args, kwargs)
-
         try:
             image = kwargs.pop('image')
         except KeyError:
