@@ -42,7 +42,7 @@ with DAG(
         command='python manage.py convert_attachment_text',
     )
 
-    if datetime.now().minute <= 55:
+    if datetime.now().minute >= 55:
         update_index_command = 'python manage.py update_index --batch-size=100'
     else:
         update_index_command = 'python manage.py update_index --batch-size=100 --age=1'
