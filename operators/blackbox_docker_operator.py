@@ -22,14 +22,10 @@ class BlackboxDockerOperator(DockerOperator):
     ]
 
     def __init__(self, *args, **kwargs):
-        try:
-            image = kwargs.pop('image')
-        except KeyError:
-            pass
-        else:
-            kwargs['image'] = '{image}:{tag}'.format(image=image, tag=LA_METRO_DOCKER_IMAGE_TAG)
-
         super().__init__(*args, **kwargs)
+
+        # Append appropriate tag to specified image
+        self.image = '{image}:{tag}'.format(image=self.image, tag=LA_METRO_DOCKER_IMAGE_TAG)
 
         if not self.network_mode:  # Give DAG-configured network precedence
             self.network_mode = DOCKER_NETWORK

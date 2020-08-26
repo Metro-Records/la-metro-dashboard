@@ -25,7 +25,7 @@ AIRFLOW_DIR_PATH = os.getenv(
 LA_METRO_DATABASE_URL = os.getenv('LA_METRO_DATABASE_URL', 'postgres://postgres:postgres@postgres:5432/lametro')
 LA_METRO_SOLR_URL = os.getenv('LA_METRO_SOLR_URL', 'http://solr:8983/solr/lametro')
 
-# Grab the correct image tag
+# Grab the correct image tag ('staging' on staging, 'production' on production)
 LA_METRO_DOCKER_IMAGE_TAG = os.getenv('LA_METRO_DOCKER_IMAGE_TAG', 'staging')
 
 DAG_DESCRIPTIONS = {
