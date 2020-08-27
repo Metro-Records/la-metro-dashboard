@@ -4,18 +4,18 @@ import os
 from airflow import DAG
 
 from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
-    DAG_DESCRIPTIONS, START_DATE
+    LA_METRO_DOCKER_IMAGE_TAG, DAG_DESCRIPTIONS, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
 default_args = {
     'start_date': START_DATE,
     'execution_timeout': timedelta(minutes=5),
-    'image': 'datamade/la-metro-councilmatic:staging',
+    'image': 'datamade/la-metro-councilmatic',
     'environment': {
         'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
         'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
-        'DECRYPTED_SETTINGS': 'configs/settings_deployment.staging.py',
+        'DECRYPTED_SETTINGS': 'configs/settings_deployment.{}.py'.format(LA_METRO_DOCKER_IMAGE_TAG),
         'DESTINATION_SETTINGS': 'councilmatic/settings_deployment.py',
     },
 }

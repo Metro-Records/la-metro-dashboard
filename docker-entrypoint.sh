@@ -8,5 +8,4 @@ if [ "$AIRFLOW_MIGRATE" = 'on' ]; then
     fi
 fi
 
-
 exec "$@"

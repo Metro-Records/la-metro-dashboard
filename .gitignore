@@ -144,6 +144,7 @@ media
 # airflow documents
 logs/
 airflow-webserver.pid
+webserver_config.py
 
 # MacOS
 .DS_Store
@@ -151,3 +152,4 @@ airflow-webserver.pid
 /.blackbox/pubring.kbx~
 /.blackbox/secring.gpg
 /configs/la-metro-dashboard.staging.conf.supervisor
+/configs/la-metro-dashboard.production.conf.supervisor

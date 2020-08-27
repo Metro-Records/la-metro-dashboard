@@ -9,7 +9,8 @@ from airflow.exceptions import AirflowException
 # - https://pypi.org/project/apache-airflow-backport-providers-docker/
 from airflow.providers.docker.operators.docker import DockerOperator
 
-from dags.constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH
+from dags.constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH, \
+    LA_METRO_DOCKER_IMAGE_TAG
 
 
 class BlackboxDockerOperator(DockerOperator):
@@ -21,8 +22,10 @@ class BlackboxDockerOperator(DockerOperator):
     ]
 
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
+
+        # Append appropriate tag to specified image
+        self.image = '{image}:{tag}'.format(image=self.image, tag=LA_METRO_DOCKER_IMAGE_TAG)
 
         if not self.network_mode:  # Give DAG-configured network precedence
             self.network_mode = DOCKER_NETWORK

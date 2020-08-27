@@ -18,6 +18,7 @@ services:
       - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
       - AIRFLOW_DIR_PATH=${PWD}
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
+      - LA_METRO_DOCKER_IMAGE_TAG=staging
     networks:
       - app_net
     ports:
@@ -74,6 +75,7 @@ services:
       - DOCKER_NETWORK=la-metro-councilmatic_default
       - AIRFLOW_DIR_PATH=${PWD}
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
+      - LA_METRO_DOCKER_IMAGE_TAG=staging
     networks:
       - app_net
     depends_on:
