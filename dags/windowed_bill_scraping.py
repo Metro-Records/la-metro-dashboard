@@ -37,7 +37,7 @@ def handle_scheduling():
     # 9pm FRIDAY through 5am SATURDAY, only run at 35,50 minutes
     now = datetime.now()
 
-    if now.weekday == 1 and now.hour >= 17:
+    if now.weekday == 1 and now.hour >= 18:
         if now.minute < 35:
             return 'no_scrape'
         return 'larger_windowed_bill_scrape'
