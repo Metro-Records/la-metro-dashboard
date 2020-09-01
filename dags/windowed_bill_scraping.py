@@ -37,12 +37,12 @@ def handle_scheduling():
     # 9pm FRIDAY through 5am SATURDAY, only run at 35,50 minutes
     now = datetime.now()
 
-    if now.weekday == 5 and now.hour >= 9:
-        if now.minute < 35:
-            return 'no_scrape'
-        return 'larger_windowed_bill_scrape'
+    friday_night = now.weekday == 5 and now.hour >= 21
+    saturday_morning = now.weekday == 6 and now.hour <= 5
 
-    elif now.weekday == 6 and now.hour <= 5:
+    # If it's between 9 p.m. UTC on Friday and 6 a.m. UTC on Saturday
+    if friday_night or saturday_morning:
+        # Skip the windowed scrape (fast full scrape will run)
         if now.minute < 35:
             return 'no_scrape'
         return 'larger_windowed_bill_scrape'

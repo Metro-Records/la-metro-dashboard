@@ -30,22 +30,28 @@ docker_base_environment = {
     'RPM': 0,
 }
 
-def friday_hourly_scraping():
-    if datetime.now().minute < 5:
-        return 'fast_full_event_scrape'
-    elif datetime.now().minute >= 5:
-        return 'fast_full_bill_scrape'
+def fast_full_scrape():
+    now = datetime.now()
+
+    friday_night = now.weekday == 5 and now.hour >= 21
+    saturday_morning = now.weekday == 6 and now.hour <= 5
+
+    if friday_night or saturday_morning:
+        if datetime.now().minute < 5:
+            return 'fast_full_event_scrape'
+        elif datetime.now().minute >= 5:
+            return 'fast_full_bill_scrape'
 
 with DAG(
-    'friday_hourly_scraping',
+    'fast_full_scrape',
     default_args=default_args,
-    schedule_interval='0,5 21-23 * * 5',
-    description=DAG_DESCRIPTIONS['friday_hourly_scraping']
+    schedule_interval='0,5 * * * 5,6',
+    description=DAG_DESCRIPTIONS['fast_full_scrape']
 ) as dag:
 
     branch = BranchPythonOperator(
-        task_id='friday_hourly_scraping',
-        python_callable=friday_hourly_scraping
+        task_id='fast_full_scrape',
+        python_callable=fast_full_scrape
     )
 
     bill_environment = docker_base_environment.copy()
@@ -68,4 +74,8 @@ with DAG(
         **docker_default_args
     )
 
-    branch >> [bill_scrape, event_scrape]
+    no_scrape = DummyOperator(
+        task_id='no_scrape'
+    )
+
+branch >> [bill_scrape, event_scrape, no_scrape]
