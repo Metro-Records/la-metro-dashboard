@@ -30,7 +30,7 @@ docker_base_environment = {
     'RPM': 0,
 }
 
-def fast_full_scrape():
+def fast_full_scraping():
     now = datetime.now()
 
     friday_night = now.weekday == 5 and now.hour >= 21
@@ -42,16 +42,19 @@ def fast_full_scrape():
         elif datetime.now().minute >= 5:
             return 'fast_full_bill_scrape'
 
+    else:
+        return 'no_scrape'
+
 with DAG(
-    'fast_full_scrape',
+    'fast_full_scraping',
     default_args=default_args,
     schedule_interval='0,5 * * * 5,6',
-    description=DAG_DESCRIPTIONS['fast_full_scrape']
+    description=DAG_DESCRIPTIONS['fast_full_scraping']
 ) as dag:
 
     branch = BranchPythonOperator(
-        task_id='fast_full_scrape',
-        python_callable=fast_full_scrape
+        task_id='fast_full_scraping',
+        python_callable=fast_full_scraping
     )
 
     bill_environment = docker_base_environment.copy()
