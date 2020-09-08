@@ -6,7 +6,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import BranchPythonOperator
 
 from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, \
-    DAG_DESCRIPTIONS, START_DATE
+    DAG_DESCRIPTIONS, START_DATE, IN_SUPPORT_WINDOW
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -32,15 +32,13 @@ docker_base_environment = {
 }
 
 def fast_full_scraping():
-    now = datetime.now()
+    if IN_SUPPORT_WINDOW():
+        now = datetime.now()
 
-    friday_night = now.weekday == 5 and now.hour >= 21
-    saturday_morning = now.weekday == 6 and now.hour <= 5
-
-    if friday_night or saturday_morning:
-        if datetime.now().minute < 5:
+        if now.minute < 5:
             return 'fast_full_event_scrape'
-        elif datetime.now().minute >= 5:
+
+        elif now.minute >= 5:
             return 'fast_full_bill_scrape'
 
     else:
