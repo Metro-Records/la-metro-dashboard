@@ -27,7 +27,7 @@ default_args = {
 with DAG(
     'daily_scraping',
     default_args=default_args,
-    schedule_interval='5 0 * * 0-5',
+    schedule_interval='5 3 * * 0-5',
     description=DAG_DESCRIPTIONS['daily_scraping']
 ) as dag:
 
