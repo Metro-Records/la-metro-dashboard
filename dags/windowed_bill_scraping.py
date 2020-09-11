@@ -6,7 +6,7 @@ from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
 from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, \
-    DAG_DESCRIPTIONS, START_DATE
+    DAG_DESCRIPTIONS, START_DATE, IN_SUPPORT_WINDOW
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -33,18 +33,14 @@ docker_base_environment = {
 }
 
 def handle_scheduling():
-    # SUNDAY THROUGH SATURDAY
-    # 9pm FRIDAY through 5am SATURDAY, only run at 35,50 minutes
-    now = datetime.now()
-
-    friday_night = now.weekday == 5 and now.hour >= 21
-    saturday_morning = now.weekday == 6 and now.hour <= 5
-
     # If it's between 9 p.m. UTC on Friday and 6 a.m. UTC on Saturday
-    if friday_night or saturday_morning:
-        # Skip the windowed scrape (fast full scrape will run)
+    if IN_SUPPORT_WINDOW():
+        now = datetime.now()
+
         if now.minute < 35:
+            # Skip the windowed scrape (fast full scrape will run)
             return 'no_scrape'
+
         return 'larger_windowed_bill_scrape'
 
     return 'windowed_bill_scrape'

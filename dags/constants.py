@@ -37,3 +37,23 @@ DAG_DESCRIPTIONS = {
     'hourly_processing': 'Refresh the document cache, compile bill and event packets, extract attachment text, update the search index, and confirm the search index and database contain the same number of bills at 10, 25, 40, and 55 minutes past the hour.',
     'refresh_guid': 'Sync Metro subjects with SmartLogic terms once nightly.',
 }
+
+def IN_SUPPORT_WINDOW():
+    '''
+    Support window:
+
+    UTC: 9:00 pm Friday to 5:50 am Saturday
+    CST: 3:00 pm Friday to 11:50 pm Friday
+    CDT: 4:00 pm Friday to 12:50 am Saturday
+    '''
+    now = datetime.now()
+
+    # Monday is 0, Sunday is 6:
+    # https://docs.python.org/3.7/library/datetime.html#datetime.date.weekday
+    FRIDAY = 4
+    SATURDAY = 5
+
+    friday_night = now.weekday() == FRIDAY and now.hour >= 21
+    saturday_morning = now.weekday() == SATURDAY and now.hour <= 5
+
+    return friday_night or saturday_morning
