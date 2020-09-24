@@ -29,14 +29,14 @@ docker_environment = {
     'DATABASE_URL': LA_METRO_DATABASE_URL,  # For use by entrypoint
     'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,  # For use in scraping scripts
     'TARGET': 'bills',
-    'WINDOW': 0.05,
+    'WINDOW': 1,
     'RPM': 60,
 }
 
 with DAG(
-    'windowed_bill_scraping_sunday_thru_thursday',
+    'windowed_bill_scraping_saturday_pm',
     default_args=default_args,
-    schedule_interval='5,20,35,50 * * * 0-4',
+    schedule_interval='5,20,35,50 6-23 * * 6',
     description=DAG_DESCRIPTIONS['windowed_bill_scraping']
 ) as dag:
 
