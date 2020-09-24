@@ -33,7 +33,7 @@ docker_environment = {
 }
 
 with DAG(
-    'fast_full_scraping',
+    'fast_full_bill_scraping_saturday',
     default_args=default_args,
     schedule_interval='5 0-5 * * 6',
     description=DAG_DESCRIPTIONS['fast_full_scraping']

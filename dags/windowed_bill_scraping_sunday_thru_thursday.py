@@ -34,7 +34,7 @@ docker_environment = {
 }
 
 with DAG(
-    'windowed_bill_scraping',
+    'windowed_bill_scraping_sunday_thru_thursday',
     default_args=default_args,
     schedule_interval='5,20,35,50 0-20 * * 5',
     description=DAG_DESCRIPTIONS['windowed_bill_scraping']
