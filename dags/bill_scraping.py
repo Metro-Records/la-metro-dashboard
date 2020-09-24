@@ -5,7 +5,7 @@ from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 
 from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, \
-    DAG_DESCRIPTIONS, START_DATE, IN_SUPPORT_WINDOW
+    DAG_DESCRIPTIONS, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 from operators.scheduling_branch_operator import SchedulingBranchOperator
 
