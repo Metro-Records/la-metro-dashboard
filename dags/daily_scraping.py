@@ -10,7 +10,7 @@ from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 default_args = {
     'start_date': START_DATE,
-    'execution_timeout': timedelta(hours=12),
+    'execution_timeout': timedelta(hours=24),
     'image': 'datamade/scrapers-us-municipal',
     'environment': {
         'DECRYPTED_SETTINGS': 'pupa_settings.py',
