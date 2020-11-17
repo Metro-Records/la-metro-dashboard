@@ -8,9 +8,8 @@ conditionally_import_to_staging() {
     fi
 }
 
-# Bills are windowed to 3 days by default. Scrape all people, all events, and
-# windowed bills.
-pupa update lametro --scrape
+# Bills are windowed to 3 days by default. Scrape all people and all events.
+pupa update lametro --scrape people events
 SHARED_DB=True DATABASE_URL=$LA_METRO_DATABASE_URL pupa update lametro --import
 conditionally_import_to_staging
 
