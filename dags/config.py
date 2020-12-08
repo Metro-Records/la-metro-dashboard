@@ -43,13 +43,43 @@ SCRAPING_DAGS = {
             'RPM': 0,
         },
     },
-    'full_scrape': {
-        'schedule_interval': ['5 0 * * 0-5'],
-        'execution_timeout': timedelta(hours=12),
-        'command': 'scraper_scripts/full-scrape.sh',
+    'windowed_event_scrape': {
+      'schedule_interval': [
+            '0,15,30,45 * * * 0-4',
+            '0,15,30,45 0-20 * * 5',
+            '0,15,30,45 6-23 * * 6',
+        ],
+        'execution_timeout': timedelta(hours=1),
+        'command': 'scraper_scripts/targeted-scrape.sh',
         'docker_environment': {
-            'LA_METRO_STAGING_DATABASE_URL': LA_METRO_STAGING_DATABASE_URL,
+            'TARGET': 'events',
+            'WINDOW': 0.05,
         },
     },
-    # etc.
+    'fast_windowed_event_scrape': {
+        'schedule_interval': [
+            '30,45 21-23 * * 5',
+            '30,45 0-5 * * 6',
+        ],
+        'execution_timeout': timedelta(hours=1),
+        'command': 'scraper_scripts/targeted-scrape.sh',
+        'docker_environment': {
+            'TARGET': 'events',
+            'WINDOW': 1,
+            'RPM': 0,
+        },
+    },
+    'fast_full_event_scrape': {
+        'schedule_interval': [
+            '0 21-23 * * 5',
+            '0 0-5 * * 6',
+        ],
+        'execution_timeout': timedelta(hours=1),
+        'command': 'scraper_scripts/targeted-scrape.sh',
+        'docker_environment': {
+            'TARGET': 'events',
+            'WINDOW': 0,
+            'RPM': 0,
+        },
+    },
 }
