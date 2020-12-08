@@ -15,6 +15,7 @@ SCRAPING_DAGS = {
         'docker_environment': {
             'TARGET': 'bills',
             'WINDOW': 0.05,
+            'RPM': 60,
         },
     },
     'fast_windowed_bill_scrape': {
@@ -54,6 +55,7 @@ SCRAPING_DAGS = {
         'docker_environment': {
             'TARGET': 'events',
             'WINDOW': 0.05,
+            'RPM': 60,
         },
     },
     'fast_windowed_event_scrape': {
