@@ -34,7 +34,7 @@ docker_base_environment = {
 with DAG(
     'full_scrape',
     default_args=default_args,
-    schedule_interval='5 0 * * 0-5',
+    schedule_interval='5 3 * * 0-5',
     description=DAG_DESCRIPTIONS.get('full_scrape', '')
 ) as dag:
 

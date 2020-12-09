@@ -86,7 +86,7 @@ SCRAPING_DAGS = {
     },
     'person_scrape': {
         'schedule_interval': [
-            '5 0 * * 6',
+            '5 3 * * 6',
         ],
         'execution_timeout': timedelta(hours=1),
         'command': 'scraper_scripts/targeted-scrape.sh',
