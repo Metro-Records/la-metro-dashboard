@@ -28,32 +28,3 @@ LA_METRO_SOLR_URL = os.getenv('LA_METRO_SOLR_URL', 'http://solr:8983/solr/lametr
 
 # Grab the correct image tag ('staging' on staging, 'production' on production)
 LA_METRO_DOCKER_IMAGE_TAG = os.getenv('LA_METRO_DOCKER_IMAGE_TAG', 'staging')
-
-DAG_DESCRIPTIONS = {
-    'daily_scraping': 'Scrape all people and committees, bills, and events "politely" – that is, with requests throttled to 60 per minute, or 1 per second. This generally takes 6-7 hours.',
-    'windowed_bill_scraping': 'Scrape bills with a window of 0.05 at 5, 20, 35, and 50 minutes past the hour. Between 9 p.m. UTC Friday and 6 a.m. UTC Saturday, scrape bills with a window of 1 at 35 and 50 minutes past the hour. Windowed scrapes capture bills with timestamps within a given window or in the future. This generally takes somewhere between a few seconds and a few minutes, depending on the volume of updates.',
-    'windowed_event_scraping': 'Scrape events with a window of 0.05 at 0, 15, 30, and 45 minutes past the hour. Between 9 p.m. UTC Friday and 6 a.m. UTC Saturday, scrape events with a window of 1 at 35 and 50 minutes past the hour. Windowed scrapes capture events with timestamps within a given window or in the future. This generally takes somewhere between a few seconds and a few minutes, depending on the volume of updates.',
-    'fast_full_scraping': 'Scrape all events quickly on the hour and all bills quickly at 5 past the hour between 9 p.m. UTC Friday and 6 a.m. UTC Saturday. Fast scrapes scrape all bills or events quickly – that is, with requests issues as quickly as the server will respond to them. This generally takes less than 30 minutes.',
-    'hourly_processing': 'Refresh the document cache, compile bill and event packets, extract attachment text, update the search index, and confirm the search index and database contain the same number of bills at 10, 25, 40, and 55 minutes past the hour.',
-    'refresh_guid': 'Sync Metro subjects with SmartLogic terms once nightly.',
-}
-
-def IN_SUPPORT_WINDOW():
-    '''
-    Support window:
-
-    UTC: 9:00 pm Friday to 5:50 am Saturday
-    CST: 3:00 pm Friday to 11:50 pm Friday
-    CDT: 4:00 pm Friday to 12:50 am Saturday
-    '''
-    now = datetime.now()
-
-    # Monday is 0, Sunday is 6:
-    # https://docs.python.org/3.7/library/datetime.html#datetime.date.weekday
-    FRIDAY = 4
-    SATURDAY = 5
-
-    friday_night = now.weekday() == FRIDAY and now.hour >= 21
-    saturday_morning = now.weekday() == SATURDAY and now.hour <= 5
-
-    return friday_night or saturday_morning

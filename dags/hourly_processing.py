@@ -4,7 +4,7 @@ import os
 from airflow import DAG
 
 from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
-    LA_METRO_DOCKER_IMAGE_TAG, DAG_DESCRIPTIONS, START_DATE
+    LA_METRO_DOCKER_IMAGE_TAG, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -24,7 +24,12 @@ with DAG(
     'hourly_processing',
     default_args=default_args,
     schedule_interval='10,25,40,55 * * * *',
-    description=DAG_DESCRIPTIONS['hourly_processing']
+    description=(
+        'Refresh the document cache, compile bill and event packets, extract '
+        'attachment text, update the search index, and confirm the search '
+        'index and database contain the same number of bills at 10, 25, 40, '
+        'and 55 minutes past the hour.'
+    )
 ) as dag:
 
     t1 = BlackboxDockerOperator(

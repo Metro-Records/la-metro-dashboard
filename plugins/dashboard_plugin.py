@@ -23,20 +23,6 @@ CENTRAL_TIMEZONE = pytz.timezone('US/Central')
 class Dashboard(BaseView):
     template_folder = os.path.join(os.path.dirname(__file__), 'templates')
 
-    BILL_DAGS = (
-        'windowed_bill_scraping',
-        'daily_scraping',
-        'friday_hourly_scraping',
-        'saturday_hourly_scraping',
-    )
-
-    EVENT_DAGS = (
-        'windowed_event_scraping',
-        'daily_scraping',
-        'friday_hourly_scraping',
-        'saturday_hourly_scraping',
-    )
-
     DATETIME_FORMAT = '%m/%d/%y %I:%M %p'
 
     def __init__(self, *args, **kwargs):
@@ -49,8 +35,8 @@ class Dashboard(BaseView):
     def list(self):
         dag_info = self.get_dag_info()
 
-        event_dags = [dag for dag in dag_info if dag['name'] in self.EVENT_DAGS]
-        bill_dags = [dag for dag in dag_info if dag['name'] in self.BILL_DAGS]
+        event_dags = [dag for dag in dag_info if 'event' in dag['name'] or dag['name'] == 'full_scrape']
+        bill_dags = [dag for dag in dag_info if 'bill' in dag['name'] or dag['name'] == 'full_scrape']
 
         event_last_run = self.get_last_successful_dagrun(event_dags)
         bill_last_run = self.get_last_successful_dagrun(bill_dags)
