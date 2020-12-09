@@ -4,7 +4,7 @@ import os
 from airflow import DAG
 
 from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
-    LA_METRO_DOCKER_IMAGE_TAG, DAG_DESCRIPTIONS, START_DATE
+    LA_METRO_DOCKER_IMAGE_TAG, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -24,7 +24,7 @@ with DAG(
     'refresh_guid',
     default_args=default_args,
     schedule_interval='0 1 * * *',
-    description=DAG_DESCRIPTIONS['refresh_guid']
+    description='Sync Metro subjects with SmartLogic terms once nightly. Only used on staging.'
 ) as dag:
 
     t1 = BlackboxDockerOperator(

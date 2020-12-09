@@ -4,8 +4,7 @@ from airflow import DAG
 from croniter import croniter
 
 from dags.config import SCRAPING_DAGS
-from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, \
-    DAG_DESCRIPTIONS, START_DATE
+from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -59,7 +58,7 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                 'start_date': START_DATE,
                 'execution_timeout': dag_config['execution_timeout']
             },
-            description=DAG_DESCRIPTIONS.get(dag_name, 'tk')
+            description=dag_config['description']
         )
 
         docker_environment = docker_base_environment.copy()

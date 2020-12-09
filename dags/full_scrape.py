@@ -5,8 +5,7 @@ from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
-from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, \
-    DAG_DESCRIPTIONS, START_DATE
+from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -35,7 +34,11 @@ with DAG(
     'full_scrape',
     default_args=default_args,
     schedule_interval='5 3 * * 0-5',
-    description=DAG_DESCRIPTIONS.get('full_scrape', '')
+    description=(
+        'Scrape all people and committees, bills, and events "politely" – that '
+        'is, with requests throttled to 60 per minute, or 1 per second. This '
+        'generally takes 6-7 hours.'
+    )
 ) as dag:
 
     scrape_people_orgs_environment = docker_base_environment.copy()
