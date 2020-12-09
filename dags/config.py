@@ -84,4 +84,15 @@ SCRAPING_DAGS = {
             'RPM': 0,
         },
     },
+    'person_scrape': {
+        'schedule_interval': [
+            '5 0 * * 6',
+        ],
+        'execution_timeout': timedelta(hours=1),
+        'command': 'scraper_scripts/targeted-scrape.sh',
+        'docker_environment': {
+            'TARGET': 'people',
+            'RPM': 60,
+        },
+    },
 }
