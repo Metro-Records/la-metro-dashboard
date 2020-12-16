@@ -5,6 +5,8 @@ conditionally_import_to_staging() {
     if [[ -n "$LA_METRO_STAGING_DATABASE_URL" ]]; then
         echo "Importing into staging database ${LA_METRO_STAGING_DATABASE_URL}"
         SHARED_DB=True LA_METRO_DATABASE_URL=$LA_METRO_STAGING_DATABASE_URL pupa update lametro --import || echo "${LA_METRO_STAGING_DATABASE_URL} does not exist"
+    else
+        echo 'No value set for $LA_METRO_STAGING_DATABASE_URL'
     fi
 }
 
