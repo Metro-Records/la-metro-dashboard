@@ -5,7 +5,8 @@ from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
-from dags.constants import LA_METRO_DATABASE_URL, AIRFLOW_DIR_PATH, START_DATE
+from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
+    AIRFLOW_DIR_PATH, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -27,6 +28,7 @@ docker_base_environment = {
     'DESTINATION_SETTINGS': 'pupa_settings.py',
     'DATABASE_URL': LA_METRO_DATABASE_URL,  # For use by entrypoint
     'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,  # For use in scraping scripts
+    'LA_METRO_STAGING_DATABASE_URL': LA_METRO_STAGING_DATABASE_URL,
     'RPM': 60,
 }
 
