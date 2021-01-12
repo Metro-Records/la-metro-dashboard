@@ -35,7 +35,7 @@ docker_base_environment = {
 with DAG(
     'full_scrape',
     default_args=default_args,
-    schedule_interval='5 3 * * 0-5',
+    schedule_interval='5 4 * * 0-5',
     description=(
         'Scrape all people and committees, bills, and events "politely" – that '
         'is, with requests throttled to 60 per minute, or 1 per second. This '
