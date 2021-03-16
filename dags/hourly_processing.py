@@ -48,9 +48,9 @@ with DAG(
     )
 
     if datetime.now().minute >= 55:
-        update_index_command = 'python manage.py update_index --batch-size=100'
+        update_index_command = 'python manage.py update_index --batch-size=100 --remove'
     else:
-        update_index_command = 'python manage.py update_index --batch-size=100 --age=1'
+        update_index_command = 'python manage.py update_index --batch-size=100 --age=1 --remove'
 
     t4 = BlackboxDockerOperator(
         task_id='update_index',
