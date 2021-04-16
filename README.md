@@ -72,8 +72,9 @@ The dashboard runs DAGs from application images stored in Dockerhub:
 - [LA Metro Councilmatic](https://hub.docker.com/repository/docker/datamade/la-metro-councilmatic)
 
 Both images are configured to build automatically from their corresponding
-GitHub repositories. Commits to `master` build a `staging` tag, and releases
-matching the `v0.*` pattern build a `production` tag.
+GitHub repositories. Commits to `master` build a `staging` tag. Scraper releases
+matching the `v0.*` pattern and Metro app pushes to the `deploy` branch build a
+`production` tag for their respective images.
 
 ### Managing secrets
 
