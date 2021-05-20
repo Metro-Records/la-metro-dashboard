@@ -15,6 +15,7 @@ docker_base_environment = {
     'DATABASE_URL': LA_METRO_DATABASE_URL,  # For use by entrypoint
     'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,  # For use in scraping scripts
     'LA_METRO_STAGING_DATABASE_URL': LA_METRO_STAGING_DATABASE_URL,
+    'OCD_DIVISION_CSV': '/app/configs/lametro_divisions.csv',
 }
 
 def get_dag_id(dag_name, dag_config, interval):
@@ -71,7 +72,8 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                 task_id='scrape',
                 image='datamade/scrapers-us-municipal',
                 volumes=[
-                    '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
+                    '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts')),
+                    '{}:/app/configs'.format(os.path.join(AIRFLOW_DIR_PATH, 'configs'))
                 ],
                 command=dag_config['command'],
                 environment=docker_environment
