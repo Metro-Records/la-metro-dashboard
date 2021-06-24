@@ -5,13 +5,13 @@ from dags.constants import START_DATE
 
 
 with DAG(
-    'image_cleanup',
+    'docker_system_cleanup',
     schedule_interval='0 12 * * *',
     start_date=START_DATE,
-    description='Prune Docker images every day at noon.'
+    description='Prune Docker images, containers, and networks every day at noon. https://docs.docker.com/config/pruning/'
 ) as dag:
 
-    image_cleaup = BashOperator(
+    docker_system_cleanup = BashOperator(
         task_id='prune_images',
-        bash_command='docker image prune -f'
+        bash_command='docker system prune -f'
     )
