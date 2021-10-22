@@ -37,11 +37,12 @@ with DAG(
     t1 = DockerOperator(
         task_id='make_packet',
         command='make merged/{{ dag_run.conf["identifier"] }}.pdf',
-        image='datamade/councilmatic-document-merger:latest',
+        image='ghcr.io/datamade/councilmatic-document-merger:latest',
         environment={
             'attachment_links': '{{ dag_run.conf["attachment_links"] }}',
             'AWS_ACCESS_KEY_ID': AWS_ACCESS_KEY_ID,
             'AWS_SECRET_ACCESS_KEY': AWS_SECRET_ACCESS_KEY,
+            'AWS_DEFAULT_REGION': 'us-east-1',
         }
     )
 
