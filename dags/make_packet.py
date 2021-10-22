@@ -24,13 +24,14 @@ from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 default_args = {
     'start_date': START_DATE,
-    'execution_timeout': timedelta(minutes=20),
+    'execution_timeout': timedelta(minutes=5),
 }
 
 with DAG(
     'make_packet',
     default_args=default_args,
     schedule_interval=None,
+    max_active_runs=1
 ) as dag:
 
     t1 = DockerOperator(
