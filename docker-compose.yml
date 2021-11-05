@@ -76,6 +76,8 @@ services:
       - AIRFLOW_DIR_PATH=${PWD}
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
       - LA_METRO_DOCKER_IMAGE_TAG=staging
+    env_file:
+      - .env
     networks:
       - app_net
     depends_on:
