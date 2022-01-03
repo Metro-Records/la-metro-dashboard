@@ -60,21 +60,22 @@ The conversation on how to ensure DAGs are running against the current version
 of these applications is captured [in this issue](https://github.com/datamade/server-la-metro-dashboard/issues/1).
 
 tl;dr - Application dependencies are packaged as Docker images and pushed to
-Dockerhub. When a task starts, it pulls the corresponding image, runs a custom
-script to decrypt the bundled secrets and append dashboard-specific connection
-strings, then executes its command in a container.
+GitHub Container Registry. When a task starts, it pulls the corresponding image,
+runs a custom script to decrypt the bundled secrets and append dashboard-specific
+connection strings, then executes its command in a container.
 
 ### Managing code
 
-The dashboard runs DAGs from application images stored in Dockerhub:
+The dashboard runs DAGs from application images stored in GitHub Container
+Registry:
 
-- [`scrapers-us-municipal`](https://hub.docker.com/repository/docker/datamade/scrapers-us-municipal)
-- [LA Metro Councilmatic](https://hub.docker.com/repository/docker/datamade/la-metro-councilmatic)
+- [`scrapers-us-municipal`](https://github.com/datamade/scrapers-us-municipal/pkgs/container/scrapers-us-municipal)
+- [LA Metro Councilmatic](https://github.com/datamade/la-metro-councilmatic/pkgs/container/la-metro-councilmatic)
 
 Both images are configured to build automatically from their corresponding
-GitHub repositories. Commits to `master` build a `staging` tag. Scraper releases
-matching the `v0.*` pattern and Metro app pushes to the `deploy` branch build a
-`production` tag for their respective images.
+GitHub repositories. Commits to `master` (i.e., staging deployments) build a
+`master` tag. Pushes to `deploy` (i.e., production deployments) build a `deploy`
+tag.
 
 ### Managing secrets
 

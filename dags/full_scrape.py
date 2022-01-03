@@ -16,7 +16,7 @@ default_args = {
 }
 
 default_docker_args = {
-    'image': 'datamade/scrapers-us-municipal',
+    'image': 'ghcr.io/datamade/scrapers-us-municipal',
     'volumes': [
         '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
     ],
