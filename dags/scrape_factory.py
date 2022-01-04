@@ -1,8 +1,9 @@
 import os
 
 from airflow import DAG
-from airflow.exceptions import DagRunNotFound
+from airflow.models import TaskInstance
 from airflow.operators.python_operator import ShortCircuitOperator
+from airflow.utils.db import provide_session
 
 from croniter import croniter
 
@@ -45,27 +46,16 @@ def get_dag_id(dag_name, dag_config, interval):
     else:
         return '{0}_{1}_thru_{2}'.format(dag_name, int_day_map[days[0]], int_day_map[days[-1]])
 
-def short_circuit_if_previous_run_ongoing(**kwargs):
-    '''
-    Do not proceed to scrape task if the previous *scheduled* scrape is still
-    running. N.b., Airflow treats manually triggered DAGs as their own special
-    entities. In that instance, prev_execution_date is the date of the current
-    manual run, and the scrape will always run. This is annoying for testing
-    but not such a bad thing for deployment, where we might want to kick off
-    another scrape run without regard for what's happening in the regularly
-    scheduled DAGs.
-    '''
-    try:
-        previous_run = kwargs['dag'].get_dagrun(kwargs['prev_execution_date'])
+@provide_session
+def previous_scrape_done(**kwargs):
+    running_scrapes = kwargs['session'].query(TaskInstance).filter(
+        TaskInstance.dag_id == kwargs['dag'].dag_id,
+        TaskInstance.task_id == 'scrape',
+        TaskInstance.start_date < kwargs['execution_date'],
+        TaskInstance.state == 'running'
+    )
 
-    except DagRunNotFound:
-        return True
-
-    else:
-        ti = previous_run.get_task_instance('scrape')
-        current_state = ti.current_state()
-        print('Previous instance {0} in state {1}'.format(ti, current_state))
-        return current_state != 'running'
+    return running_scrapes.count() == 0
 
 seen_ids = []
 
@@ -95,7 +85,7 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
         with dag:
             check_previous = ShortCircuitOperator(
                 task_id='check_previous',
-                python_callable=short_circuit_if_previous_run_ongoing,
+                python_callable=previous_scrape_done,
                 provide_context=True
             )
 
