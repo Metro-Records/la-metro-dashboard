@@ -46,8 +46,17 @@ def get_dag_id(dag_name, dag_config, interval):
         return '{0}_{1}_thru_{2}'.format(dag_name, int_day_map[days[0]], int_day_map[days[-1]])
 
 def short_circuit_if_previous_run_ongoing(**kwargs):
+    '''
+    Do not proceed to scrape task if the previous *scheduled* scrape is still
+    running. N.b., Airflow treats manually triggered DAGs as their own special
+    entities. In that instance, prev_execution_date is the date of the current
+    manual run, and the scrape will always run. This is annoying for testing
+    but not such a bad thing for deployment, where we might want to kick off
+    another scrape run without regard for what's happening in the regularly
+    scheduled DAGs.
+    '''
     try:
-        previous_run = kwargs['dag'].get_last_dagrun(include_externally_triggered=True)
+        previous_run = kwargs['dag'].get_dagrun(kwargs['prev_execution_date'])
 
     except DagRunNotFound:
         return True
