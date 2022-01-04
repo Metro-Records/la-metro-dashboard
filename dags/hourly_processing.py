@@ -8,6 +8,8 @@ from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
+deployment = 'staging' if LA_METRO_DOCKER_IMAGE_TAG == 'master' else 'production'
+
 default_args = {
     'start_date': START_DATE,
     'execution_timeout': timedelta(minutes=20),
@@ -15,7 +17,7 @@ default_args = {
     'environment': {
         'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
         'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
-        'DECRYPTED_SETTINGS': 'configs/settings_deployment.{}.py'.format(LA_METRO_DOCKER_IMAGE_TAG),
+        'DECRYPTED_SETTINGS': 'configs/settings_deployment.{}.py'.format(deployment),
         'DESTINATION_SETTINGS': 'councilmatic/settings_deployment.py',
     },
 }
