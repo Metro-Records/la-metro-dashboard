@@ -10,7 +10,8 @@ RUN apt-get update && \
       ca-certificates \
       curl \
       gnupg-agent \
-      software-properties-common && \
+      software-properties-common \
+      postgresql-client && \
     rm -rf /var/lib/apt/lists/* && \
     curl -fsSL https://get.docker.com -o get-docker.sh && \
     sh get-docker.sh
