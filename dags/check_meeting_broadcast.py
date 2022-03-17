@@ -30,5 +30,5 @@ with DAG(
     t1 = BlackboxDockerOperator(
         task_id='check_current_meeting',
         command='python manage.py check_current_meeting',
-        tag='pr-796',
+        tag=LA_METRO_DOCKER_IMAGE_TAG,
     )

@@ -2,8 +2,6 @@
 Override Postgres and Haystack connections for the scrapers and LA Metro
 containers.
 '''
-import sys
-
 import dj_database_url
 
 
