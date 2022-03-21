@@ -25,7 +25,10 @@ class BlackboxDockerOperator(DockerOperator):
         super().__init__(*args, **kwargs)
 
         # Append appropriate tag to specified image
-        self.image = '{image}:{tag}'.format(image=self.image, tag=LA_METRO_DOCKER_IMAGE_TAG)
+        self.image = '{image}:{tag}'.format(
+            image=self.image,
+            tag=kwargs.get('tag', LA_METRO_DOCKER_IMAGE_TAG)
+        )
 
         if not self.network_mode:  # Give DAG-configured network precedence
             self.network_mode = DOCKER_NETWORK
