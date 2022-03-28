@@ -45,6 +45,6 @@ with DAG(
             'AWS_SECRET_ACCESS_KEY': AWS_SECRET_ACCESS_KEY,
             'S3_BUCKET_NAME': S3_BUCKET_NAME,
         },
-        force_pull=True
+        force_pull=True,
+        auto_remove=True
     )
-
