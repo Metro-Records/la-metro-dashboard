@@ -2,11 +2,9 @@ version: '2.4'
 
 services:
   airflow:
-    image: la-metro-dashboard
+    image: ghcr.io/datamade/la-metro-dashboard:master
     container_name: la-metro-dashboard
     restart: always
-    build: .
-    # Allow container to be attached to, e.g., to access the pdb shell
     stdin_open: true
     tty: true
     environment:
