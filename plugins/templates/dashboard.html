@@ -152,8 +152,10 @@
               {% else %}
                 <td></td>
               {% endif %}
-              {% if dag.next_scheduled_date.pst_time %}
-                <td>{{ dag.next_scheduled_date.pst_time.strftime(datetime_format) }} PST<br /> {{ dag.next_scheduled_date.cst_time.strftime(datetime_format) }} CST</td>
+              {% if dag.next_scheduled_date %}
+                {% if dag.next_scheduled_date.pst_time %}
+                  <td>{{ dag.next_scheduled_date.pst_time.strftime(datetime_format) }} PST<br /> {{ dag.next_scheduled_date.cst_time.strftime(datetime_format) }} CST</td>
+                {% endif %}
               {% else %}
                 <td></td>
               {% endif %}
