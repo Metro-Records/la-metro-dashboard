@@ -8,8 +8,7 @@ from airflow import settings
 from airflow.models import dag, dagrun, taskinstance
 from airflow.models.dagbag import DagBag
 from airflow.plugins_manager import AirflowPlugin
-from flask import Blueprint
-from flask_appbuilder import BaseView, expose
+from flask_appbuilder import BaseView, expose, has_access
 import pytz
 import requests
 
@@ -32,6 +31,7 @@ class Dashboard(BaseView):
         self.airflow_dag_bag = DagBag()
 
     @expose('/')
+    @has_access
     def list(self):
         dag_info = self.get_dag_info()
 

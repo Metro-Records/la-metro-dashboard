@@ -119,3 +119,11 @@ Don't forget to remove `pubkey.txt` from the server and from your local machine
 after you've imported the keys successfully.
 
 Now you can run Metro DAGs locally using decrypted secrets.
+
+### Adding users
+
+Admins can add users on the 'List Users' page located in the 'Security' dropdown on
+the top Airflow toolbar. Each user is assigned a role, which has associated permissions.
+The Airflow documentation has a thorough explanation of 
+[permissions](https://airflow.apache.org/docs/apache-airflow/stable/security/access-control.html).
+The role 'Metro Admin' grants users access only to the Dashboard view.
