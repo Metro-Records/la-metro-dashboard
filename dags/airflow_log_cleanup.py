@@ -11,7 +11,7 @@ airflow trigger_dag --conf '{"maxLogAgeInDays":30}' airflow-log-cleanup
 from airflow.models import DAG, Variable
 from airflow.configuration import conf
 from airflow.operators.bash_operator import BashOperator
-from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.empty import EmptyOperator
 from datetime import timedelta
 import os
 import logging
@@ -89,7 +89,7 @@ if hasattr(dag, 'doc_md'):
 if hasattr(dag, 'catchup'):
     dag.catchup = False
 
-start = DummyOperator(
+start = EmptyOperator(
     task_id='start',
     dag=dag)
 
