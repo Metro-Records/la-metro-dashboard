@@ -35,7 +35,7 @@ class BlackboxDockerOperator(DockerOperator):
 
         self.force_pull = True
         self.auto_remove = True
-        self.volumes = list(set(self.DEFAULT_VOLUMES + self.volumes))
+        self.mounts = list(set(self.DEFAULT_VOLUMES + self.mounts))
 
         if not all(k in self.environment for k in ('DECRYPTED_SETTINGS', 'DESTINATION_SETTINGS')):
             raise ValueError('Must set DECRYPTED_SETTINGS and DESTINATION_SETTINGS environment variables')

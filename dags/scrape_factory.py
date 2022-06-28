@@ -91,7 +91,7 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
             scrape = BlackboxDockerOperator(
                 task_id='scrape',
                 image='ghcr.io/metro-records/scrapers-lametro',
-                volumes=[
+                mounts=[
                     '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts')),
                     '{}:/app/configs'.format(os.path.join(AIRFLOW_DIR_PATH, 'configs'))
                 ],

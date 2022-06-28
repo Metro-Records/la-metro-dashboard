@@ -17,7 +17,7 @@ default_args = {
 
 default_docker_args = {
     'image': 'ghcr.io/metro-records/scrapers-lametro',
-    'volumes': [
+    'mounts': [
         '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
     ],
     'command': 'scraper_scripts/targeted-scrape.sh',

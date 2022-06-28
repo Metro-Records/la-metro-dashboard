@@ -29,6 +29,13 @@ try:
 except ImportError:
     now = datetime.utcnow
 
+# Get dag model last schedule run
+# https://github.com/teamclairvoyant/airflow-maintenance-dags/issues/117#issuecomment-964207464
+try:
+    dag_model_last_scheduler_run = DagModel.last_scheduler_run
+except AttributeError:
+    dag_model_last_scheduler_run = DagModel.last_parsed_time
+
 # airflow-db-cleanup
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 START_DATE = airflow.utils.dates.days_ago(1)
@@ -93,7 +100,7 @@ DATABASE_OBJECTS = [
     },
     {
         "airflow_db_model": DagModel,
-        "age_check_column": DagModel.last_scheduler_run,
+        "age_check_column": dag_model_last_scheduler_run,
         "keep_last": False,
         "keep_last_filters": None,
         "keep_last_group_by": None
