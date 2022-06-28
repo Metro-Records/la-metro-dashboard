@@ -16,7 +16,7 @@ import os
 from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator
 
-from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
+from constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
     LA_METRO_DOCKER_IMAGE_TAG, START_DATE, AWS_ACCESS_KEY_ID, \
     AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME
 from operators.blackbox_docker_operator import BlackboxDockerOperator

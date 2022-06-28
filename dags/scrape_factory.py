@@ -7,8 +7,8 @@ from airflow.utils.db import provide_session
 
 from croniter import croniter
 
-from dags.config import SCRAPING_DAGS
-from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
+from config import SCRAPING_DAGS
+from constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
     AIRFLOW_DIR_PATH, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
@@ -47,7 +47,7 @@ def get_dag_id(dag_name, dag_config, interval):
         return '{0}_{1}_thru_{2}'.format(dag_name, int_day_map[days[0]], int_day_map[days[-1]])
 
 @provide_session
-def previous_scrape_done(**kwargs):
+def previous_scrape_done(session=None, **kwargs):
     running_scrapes = kwargs['session'].query(TaskInstance).filter(
         TaskInstance.dag_id == kwargs['dag'].dag_id,
         TaskInstance.task_id == 'scrape',

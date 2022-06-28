@@ -3,7 +3,7 @@ import os
 
 from airflow import DAG
 
-from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
+from constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
     LA_METRO_DOCKER_IMAGE_TAG, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 

@@ -11,7 +11,7 @@ airflow trigger_dag --conf '{"maxDBEntryAgeInDays":30}' airflow-db-cleanup
 """
 from airflow.models import DAG, DagRun, TaskInstance, Log, XCom, SlaMiss, \
     DagModel, Variable
-from airflow.jobs import BaseJob
+from airflow.jobs.base_job import BaseJob
 from airflow import settings
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta

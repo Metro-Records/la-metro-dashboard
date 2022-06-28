@@ -1,6 +1,6 @@
 import os
 from flask_appbuilder.security.manager import AUTH_DB
-from dags.security import CustomManager
+from security import CustomManager
 
 from airflow.configuration import conf
 

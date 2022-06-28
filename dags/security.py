@@ -4,7 +4,7 @@ from flask_appbuilder.security.forms import LoginForm_db
 from flask_appbuilder.security.views import AuthDBView, expose
 from flask_login import login_user
 
-from airflow.www_rbac.security import AirflowSecurityManager
+from airflow.www.security import AirflowSecurityManager
 
 class CustomAuthDBView(AuthDBView):
     """Redirect non-admins to Dashboard after login"""
