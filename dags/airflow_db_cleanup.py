@@ -56,56 +56,7 @@ DEFAULT_MAX_DB_ENTRY_AGE_IN_DAYS = int(
 ENABLE_DELETE = True
 # List of all the objects that will be deleted. Comment out the DB objects you
 # want to skip.
-DATABASE_OBJECTS = [
-    {
-        "airflow_db_model": DagRun,
-        "age_check_column": DagRun.execution_date,
-        "keep_last": True,
-        "keep_last_filters": [DagRun.external_trigger is False],
-        "keep_last_group_by": DagRun.dag_id},
-    {
-        "airflow_db_model": TaskInstance,
-        "age_check_column": TaskInstance.execution_date,
-        "keep_last": False,
-        "keep_last_filters": None,
-        "keep_last_group_by": None
-    },
-    {
-        "airflow_db_model": Log,
-        "age_check_column": Log.dttm,
-        "keep_last": False,
-        "keep_last_filters": None,
-        "keep_last_group_by": None
-    },
-    {
-        "airflow_db_model": XCom,
-        "age_check_column": XCom.execution_date,
-        "keep_last": False,
-        "keep_last_filters": None,
-        "keep_last_group_by": None
-    },
-    {
-        "airflow_db_model": BaseJob,
-        "age_check_column": BaseJob.latest_heartbeat,
-        "keep_last": False,
-        "keep_last_filters": None,
-        "keep_last_group_by": None
-    },
-    {
-        "airflow_db_model": SlaMiss,
-        "age_check_column": SlaMiss.execution_date,
-        "keep_last": False,
-        "keep_last_filters": None,
-        "keep_last_group_by": None
-    },
-    {
-        "airflow_db_model": DagModel,
-        "age_check_column": dag_model_last_scheduler_run,
-        "keep_last": False,
-        "keep_last_filters": None,
-        "keep_last_group_by": None
-    },
-]
+DATABASE_OBJECTS = ['BaseJob', 'DagRun', 'TaskInstance', 'Log', 'XCom', 'SlaMiss', 'DagModel', 'TaskReschedule', 'TaskFail', 'RenderedTaskInstanceFields', 'ImportError', 'Task', 'TaskSet']
 
 session = settings.Session()
 
@@ -172,18 +123,153 @@ print_configuration = PythonOperator(
 
 def cleanup_function(**context):
 
+    # Followed suggested changes to upgrade to Airflow 2.2
+    # https://github.com/teamclairvoyant/airflow-maintenance-dags/issues/117
+    DATABASE_OBJECTS_DICTS = [
+        {
+            "airflow_db_model": DagRun,
+            "age_check_column": DagRun.execution_date,
+            "keep_last": True,
+            "keep_last_filters": [DagRun.external_trigger is False],
+            "keep_last_group_by": DagRun.dag_id},
+        {
+            "airflow_db_model": TaskInstance,
+            "age_check_column": TaskInstance.run_id,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        },
+        {
+            "airflow_db_model": Log,
+            "age_check_column": Log.dttm,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        },
+        {
+            "airflow_db_model": XCom,
+            "age_check_column": XCom.execution_date,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        },
+        {
+            "airflow_db_model": BaseJob,
+            "age_check_column": BaseJob.latest_heartbeat,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        },
+        {
+            "airflow_db_model": SlaMiss,
+            "age_check_column": SlaMiss.execution_date,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        },
+        {
+            "airflow_db_model": DagModel,
+            "age_check_column": dag_model_last_scheduler_run,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        },
+    ]
+
+    # Check for TaskReschedule model
+    try:
+        from airflow.models import TaskReschedule
+        DATABASE_OBJECTS_DICTS['TaskReschedule'] = {
+            "airflow_db_model": TaskReschedule,
+            "age_check_column": TaskReschedule.run_id,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        }
+
+    except Exception as e:
+        logging.error(e)
+
+    # Check for TaskFail model
+    try:
+        from airflow.models import TaskFail
+        DATABASE_OBJECTS_DICTS['TaskFail'] = {
+            "airflow_db_model": TaskFail,
+            "age_check_column": TaskFail.execution_date,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        }
+
+    except Exception as e:
+        logging.error(e)
+
+    # Check for RenderedTaskInstanceFields model
+    try:
+        from airflow.models import RenderedTaskInstanceFields
+        DATABASE_OBJECTS_DICTS['RenderedTaskInstanceFields'] = {
+            "airflow_db_model": RenderedTaskInstanceFields,
+            "age_check_column": RenderedTaskInstanceFields.execution_date,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        }
+
+    except Exception as e:
+        logging.error(e)
+
+    # Check for ImportError model
+    try:
+        from airflow.models import ImportError
+        DATABASE_OBJECTS_DICTS['ImportError'] = {
+            "airflow_db_model": ImportError,
+            "age_check_column": ImportError.timestamp,
+            "keep_last": False,
+            "keep_last_filters": None,
+            "keep_last_group_by": None
+        }
+
+    except Exception as e:
+        logging.error(e)
+
+    # Check for celery executor
+    airflow_executor = str(conf.get("core", "executor"))
+    logging.info("Airflow Executor: " + str(airflow_executor))
+    if(airflow_executor == "CeleryExecutor"):
+        logging.info("Including Celery Modules")
+        try:
+            from celery.backends.database.models import Task, TaskSet
+            DATABASE_OBJECTS_DICTS['Task'] = {
+                    "airflow_db_model": Task,
+                    "age_check_column": Task.date_done,
+                    "keep_last": False,
+                    "keep_last_filters": None,
+                    "keep_last_group_by": None
+            }
+            DATABASE_OBJECTS_DICTS['TaskSet'] = {
+                    "airflow_db_model": TaskSet,
+                    "age_check_column": TaskSet.date_done,
+                    "keep_last": False,
+                    "keep_last_filters": None,
+                    "keep_last_group_by": None
+            }
+
+        except Exception as e:
+            logging.error(e)
+
     logging.info("Retrieving max_execution_date from XCom")
     max_date = context["ti"].xcom_pull(
         task_ids=print_configuration.task_id, key="max_date"
     )
     max_date = dateutil.parser.parse(max_date)  # stored as iso8601 str in xcom
 
-    airflow_db_model = context["params"].get("airflow_db_model")
-    state = context["params"].get("state")
-    age_check_column = context["params"].get("age_check_column")
-    keep_last = context["params"].get("keep_last")
-    keep_last_filters = context["params"].get("keep_last_filters")
-    keep_last_group_by = context["params"].get("keep_last_group_by")
+    object_name = str(context["params"].get("object_name"))
+
+    airflow_db_model = DATABASE_OBJECTS_DICTS[object_name].get("airflow_db_model")
+    age_check_column = DATABASE_OBJECTS_DICTS[object_name].get("age_check_column")
+    keep_last = DATABASE_OBJECTS_DICTS[object_name].get("keep_last")
+    keep_last_filters = DATABASE_OBJECTS_DICTS[object_name].get("keep_last_filters")
+    keep_last_group_by = DATABASE_OBJECTS_DICTS[object_name].get("keep_last_group_by")
 
     logging.info("Configurations:")
     logging.info("max_date:                 " + str(max_date))
@@ -264,9 +350,9 @@ def cleanup_function(**context):
 for db_object in DATABASE_OBJECTS:
 
     cleanup_op = PythonOperator(
-        task_id='cleanup_' + str(db_object["airflow_db_model"].__name__),
+        task_id='cleanup_' + str(db_object),
         python_callable=cleanup_function,
-        params=db_object,
+        params={'object_name': db_object},
         dag=dag
     )
 
