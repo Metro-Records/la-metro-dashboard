@@ -160,7 +160,6 @@ def print_configuration_function(**context):
 print_configuration = PythonOperator(
     task_id='print_configuration',
     python_callable=print_configuration_function,
-    provide_context=True,
     dag=dag)
 
 
@@ -261,7 +260,6 @@ for db_object in DATABASE_OBJECTS:
         task_id='cleanup_' + str(db_object["airflow_db_model"].__name__),
         python_callable=cleanup_function,
         params=db_object,
-        provide_context=True,
         dag=dag
     )
 

@@ -86,7 +86,6 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
             check_previous = ShortCircuitOperator(
                 task_id='check_previous',
                 python_callable=previous_scrape_done,
-                provide_context=True
             )
 
             scrape = BlackboxDockerOperator(
