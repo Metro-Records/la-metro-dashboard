@@ -28,7 +28,7 @@ jobs:
           - 5432:5432
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.6
+    - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
         # Semantic version range syntax or exact version of a Python version
@@ -39,7 +39,7 @@ jobs:
         pip install -r requirements.txt
     - name: Test Airflow init
       run: |
-        airflow initdb
+        airflow db init
 
   deploy:
     needs: test
