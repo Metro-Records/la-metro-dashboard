@@ -13,8 +13,8 @@ services:
       - AIRFLOW_MIGRATE=on
       - AIRFLOW_USERNAME=foo
       - AIRFLOW_PASSWORD=bar
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgres://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
-      - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
+      - LA_METRO_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/lametro
       - AIRFLOW_DIR_PATH=${PWD}
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
       - LA_METRO_DOCKER_IMAGE_TAG=main
@@ -71,7 +71,7 @@ services:
     tty: true
     environment:
       - AIRFLOW_HOME=/app
-      - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
+      - LA_METRO_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/lametro
       - DOCKER_NETWORK=la-metro-councilmatic_default
       - AIRFLOW_DIR_PATH=${PWD}
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}

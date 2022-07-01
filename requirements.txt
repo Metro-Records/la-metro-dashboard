@@ -1,4 +1,4 @@
-apache-airflow[s3,docker]==2.2.0
+apache-airflow[s3,docker]==2.3.2
 wtforms==2.3.3
 Flask==1.1.1
 itsdangerous
@@ -7,4 +7,4 @@ psycopg2==2.8.4
 dj-database-url==0.5.0
 Flask-Bcrypt==0.7.1
 requests
-sqlalchemy<1.4.0
+sqlalchemy

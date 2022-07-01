@@ -22,7 +22,7 @@ AIRFLOW_DIR_PATH = os.getenv(
 )
 
 # Configure connection strings for the Metro database and Solr index
-LA_METRO_DATABASE_URL = os.getenv('LA_METRO_DATABASE_URL', 'postgres://postgres:postgres@postgres:5432/lametro')
+LA_METRO_DATABASE_URL = os.getenv('LA_METRO_DATABASE_URL', 'postgresql://postgres:postgres@postgres:5432/lametro')
 LA_METRO_STAGING_DATABASE_URL = os.getenv('LA_METRO_STAGING_DATABASE_URL', '')
 LA_METRO_SOLR_URL = os.getenv('LA_METRO_SOLR_URL', 'http://solr:8983/solr/lametro')
 
