@@ -13,7 +13,7 @@ services:
       - AIRFLOW_MIGRATE=on
       - AIRFLOW_USERNAME=foo
       - AIRFLOW_PASSWORD=bar
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
       - LA_METRO_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/lametro
       - AIRFLOW_DIR_PATH=${PWD}
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
