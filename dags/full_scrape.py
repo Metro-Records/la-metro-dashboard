@@ -5,6 +5,8 @@ from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
+from docker.types import Mount
+
 from constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
     AIRFLOW_DIR_PATH, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
@@ -18,9 +20,10 @@ default_args = {
 default_docker_args = {
     'image': 'ghcr.io/metro-records/scrapers-lametro',
     'mounts': [
-        '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
+        Mount('/app/scraper_scripts', os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
     ],
     'command': 'scraper_scripts/targeted-scrape.sh',
+    'mount_tmp_dir': False
 }
 
 docker_base_environment = {

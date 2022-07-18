@@ -8,6 +8,7 @@ from airflow.exceptions import AirflowException
 # - https://github.com/apache/airflow/issues/8629#issuecomment-641461423
 # - https://pypi.org/project/apache-airflow-backport-providers-docker/
 from airflow.providers.docker.operators.docker import DockerOperator
+from docker.types import Mount
 
 from constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH, \
     LA_METRO_DOCKER_IMAGE_TAG
@@ -16,10 +17,12 @@ from constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH, \
 class BlackboxDockerOperator(DockerOperator):
 
     DEFAULT_VOLUMES = [
-        '{}:/root/.gnupg'.format(GPG_KEYRING_PATH),
-        '{}:/app/airflow_configs'.format(os.path.join(AIRFLOW_DIR_PATH, 'configs')),
-        '{}:/app/airflow_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'scripts')),
+        (GPG_KEYRING_PATH, '/root/.gnupg'),
+        (os.path.join(AIRFLOW_DIR_PATH, 'configs'), '/app/airflow_configs'),
+        (os.path.join(AIRFLOW_DIR_PATH, 'scripts'), '/app/airflow/scripts')
     ]
+
+    MOUNTS = [Mount(target, source, type='bind') for source, target in DEFAULT_VOLUMES]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,7 +38,8 @@ class BlackboxDockerOperator(DockerOperator):
 
         self.force_pull = True
         self.auto_remove = True
-        self.mounts = list(set(self.DEFAULT_VOLUMES + self.mounts))
+
+        self.mounts = list(self.mounts + self.MOUNTS)
 
         if not all(k in self.environment for k in ('DECRYPTED_SETTINGS', 'DESTINATION_SETTINGS')):
             raise ValueError('Must set DECRYPTED_SETTINGS and DESTINATION_SETTINGS environment variables')

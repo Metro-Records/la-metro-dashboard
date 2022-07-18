@@ -5,6 +5,8 @@ from airflow.models import TaskInstance
 from airflow.operators.python_operator import ShortCircuitOperator
 from airflow.utils.db import provide_session
 
+from docker.types import Mount
+
 from croniter import croniter
 
 from config import SCRAPING_DAGS
@@ -48,7 +50,7 @@ def get_dag_id(dag_name, dag_config, interval):
 
 @provide_session
 def previous_scrape_done(session=None, **kwargs):
-    running_scrapes = kwargs['session'].query(TaskInstance).filter(
+    running_scrapes = session.query(TaskInstance).filter(
         TaskInstance.dag_id == kwargs['dag'].dag_id,
         TaskInstance.task_id == 'scrape',
         TaskInstance.start_date < kwargs['execution_date'],
@@ -92,8 +94,8 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                 task_id='scrape',
                 image='ghcr.io/metro-records/scrapers-lametro',
                 mounts=[
-                    '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts')),
-                    '{}:/app/configs'.format(os.path.join(AIRFLOW_DIR_PATH, 'configs'))
+                    Mount('/app/scraper_scripts', os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts')),
+                    Mount('/app/configs', os.path.join(AIRFLOW_DIR_PATH, 'configs'))
                 ],
                 command=dag_config['command'],
                 environment=docker_environment,
