@@ -97,7 +97,8 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                     '{}:/app/configs'.format(os.path.join(AIRFLOW_DIR_PATH, 'configs'))
                 ],
                 command=dag_config['command'],
-                environment=docker_environment
+                environment=docker_environment,
+                tag='deploy'  # TODO: Revert
             )
 
             check_previous >> scrape

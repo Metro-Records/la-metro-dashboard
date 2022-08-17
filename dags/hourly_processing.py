@@ -59,9 +59,4 @@ with DAG(
         command=update_index_command,
     )
 
-    t5 = BlackboxDockerOperator(
-        task_id='data_integrity',
-        command='python manage.py data_integrity',
-    )
-
-    t1 >> t2 >> t3 >> t4 >> t5
+    t1 >> t2 >> t3 >> t4
