@@ -49,14 +49,14 @@ with DAG(
         command='python manage.py convert_attachment_text',
     )
 
-#    if datetime.now().minute >= 55:
-#        update_index_command = 'python manage.py update_index --batch-size=100 --remove'
-#    else:
-#        update_index_command = 'python manage.py update_index --batch-size=100 --age=1 --remove'
+    if datetime.now().minute >= 55:
+        update_index_command = 'python manage.py update_index --batch-size=100 --remove'
+    else:
+        update_index_command = 'python manage.py update_index --batch-size=100 --age=1 --remove'
 
     t4 = BlackboxDockerOperator(
         task_id='update_index',
-        command='python manage.py update_index --batch-size=100 --remove',
+        command=update_index_command,
     )
 
     t1 >> t2 >> t3 >> t4
