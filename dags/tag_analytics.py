@@ -23,7 +23,7 @@ default_args = {
 }
 
 with DAG(
-    'analytics',
+    'tag_analytics',
     default_args=default_args,
     schedule_interval='0 0 1 * *',
     description='Generates analytics for Metro agenda tags and uploads a CSV file to Google Drive'
