@@ -15,7 +15,7 @@ Perform the following steps from your terminal.
 1. Clone this repository and its submodule, then `cd` into the superproject.
 
     ```bash
-    git clone --recursive https://github.com/datamade/la-metro-dashboard.git
+    git clone --recursive https://github.com/Metro-Records/la-metro-dashboard.git
     cd la-metro-dashboard
     ```
 2. Build `la-metro-dashboard` application, and create a local `.env` file. Fill
@@ -27,7 +27,7 @@ in the absolute location of your GPG keyring, usually the absolute path for ` ~/
     # Fill in the correct value for GPG_KEYRING_PATH
     ```
 
-3. Once the command exits, follow the instructions to build the [LA Metro Councilmatic application](https://github.com/datamade/la-metro-councilmatic#setup)
+3. Once the command exits, follow the instructions to build the [LA Metro Councilmatic application](https://github.com/Metro-Records/la-metro-councilmatic#setup)
 
 4. In order to run the `la-metro-dashboard` application, the `la-metro-councilmatic`
 app must already be running. Open a new shell, move into the `la-metro-councilmatic`
@@ -53,11 +53,11 @@ and [development](https://airflow.apache.org/docs/stable/tutorial.html).
 
 Dashboard DAGS are based on one of two applications:
 
-- [`scrapers-us-municipal`](https://github.com/datamade/scrapers-us-municipal/)
-- [LA Metro Councilmatic](https://github.com/datamade/la-metro-councilmatic)
+- [`scrapers-lametro`](https://github.com/Metro-Records/scrapers-lametro/)
+- [LA Metro Councilmatic](https://github.com/Metro-Records/la-metro-councilmatic)
 
 The conversation on how to ensure DAGs are running against the current version
-of these applications is captured [in this issue](https://github.com/datamade/server-la-metro-dashboard/issues/1).
+of these applications is captured [in this issue](https://github.com/Metro-Records/server-la-metro-dashboard/issues/1).
 
 tl;dr - Application dependencies are packaged as Docker images and pushed to
 GitHub Container Registry. When a task starts, it pulls the corresponding image,
@@ -69,8 +69,8 @@ connection strings, then executes its command in a container.
 The dashboard runs DAGs from application images stored in GitHub Container
 Registry:
 
-- [`scrapers-us-municipal`](https://github.com/datamade/scrapers-us-municipal/pkgs/container/scrapers-us-municipal)
-- [LA Metro Councilmatic](https://github.com/datamade/la-metro-councilmatic/pkgs/container/la-metro-councilmatic)
+- [`scrapers-us-municipal`](https://github.com/Metro-Records/scrapers-us-municipal/pkgs/container/scrapers-us-municipal)
+- [LA Metro Councilmatic](https://github.com/Metro-Records/la-metro-councilmatic/pkgs/container/la-metro-councilmatic)
 
 Both images are configured to build automatically from their corresponding
 GitHub repositories. Commits to `master` (i.e., staging deployments) build a
@@ -90,9 +90,7 @@ settings files. (See [`scripts/concat_settings.sh`](scripts/concat_settings.sh).
 Scrapes will run with the default settings file. **Note that running the bill
 scrape without the encrypted token will not capture private bills,** however it
 should provide enough signal to test whether scrapes are working unless you are
-specifically trying to test private bill logic. (I would recommend pulling down
-[our fork](https://github.com/datamade/scrapers-us-municipal/) and running the
-scrapers locally, rather than via the dashboard, for that type of development.)
+specifically trying to test private bill logic.
 
 #### LA Metro Councilmatic
 
