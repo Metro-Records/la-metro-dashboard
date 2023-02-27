@@ -13,7 +13,7 @@ deployment = 'staging' if LA_METRO_DOCKER_IMAGE_TAG == 'master' else 'production
 default_args = {
     'start_date': START_DATE,
     'execution_timeout': timedelta(minutes=10),
-    'image': 'ghcr.io/datamade/la-metro-councilmatic',
+    'image': 'ghcr.io/Metro-Records/la-metro-councilmatic',
     'environment': {
         'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
         'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
