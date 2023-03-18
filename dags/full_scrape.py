@@ -12,7 +12,7 @@ from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 default_args = {
     'start_date': START_DATE,
-    'execution_timeout': timedelta(hours=12),
+    'execution_timeout': timedelta(hours=14),
 }
 
 default_docker_args = {
