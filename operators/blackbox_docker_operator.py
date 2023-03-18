@@ -41,16 +41,3 @@ class BlackboxDockerOperator(DockerOperator):
             raise ValueError('Must set DECRYPTED_SETTINGS and DESTINATION_SETTINGS environment variables')
 
         self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(self.command)
-
-    def _run_image(self):
-        '''
-        Remove containers, even if the command fails.
-        '''
-        try:
-            return super()._run_image()
-
-        except AirflowException as e:
-            if self.auto_remove:
-                self.cli.remove_container(self.container['Id'])
-
-            raise e

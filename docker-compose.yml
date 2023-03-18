@@ -2,7 +2,7 @@ version: '2.4'
 
 services:
   airflow:
-    image: ghcr.io/metro-records/la-metro-dashboard:main
+    image: ghcr.io/metro-records/la-metro-dashboard:master
     container_name: la-metro-dashboard
     restart: always
     stdin_open: true
@@ -61,7 +61,7 @@ services:
       - 32001:5432
 
   scheduler:
-    image: ghcr.io/metro-records/la-metro-dashboard:main
+    image: ghcr.io/metro-records/la-metro-dashboard:master
     container_name: la-metro-dashboard-scheduler
     restart: always
     # Allow container to be attached to, e.g., to access the pdb shell
