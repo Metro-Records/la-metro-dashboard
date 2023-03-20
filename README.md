@@ -73,8 +73,8 @@ Registry:
 - [LA Metro Councilmatic](https://github.com/Metro-Records/la-metro-councilmatic/pkgs/container/la-metro-councilmatic)
 
 Both images are configured to build automatically from their corresponding
-GitHub repositories. Commits to `master` (i.e., staging deployments) build a
-`master` tag. Pushes to `deploy` (i.e., production deployments) build a `deploy`
+GitHub repositories. Commits to `main` (i.e., staging deployments) build a
+`main` tag. Pushes to `deploy` (i.e., production deployments) build a `deploy`
 tag.
 
 ### Managing secrets
@@ -102,7 +102,7 @@ your branch to staging and running the DAGs there, as the server has the
 appropriate keys to decrypt Metro application secrets.
 
 If you must work locally, you can follow steps 1-5 in our instructions for
-[moving keys between servers](https://github.com/datamade/how-to/blob/master/shell/moving-keys-between-servers.md)
+[moving keys between servers](https://github.com/datamade/how-to/blob/main/shell/moving-keys-between-servers.md)
 to export the private key, then log out of the server and `scp` it down to your
 computer:
 

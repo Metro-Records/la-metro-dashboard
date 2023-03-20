@@ -8,7 +8,7 @@ from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
-deployment = 'staging' if LA_METRO_DOCKER_IMAGE_TAG == 'master' else 'production'
+deployment = 'staging' if LA_METRO_DOCKER_IMAGE_TAG == 'main' else 'production'
 
 default_args = {
     'start_date': START_DATE,

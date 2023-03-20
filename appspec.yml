@@ -17,7 +17,7 @@ hooks:
   - location: scripts/after_install.sh
     runas: root
 branch_config:
-  master:
+  main:
     deploymentGroupName: staging
   deploy:
     deploymentGroupName: production
