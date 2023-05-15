@@ -36,7 +36,7 @@ sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade setuptools
 # Install the project requirements into the deployment specific virtual
 # environment.
 AIRFLOW_VERSION=2.6.0
-PYTHON_VERSION=2.7
+PYTHON_VERSION=3.7
 CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
 sudo -H -u datamade $VENV_DIR/bin/pip install "apache-airflow[docker,s3]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
 sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
