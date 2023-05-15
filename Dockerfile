@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.7
 
 LABEL maintainer "DataMade <info@datamade.us>"
 
