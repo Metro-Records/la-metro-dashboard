@@ -4,9 +4,6 @@ import os
 from airflow import DAG
 from airflow.exceptions import AirflowException
 
-# Use backported operator containing bug fix:
-# - https://github.com/apache/airflow/issues/8629#issuecomment-641461423
-# - https://pypi.org/project/apache-airflow-backport-providers-docker/
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
@@ -19,7 +16,7 @@ class BlackboxDockerOperator(DockerOperator):
     DEFAULT_VOLUMES = [
         (GPG_KEYRING_PATH, '/root/.gnupg'),
         (os.path.join(AIRFLOW_DIR_PATH, 'configs'), '/app/airflow_configs'),
-        (os.path.join(AIRFLOW_DIR_PATH, 'scripts'), '/app/airflow/scripts')
+        (os.path.join(AIRFLOW_DIR_PATH, 'scripts'), '/app/airflow_scripts')
     ]
 
     MOUNTS = [Mount(target, source, type='bind') for source, target in DEFAULT_VOLUMES]
@@ -39,6 +36,7 @@ class BlackboxDockerOperator(DockerOperator):
         self.force_pull = True
         self.auto_remove = True
 
+        self.mount_tmp_dir = False
         self.mounts = list(self.mounts + self.MOUNTS)
 
         if not all(k in self.environment for k in ('DECRYPTED_SETTINGS', 'DESTINATION_SETTINGS')):

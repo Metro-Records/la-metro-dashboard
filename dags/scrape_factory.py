@@ -5,12 +5,11 @@ from airflow.models import TaskInstance
 from airflow.operators.python_operator import ShortCircuitOperator
 from airflow.utils.db import provide_session
 
+from croniter import croniter
 from docker.types import Mount
 
-from croniter import croniter
-
-from config import SCRAPING_DAGS
-from constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
+from dags.config import SCRAPING_DAGS
+from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
     AIRFLOW_DIR_PATH, START_DATE
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
@@ -88,18 +87,26 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
             check_previous = ShortCircuitOperator(
                 task_id='check_previous',
                 python_callable=previous_scrape_done,
+                provide_context=True
             )
 
             scrape = BlackboxDockerOperator(
                 task_id='scrape',
                 image='ghcr.io/metro-records/scrapers-lametro',
                 mounts=[
-                    Mount('/app/scraper_scripts', os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts')),
-                    Mount('/app/configs', os.path.join(AIRFLOW_DIR_PATH, 'configs'))
+                    Mount(
+                        source=os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'),
+                        target='/app/scraper_scripts',
+                        type='bind',
+                    ),
+                    Mount(
+                        source=os.path.join(AIRFLOW_DIR_PATH, 'configs'),
+                        target='/app/configs',
+                        type='bind',
+                    ),
                 ],
                 command=dag_config['command'],
                 environment=docker_environment,
-                tag='deploy'  # TODO: Revert
             )
 
             check_previous >> scrape

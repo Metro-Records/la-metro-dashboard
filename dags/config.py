@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from constants import LA_METRO_STAGING_DATABASE_URL
+from dags.constants import LA_METRO_STAGING_DATABASE_URL
 
 
 SCRAPING_DAGS = {
