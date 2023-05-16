@@ -1,2 +1,1 @@
-configs/production/la-metro-dashboard.conf.supervisor
 configs/staging/.env
