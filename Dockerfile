@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.10
 
 LABEL maintainer "DataMade <info@datamade.us>"
 
@@ -19,11 +19,10 @@ RUN mkdir /app
 WORKDIR /app
 
 ARG AIRFLOW_VERSION=2.6.0
-ARG PYTHON_VERSION=3.7
+ARG PYTHON_VERSION=3.10
 ARG CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
 
 COPY ./requirements.txt /app/requirements.txt
-
 RUN pip install "apache-airflow[s3,docker]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}" && \
   pip install --no-cache-dir -r requirements.txt
 
