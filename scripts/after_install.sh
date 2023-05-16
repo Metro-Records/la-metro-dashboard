@@ -51,7 +51,7 @@ psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${DATABASE}'" |
 
 # Run migrations and other management commands that should be run with
 # every deployment
-AIRFLOW_HOME=$PROJECT_DIR $VENV_DIR/bin/airflow initdb
+AIRFLOW_HOME=$PROJECT_DIR $VENV_DIR/bin/airflow db init
 
 # Echo a simple nginx configuration into the correct place, and tell
 # certbot to request a cert if one does not already exist.
