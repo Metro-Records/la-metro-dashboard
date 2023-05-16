@@ -3,7 +3,7 @@ set -euxo pipefail
 
 # Make sure the deployment group specific variables are available to this
 # script.
-source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME-config.conf
+source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME/deployment.cfg
 
 # Set some useful variables
 DEPLOYMENT_NAME="$APP_NAME"
@@ -42,7 +42,7 @@ sudo -H -u datamade $VENV_DIR/bin/pip install --no-cache-dir "apache-airflow[s3,
 sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
 
 # Move project configuration files into the appropriate locations within the project.
-mv $PROJECT_DIR/configs/airflow.$DEPLOYMENT_GROUP_NAME.cfg $PROJECT_DIR/airflow.cfg
+mv $PROJECT_DIR/configs/$DEPLOYMENT_GROUP_NAME/airflow.cfg $PROJECT_DIR/airflow.cfg
 
 # OPTIONAL If you're using PostgreSQL, check to see if the database that you
 # need is present and, if not, create it setting the datamade user as it's
@@ -51,7 +51,8 @@ psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${DATABASE}'" |
 
 # Run migrations and other management commands that should be run with
 # every deployment
-AIRFLOW_HOME=$PROJECT_DIR $VENV_DIR/bin/airflow db init
+source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME/.env
+$VENV_DIR/bin/airflow db init
 
 # Echo a simple nginx configuration into the correct place, and tell
 # certbot to request a cert if one does not already exist.
@@ -73,5 +74,5 @@ if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then
 fi
 
 # Move configs files to correct location.
-mv -f $PROJECT_DIR/configs/$APP_NAME.$DEPLOYMENT_GROUP_NAME.conf.nginx /etc/nginx/conf.d/$APP_NAME.conf
-mv -f $PROJECT_DIR/configs/$APP_NAME.$DEPLOYMENT_GROUP_NAME.conf.supervisor /etc/supervisor/conf.d/$APP_NAME.conf
+mv -f $PROJECT_DIR/configs/$DEPLOYMENT_GROUP_NAME/$APP_NAME.conf.nginx /etc/nginx/conf.d/$APP_NAME.conf
+mv -f $PROJECT_DIR/configs/$DEPLOYMENT_GROUP_NAME/$APP_NAME.conf.supervisor /etc/supervisor/conf.d/$APP_NAME.conf

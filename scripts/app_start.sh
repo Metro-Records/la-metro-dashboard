@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Make sure the deployment group specific variables are available to this
 # script.
-source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME-config.conf
+source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME/deployment.cfg
 
 # Re-read supervisor config, and add new processes
 echo "Reloading supervisor"
