@@ -36,7 +36,7 @@ jobs:
     - name: Install dependencies
       run: |
         AIRFLOW_VERSION=2.6.0
-        PYTHON_VERSION=${{ steps.setup-python.outputs.python-version }}
+        PYTHON_VERSION=$(echo ${{ steps.setup-python.outputs.python-version }} | cut -d "." -f 1-2)
         CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
         python -m pip install --upgrade pip
         pip install "apache-airflow[s3,docker]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
