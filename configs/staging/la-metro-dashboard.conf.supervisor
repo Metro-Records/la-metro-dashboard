@@ -6,10 +6,7 @@ stdout_logfile_maxbytes=10MB
 stderr_logfile=/var/log/la-metro-dashboard/webserver-err.log
 stderr_logfile_maxbytes=10MB
 directory=/home/datamade/la-metro-dashboard
-command=/bin/bash -c 'source "$0" && source "$1" && exec $2' \
-	/home/datamade/.virtualenvs/la-metro-dashboard/bin/activate \
-	/home/datamade/la-metro-dashboard/configs/staging/.env \
-	'airflow webserver -p 8080'
+command=/bin/bash -c 'source /home/datamade/.virtualenvs/la-metro-dashboard/bin/activate && source /home/datamade/la-metro-dashboard/configs/staging/.env && exec airflow webserver -p 8080'
 
 [program:la-metro-dashboard-scheduler]
 user=datamade
@@ -19,7 +16,4 @@ stdout_logfile_maxbytes=10MB
 stderr_logfile=/var/log/la-metro-dashboard/scheduler-err.log
 stderr_logfile_maxbytes=10MB
 directory=/home/datamade/la-metro-dashboard
-command=/bin/bash -c 'source "$0" && source "$1" && exec $2' \
-	/home/datamade/.virtualenvs/la-metro-dashboard/bin/activate \
-	/home/datamade/la-metro-dashboard/configs/staging/.env \
-	'airflow scheduler'
+command=/bin/bash -c 'source /home/datamade/.virtualenvs/la-metro-dashboard/bin/activate && source /home/datamade/la-metro-dashboard/configs/staging/.env && exec airflow scheduler'
