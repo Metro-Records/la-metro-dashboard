@@ -34,7 +34,7 @@ class BlackboxDockerOperator(DockerOperator):
             self.network_mode = DOCKER_NETWORK
 
         self.force_pull = True
-        self.auto_remove = True
+        self.auto_remove = 'force'
 
         self.mount_tmp_dir = False
         self.mounts = list(self.mounts + self.MOUNTS)
