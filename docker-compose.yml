@@ -15,6 +15,8 @@ services:
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
       - LA_METRO_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/lametro
       - LA_METRO_DOCKER_IMAGE_TAG=main
+      - AIRFLOW__SENTRY__SENTRY_DSN=
+      - AIRFLOW__SENTRY__ENVIRONMENT=dev
     networks:
       - app_net
     ports:
@@ -61,6 +63,7 @@ services:
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
       - LA_METRO_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/lametro
       - LA_METRO_DOCKER_IMAGE_TAG=main
+      - SENTRY_ENVIRONMENT=dev
     env_file:
       - .env
     networks:

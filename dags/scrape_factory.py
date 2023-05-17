@@ -10,7 +10,7 @@ from docker.types import Mount
 
 from dags.config import SCRAPING_DAGS
 from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
-    AIRFLOW_DIR_PATH, START_DATE
+    AIRFLOW_DIR_PATH, START_DATE, ENVIRONMENT
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -21,6 +21,7 @@ docker_base_environment = {
     'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,  # For use in scraping scripts
     'LA_METRO_STAGING_DATABASE_URL': LA_METRO_STAGING_DATABASE_URL,
     'OCD_DIVISION_CSV': '/app/configs/lametro_divisions.csv',
+    'SENTRY_ENVIRONMENT': ENVIRONMENT,
 }
 
 def get_dag_id(dag_name, dag_config, interval):

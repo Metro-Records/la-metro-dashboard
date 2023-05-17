@@ -2,6 +2,11 @@ from datetime import datetime
 import os
 
 
+ENVIRONMENT = os.getenv(
+    'AIRFLOW__SENTRY__ENVIRONMENT',
+    'dev'
+)
+
 START_DATE = datetime(2020, 7, 15)
 
 # Configure DAG container to connect to specific Docker network, useful for
