@@ -2,36 +2,31 @@ version: '2.4'
 
 services:
   airflow:
-    image: ghcr.io/metro-records/la-metro-dashboard:main
+    image: la-metro-dashboard
+    build: .
     container_name: la-metro-dashboard
-    restart: always
     stdin_open: true
     tty: true
     environment:
       - AIRFLOW_HOME=/app
-      - AIRFLOW_MIGRATE=on
-      - AIRFLOW_USERNAME=foo
-      - AIRFLOW_PASSWORD=bar
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgres://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
-      - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
+      - AIRFLOW__CORE__FERNET_KEY=38H0RL0YR-fNb2YTbNIAD9CX-1NBcnHNwpJzGlLY5X4=
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
       - AIRFLOW_DIR_PATH=${PWD}
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
+      - LA_METRO_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/lametro
       - LA_METRO_DOCKER_IMAGE_TAG=main
+      - AIRFLOW__SENTRY__SENTRY_DSN=
+      - AIRFLOW__SENTRY__ENVIRONMENT=dev
     networks:
       - app_net
     ports:
-      # Map ports on your computer to ports on your container. This allows you,
-      # e.g., to visit your containerized application in a browser on your
-      # computer.
       - 8080:8080
     depends_on:
       dashboard_postgres:
         condition: service_healthy
     volumes:
-      # Mount the development directory as a volume into the container, so
-      # Docker automatically recognizes your changes.
       - .:/app
-    entrypoint: /app/docker-entrypoint.sh
+      - /var/run/docker.sock:/var/run/docker.sock
     command: airflow webserver -p 8080
 
   dashboard_postgres:
@@ -43,25 +38,18 @@ services:
       timeout: 5s
       retries: 5
     environment:
-      # The default Postgres image exposes a number of environmental variables
-      # that allow you to configure the container's behavior, without writing
-      # any additional code. Specify the name of your database, and any other
-      # variables, here. https://hub.docker.com/_/postgres/#environment-variables
       - POSTGRES_DB=la_metro_dashboard
       - POSTGRES_PASSWORD=postgres
     networks:
       - app_net
     volumes:
-      # By default, Postgres instantiates an anonymous volume. Use a named
-      # one, so your data persists beyond the life of the container. See this
-      # post for a discussion of the pitfalls of Postgres and anonymous
-      # volumes: https://linuxhint.com/run_postgresql_docker_compose/
       - la-metro-dashboard-db-data:/var/lib/postgresql/data
     ports:
       - 32001:5432
 
   scheduler:
-    image: ghcr.io/metro-records/la-metro-dashboard:main
+    image: la-metro-dashboard
+    build: .
     container_name: la-metro-dashboard-scheduler
     restart: always
     # Allow container to be attached to, e.g., to access the pdb shell
@@ -69,11 +57,13 @@ services:
     tty: true
     environment:
       - AIRFLOW_HOME=/app
-      - LA_METRO_DATABASE_URL=postgres://postgres:postgres@postgres:5432/lametro
-      - DOCKER_NETWORK=la-metro-councilmatic_default
       - AIRFLOW_DIR_PATH=${PWD}
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://postgres:postgres@dashboard_postgres:5432/la_metro_dashboard
+      - DOCKER_NETWORK=la-metro-councilmatic_default
       - GPG_KEYRING_PATH=${GPG_KEYRING_PATH}
+      - LA_METRO_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/lametro
       - LA_METRO_DOCKER_IMAGE_TAG=main
+      - SENTRY_ENVIRONMENT=dev
     env_file:
       - .env
     networks:
@@ -82,16 +72,12 @@ services:
       dashboard_postgres:
         condition: service_healthy
     volumes:
-      # Mount the development directory as a volume into the container, so
-      # Docker automatically recognizes your changes.
       - .:/app
       - /var/run/docker.sock:/var/run/docker.sock
     command: airflow scheduler
 
 volumes:
-  # Declare your named volume for Postgres.
   la-metro-dashboard-db-data:
-
 
 networks:
   app_net:

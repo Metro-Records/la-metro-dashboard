@@ -4,11 +4,9 @@ import os
 from airflow import DAG
 
 from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, \
-    LA_METRO_DOCKER_IMAGE_TAG, START_DATE
+    LA_METRO_DOCKER_IMAGE_TAG, START_DATE, ENVIRONMENT
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
-
-deployment = 'staging' if LA_METRO_DOCKER_IMAGE_TAG == 'main' else 'production'
 
 default_args = {
     'start_date': START_DATE,
@@ -17,7 +15,7 @@ default_args = {
     'environment': {
         'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
         'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
-        'DECRYPTED_SETTINGS': 'configs/settings_deployment.{}.py'.format(deployment),
+        'DECRYPTED_SETTINGS': 'configs/settings_deployment.{}.py'.format(ENVIRONMENT),
         'DESTINATION_SETTINGS': 'councilmatic/settings_deployment.py',
     },
 }

@@ -15,7 +15,9 @@ default_args = {
     'environment': {
         'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,
         'LA_METRO_SOLR_URL': LA_METRO_SOLR_URL,
-        'DECRYPTED_SETTINGS': 'configs/settings_deployment.{}.py'.format(LA_METRO_DOCKER_IMAGE_TAG),
+        'DECRYPTED_SETTINGS': 'configs/settings_deployment.{}.py'.format(
+            "staging" if LA_METRO_DOCKER_IMAGE_TAG == "main" else "production"
+        ),
         'DESTINATION_SETTINGS': 'councilmatic/settings_deployment.py',
     },
 }
@@ -30,5 +32,4 @@ with DAG(
     t1 = BlackboxDockerOperator(
         task_id='check_current_meeting',
         command='python manage.py check_current_meeting',
-        tag=LA_METRO_DOCKER_IMAGE_TAG,
     )

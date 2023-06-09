@@ -6,10 +6,11 @@ from airflow.operators.python_operator import ShortCircuitOperator
 from airflow.utils.db import provide_session
 
 from croniter import croniter
+from docker.types import Mount
 
 from dags.config import SCRAPING_DAGS
 from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
-    AIRFLOW_DIR_PATH, START_DATE
+    AIRFLOW_DIR_PATH, START_DATE, ENVIRONMENT
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -20,6 +21,7 @@ docker_base_environment = {
     'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,  # For use in scraping scripts
     'LA_METRO_STAGING_DATABASE_URL': LA_METRO_STAGING_DATABASE_URL,
     'OCD_DIVISION_CSV': '/app/configs/lametro_divisions.csv',
+    'SENTRY_ENVIRONMENT': ENVIRONMENT,
 }
 
 def get_dag_id(dag_name, dag_config, interval):
@@ -47,8 +49,8 @@ def get_dag_id(dag_name, dag_config, interval):
         return '{0}_{1}_thru_{2}'.format(dag_name, int_day_map[days[0]], int_day_map[days[-1]])
 
 @provide_session
-def previous_scrape_done(**kwargs):
-    running_scrapes = kwargs['session'].query(TaskInstance).filter(
+def previous_scrape_done(session=None, **kwargs):
+    running_scrapes = session.query(TaskInstance).filter(
         TaskInstance.dag_id == kwargs['dag'].dag_id,
         TaskInstance.task_id == 'scrape',
         TaskInstance.start_date < kwargs['execution_date'],
@@ -92,13 +94,20 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
             scrape = BlackboxDockerOperator(
                 task_id='scrape',
                 image='ghcr.io/metro-records/scrapers-lametro',
-                volumes=[
-                    '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts')),
-                    '{}:/app/configs'.format(os.path.join(AIRFLOW_DIR_PATH, 'configs'))
+                mounts=[
+                    Mount(
+                        source=os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'),
+                        target='/app/scraper_scripts',
+                        type='bind',
+                    ),
+                    Mount(
+                        source=os.path.join(AIRFLOW_DIR_PATH, 'configs'),
+                        target='/app/configs',
+                        type='bind',
+                    ),
                 ],
                 command=dag_config['command'],
                 environment=docker_environment,
-                tag='deploy'  # TODO: Revert
             )
 
             check_previous >> scrape

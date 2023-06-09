@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.dummy_operator import DummyOperator
+from docker.types import Mount
 
 from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
-    AIRFLOW_DIR_PATH, START_DATE
+    AIRFLOW_DIR_PATH, START_DATE, ENVIRONMENT
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -17,8 +18,12 @@ default_args = {
 
 default_docker_args = {
     'image': 'ghcr.io/metro-records/scrapers-lametro',
-    'volumes': [
-        '{}:/app/scraper_scripts'.format(os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'))
+    'mounts': [
+        Mount(
+            source=os.path.join(AIRFLOW_DIR_PATH, 'dags', 'scripts'),
+            target='/app/scraper_scripts',
+            type='bind'
+        ),
     ],
     'command': 'scraper_scripts/targeted-scrape.sh',
 }
@@ -30,6 +35,7 @@ docker_base_environment = {
     'LA_METRO_DATABASE_URL': LA_METRO_DATABASE_URL,  # For use in scraping scripts
     'LA_METRO_STAGING_DATABASE_URL': LA_METRO_STAGING_DATABASE_URL,
     'RPM': 60,
+    'SENTRY_ENVIRONMENT': ENVIRONMENT,
 }
 
 with DAG(
