@@ -6,8 +6,9 @@ from datetime import datetime, timedelta
 from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
 
-START_DATE = datetime(2023, 7, 1)
+from dags.constants import START_DATE
 
+# Delete logs more than 30 days old
 DELETE_BEFORE = datetime.now() - timedelta(days=30)
 
 bash_command = f"airflow db clean -y --clean-before-timestamp '{DELETE_BEFORE}'"
