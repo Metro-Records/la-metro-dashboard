@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - deploy
+      - heroku
   pull_request:
     branches:
       - main
