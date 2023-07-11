@@ -16,7 +16,7 @@ rm -Rf $PROJECT_DIR
 mv /home/datamade/la-metro-dashboard-deployment-root $PROJECT_DIR
 
 # Create a deployment specific virtual environment
-python3 -m venv $VENV_DIR
+python3.7 -m venv $VENV_DIR
 
 # Set the ownership of the project files and the virtual environment
 chown -R datamade.www-data $PROJECT_DIR
