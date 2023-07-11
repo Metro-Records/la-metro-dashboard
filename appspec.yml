@@ -21,3 +21,5 @@ branch_config:
     deploymentGroupName: staging
   deploy:
     deploymentGroupName: production
+  heroku:
+    deploymentGroupName: heroku
