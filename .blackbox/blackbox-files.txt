@@ -1,2 +1,3 @@
+configs/heroku/.env
 configs/production/.env
 configs/staging/.env
