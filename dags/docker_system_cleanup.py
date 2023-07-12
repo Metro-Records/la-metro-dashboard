@@ -1,7 +1,7 @@
 from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
 
-from dags.constants import START_DATE
+from constants import START_DATE
 
 
 with DAG(

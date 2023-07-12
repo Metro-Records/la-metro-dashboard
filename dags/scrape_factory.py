@@ -8,8 +8,8 @@ from airflow.utils.db import provide_session
 from croniter import croniter
 from docker.types import Mount
 
-from dags.config import SCRAPING_DAGS
-from dags.constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
+from config import SCRAPING_DAGS
+from constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
     AIRFLOW_DIR_PATH, START_DATE, ENVIRONMENT
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 

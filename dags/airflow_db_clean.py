@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
 
-from dags.constants import START_DATE
+from constants import START_DATE
 
 # Delete logs more than 30 days old
 DELETE_BEFORE = datetime.now() - timedelta(days=30)

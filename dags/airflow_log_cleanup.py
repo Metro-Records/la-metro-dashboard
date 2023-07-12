@@ -20,7 +20,7 @@ from airflow.models import DAG, Variable
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
 
-from dags.constants import START_DATE
+from constants import START_DATE
 
 # airflow-log-cleanup
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
