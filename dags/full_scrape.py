@@ -1,9 +1,7 @@
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from airflow import DAG
-from airflow.operators.python_operator import BranchPythonOperator
-from airflow.operators.dummy_operator import DummyOperator
 from docker.types import Mount
 
 from constants import LA_METRO_DATABASE_URL, LA_METRO_STAGING_DATABASE_URL, \
