@@ -1,14 +1,10 @@
-from datetime import datetime, timedelta
 import os
-
-from airflow import DAG
-from airflow.exceptions import AirflowException
 
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH, \
-    LA_METRO_DOCKER_IMAGE_TAG
+    LA_SCRAPERS_DOCKER_IMAGE_TAG
 
 
 class BlackboxDockerOperator(DockerOperator):
@@ -27,7 +23,7 @@ class BlackboxDockerOperator(DockerOperator):
         # Append appropriate tag to specified image
         self.image = '{image}:{tag}'.format(
             image=self.image,
-            tag=kwargs.get('tag', LA_METRO_DOCKER_IMAGE_TAG)
+            tag=kwargs.get('tag', LA_SCRAPERS_DOCKER_IMAGE_TAG)
         )
 
         if not self.network_mode:  # Give DAG-configured network precedence

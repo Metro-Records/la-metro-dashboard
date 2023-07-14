@@ -33,6 +33,7 @@ LA_METRO_SOLR_URL = os.getenv('LA_METRO_SOLR_URL', 'http://solr:8983/solr/lametr
 
 # Grab the correct image tag ('main' on staging, 'deploy' on production)
 LA_METRO_DOCKER_IMAGE_TAG = os.getenv('LA_METRO_DOCKER_IMAGE_TAG', 'main')
+LA_SCRAPERS_DOCKER_IMAGE_TAG = os.getenv('LA_SCRAPERS_DOCKER_IMAGE_TAG', 'main')
 
 # Get AWS credentials
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', '')
