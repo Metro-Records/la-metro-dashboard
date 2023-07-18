@@ -4,7 +4,7 @@ from airflow import DAG
 
 from constants import (
     LA_METRO_DATABASE_URL,
-    LA_METRO_SOLR_URL,
+    LA_METRO_SEARCH_URL,
     START_DATE,
     DEPLOYMENT,
 )
@@ -17,7 +17,7 @@ default_args = {
     "image": "ghcr.io/metro-records/la-metro-councilmatic",
     "environment": {
         "LA_METRO_DATABASE_URL": LA_METRO_DATABASE_URL,
-        "LA_METRO_SOLR_URL": LA_METRO_SOLR_URL,
+        "SEARCH_URL": LA_METRO_SEARCH_URL,
         "DECRYPTED_SETTINGS": "configs/settings_deployment.{}.py".format(DEPLOYMENT),
         "DESTINATION_SETTINGS": "councilmatic/settings_deployment.py",
     },

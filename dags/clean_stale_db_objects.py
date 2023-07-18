@@ -4,7 +4,7 @@ from airflow import DAG
 
 from constants import (
     LA_METRO_DATABASE_URL,
-    LA_METRO_SOLR_URL,
+    LA_METRO_SEARCH_URL,
     LA_METRO_DOCKER_IMAGE_TAG,
     LA_METRO_STAGING_DATABASE_URL,
     START_DATE,
@@ -34,7 +34,7 @@ default_args = {
     "image": "ghcr.io/metro-records/scrapers-lametro",
     "environment": {
         "LA_METRO_DATABASE_URL": LA_METRO_DATABASE_URL,
-        "LA_METRO_SOLR_URL": LA_METRO_SOLR_URL,
+        "SEARCH_URL": LA_METRO_SEARCH_URL,
         "DECRYPTED_SETTINGS": f"configs/settings_deployment.{deployment}.py",
         "DESTINATION_SETTINGS": "councilmatic/settings_deployment.py",
     },

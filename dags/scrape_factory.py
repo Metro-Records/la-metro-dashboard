@@ -15,6 +15,7 @@ from constants import (
     AIRFLOW_DIR_PATH,
     START_DATE,
     ENVIRONMENT,
+    LA_METRO_CONFIGS
 )
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 

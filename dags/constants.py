@@ -27,7 +27,7 @@ LA_METRO_DATABASE_URL = os.getenv(
     "LA_METRO_DATABASE_URL", "postgres://postgres:postgres@postgres:5432/lametro"
 )
 LA_METRO_STAGING_DATABASE_URL = os.getenv("LA_METRO_STAGING_DATABASE_URL", "")
-LA_METRO_SOLR_URL = os.getenv("LA_METRO_SOLR_URL", "http://solr:8983/solr/lametro")
+LA_METRO_SEARCH_URL = os.getenv("LA_METRO_SEARCH_URL", "http://solr:8983/solr/lametro")
 
 # Grab the correct image tag ('main' on staging, 'deploy' on production)
 LA_METRO_DOCKER_IMAGE_TAG = os.getenv("LA_METRO_DOCKER_IMAGE_TAG", "main")

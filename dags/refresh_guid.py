@@ -2,7 +2,13 @@ from datetime import timedelta
 
 from airflow import DAG
 
-from constants import LA_METRO_DATABASE_URL, LA_METRO_SOLR_URL, START_DATE, ENVIRONMENT
+from constants import (
+    LA_METRO_DATABASE_URL,
+    LA_METRO_SEARCH_URL,
+    START_DATE,
+    ENVIRONMENT,
+    LA_METRO_CONFIGS,
+)
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
@@ -12,9 +18,10 @@ default_args = {
     "image": "ghcr.io/metro-records/la-metro-councilmatic",
     "environment": {
         "LA_METRO_DATABASE_URL": LA_METRO_DATABASE_URL,
-        "LA_METRO_SOLR_URL": LA_METRO_SOLR_URL,
+        "SEARCH_URL": LA_METRO_SEARCH_URL,
         "DECRYPTED_SETTINGS": "configs/settings_deployment.{}.py".format(ENVIRONMENT),
         "DESTINATION_SETTINGS": "councilmatic/settings_deployment.py",
+        **LA_METRO_CONFIGS,
     },
 }
 
