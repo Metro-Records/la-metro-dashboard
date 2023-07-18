@@ -22,16 +22,24 @@ AIRFLOW_DIR_PATH = os.getenv(
     "AIRFLOW_DIR_PATH", os.path.join(os.path.abspath(os.path.dirname(__file__)), "..")
 )
 
+# Grab the correct image tag ('main' on staging, 'deploy' on production)
+LA_METRO_DOCKER_IMAGE_TAG = os.getenv("LA_METRO_DOCKER_IMAGE_TAG", "main")
+LA_SCRAPERS_DOCKER_IMAGE_TAG = os.getenv("LA_SCRAPERS_DOCKER_IMAGE_TAG", "main")
+
+# URLs for Docker images
+LA_SCRAPERS_IMAGE_URL = (
+    f"ghcr.io/metro-records/scrapers-lametro:{LA_SCRAPERS_DOCKER_IMAGE_TAG}"
+)
+LA_METRO_IMAGE_URL = (
+    f"ghcr.io/metro-records/la-metro-councilmatic:{LA_METRO_DOCKER_IMAGE_TAG}"
+)
+
 # Configure connection strings for the Metro database and Solr index
 LA_METRO_DATABASE_URL = os.getenv(
     "LA_METRO_DATABASE_URL", "postgres://postgres:postgres@postgres:5432/lametro"
 )
 LA_METRO_STAGING_DATABASE_URL = os.getenv("LA_METRO_STAGING_DATABASE_URL", "")
 LA_METRO_SEARCH_URL = os.getenv("LA_METRO_SEARCH_URL", "http://solr:8983/solr/lametro")
-
-# Grab the correct image tag ('main' on staging, 'deploy' on production)
-LA_METRO_DOCKER_IMAGE_TAG = os.getenv("LA_METRO_DOCKER_IMAGE_TAG", "main")
-LA_SCRAPERS_DOCKER_IMAGE_TAG = os.getenv("LA_SCRAPERS_DOCKER_IMAGE_TAG", "main")
 
 # Get AWS credentials
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")

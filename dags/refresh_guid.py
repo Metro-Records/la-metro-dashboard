@@ -7,7 +7,8 @@ from constants import (
     LA_METRO_SEARCH_URL,
     START_DATE,
     LA_METRO_CONFIGS,
-    ENVIRONMENT
+    ENVIRONMENT,
+    LA_METRO_IMAGE_URL
 )
 from operators.blackbox_docker_operator import TaggedDockerOperator
 
@@ -15,7 +16,7 @@ from operators.blackbox_docker_operator import TaggedDockerOperator
 default_args = {
     "start_date": START_DATE,
     "execution_timeout": timedelta(minutes=5),
-    "image": "ghcr.io/metro-records/la-metro-councilmatic",
+    "image": LA_METRO_IMAGE_URL,
     "environment": {
         "DATABASE_URL": LA_METRO_DATABASE_URL,
         "SEARCH_URL": LA_METRO_SEARCH_URL,

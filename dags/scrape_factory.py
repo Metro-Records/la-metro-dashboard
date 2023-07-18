@@ -10,6 +10,7 @@ from docker.types import Mount
 
 from config import SCRAPING_DAGS
 from constants import (
+    LA_METRO_IMAGE_URL,
     LA_METRO_DATABASE_URL,
     LA_METRO_STAGING_DATABASE_URL,
     AIRFLOW_DIR_PATH,
@@ -106,7 +107,7 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
 
             scrape = BlackboxDockerOperator(
                 task_id="scrape",
-                image="ghcr.io/metro-records/scrapers-lametro",
+                image=LA_METRO_IMAGE_URL,
                 mounts=[
                     Mount(
                         source=os.path.join(AIRFLOW_DIR_PATH, "dags", "scripts"),

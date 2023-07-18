@@ -8,6 +8,7 @@ from constants import (
     LA_METRO_DOCKER_IMAGE_TAG,
     LA_METRO_STAGING_DATABASE_URL,
     START_DATE,
+    LA_SCRAPERS_IMAGE_URL
 )
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
@@ -31,7 +32,7 @@ docker_base_environment = {
 default_args = {
     "start_date": START_DATE,
     "execution_timeout": timedelta(minutes=15),
-    "image": "ghcr.io/metro-records/scrapers-lametro",
+    "image": LA_SCRAPERS_IMAGE_URL,
     "environment": {
         "LA_METRO_DATABASE_URL": LA_METRO_DATABASE_URL,
         "SEARCH_URL": LA_METRO_SEARCH_URL,
