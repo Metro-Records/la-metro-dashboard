@@ -3,39 +3,59 @@ import os
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-from constants import DOCKER_NETWORK, GPG_KEYRING_PATH, AIRFLOW_DIR_PATH, \
-    LA_SCRAPERS_DOCKER_IMAGE_TAG
+from constants import (
+    DOCKER_NETWORK,
+    GPG_KEYRING_PATH,
+    AIRFLOW_DIR_PATH,
+    LA_SCRAPERS_DOCKER_IMAGE_TAG,
+)
 
 
-class BlackboxDockerOperator(DockerOperator):
-
+class TaggedDockerOperator(DockerOperator):
     DEFAULT_VOLUMES = [
-        (GPG_KEYRING_PATH, '/root/.gnupg'),
-        (os.path.join(AIRFLOW_DIR_PATH, 'configs'), '/app/airflow_configs'),
-        (os.path.join(AIRFLOW_DIR_PATH, 'scripts'), '/app/airflow_scripts')
+        (os.path.join(AIRFLOW_DIR_PATH, "configs"), "/app/airflow_configs"),
+        (os.path.join(AIRFLOW_DIR_PATH, "scripts"), "/app/airflow_scripts"),
     ]
 
-    MOUNTS = [Mount(target, source, type='bind') for source, target in DEFAULT_VOLUMES]
+    MOUNTS = [Mount(target, source, type="bind") for source, target in DEFAULT_VOLUMES]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Append appropriate tag to specified image
-        self.image = '{image}:{tag}'.format(
-            image=self.image,
-            tag=kwargs.get('tag', LA_SCRAPERS_DOCKER_IMAGE_TAG)
+        self.image = "{image}:{tag}".format(
+            image=self.image, tag=kwargs.get("tag", LA_SCRAPERS_DOCKER_IMAGE_TAG)
         )
 
         if not self.network_mode:  # Give DAG-configured network precedence
             self.network_mode = DOCKER_NETWORK
 
         self.force_pull = True
-        self.auto_remove = 'force'
+        self.auto_remove = "force"
 
         self.mount_tmp_dir = False
         self.mounts = list(self.mounts + self.MOUNTS)
 
-        if not all(k in self.environment for k in ('DECRYPTED_SETTINGS', 'DESTINATION_SETTINGS')):
-            raise ValueError('Must set DECRYPTED_SETTINGS and DESTINATION_SETTINGS environment variables')
 
-        self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(self.command)
+class BlackboxDockerOperator(TaggedDockerOperator):
+    DEFAULT_VOLUMES = [
+        (GPG_KEYRING_PATH, "/root/.gnupg"),
+        (os.path.join(AIRFLOW_DIR_PATH, "configs"), "/app/airflow_configs"),
+        (os.path.join(AIRFLOW_DIR_PATH, "scripts"), "/app/airflow_scripts"),
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if not all(
+            k in self.environment
+            for k in ("DECRYPTED_SETTINGS", "DESTINATION_SETTINGS")
+        ):
+            raise ValueError(
+                "Must set DECRYPTED_SETTINGS and DESTINATION_SETTINGS "
+                "environment variables"
+            )
+
+        self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(
+            self.command
+        )

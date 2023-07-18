@@ -6,9 +6,8 @@ from constants import (
     LA_METRO_DATABASE_URL,
     LA_METRO_SEARCH_URL,
     START_DATE,
-    DEPLOYMENT,
 )
-from operators.blackbox_docker_operator import BlackboxDockerOperator
+from operators.blackbox_docker_operator import TaggedDockerOperator
 
 
 default_args = {
@@ -19,8 +18,6 @@ default_args = {
         "LA_METRO_DATABASE_URL": LA_METRO_DATABASE_URL,
         "DATABASE_URL": LA_METRO_DATABASE_URL,
         "SEARCH_URL": LA_METRO_SEARCH_URL,
-        "DECRYPTED_SETTINGS": "configs/settings_deployment.{}.py".format(DEPLOYMENT),
-        "DESTINATION_SETTINGS": "councilmatic/settings_deployment.py",
     },
 }
 
@@ -30,7 +27,7 @@ with DAG(
     schedule_interval="0 0 1 * *",
     description="Generates analytics for Metro agenda tags and uploads a CSV file to Google Drive",
 ) as dag:
-    t1 = BlackboxDockerOperator(
+    t1 = TaggedDockerOperator(
         task_id="generate_tag_analytics",
         command="python manage.py generate_tag_analytics",
     )

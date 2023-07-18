@@ -6,10 +6,9 @@ from constants import (
     LA_METRO_DATABASE_URL,
     LA_METRO_SEARCH_URL,
     START_DATE,
-    DEPLOYMENT,
     LA_METRO_CONFIGS,
 )
-from operators.blackbox_docker_operator import BlackboxDockerOperator
+from operators.blackbox_docker_operator import TaggedDockerOperator
 
 
 default_args = {
@@ -19,8 +18,6 @@ default_args = {
     "environment": {
         "LA_METRO_DATABASE_URL": LA_METRO_DATABASE_URL,
         "SEARCH_URL": LA_METRO_SEARCH_URL,
-        "DECRYPTED_SETTINGS": "configs/settings_deployment.{}.py".format(DEPLOYMENT),
-        "DESTINATION_SETTINGS": "councilmatic/settings_deployment.py",
         **LA_METRO_CONFIGS,
     },
 }
@@ -36,17 +33,17 @@ with DAG(
         "and 55 minutes past the hour."
     ),
 ) as dag:
-    t1 = BlackboxDockerOperator(
+    t1 = TaggedDockerOperator(
         task_id="refresh_pic",
         command="python manage.py refresh_pic",
     )
 
-    t2 = BlackboxDockerOperator(
+    t2 = TaggedDockerOperator(
         task_id="compile_pdfs",
         command="python manage.py compile_pdfs",
     )
 
-    t3 = BlackboxDockerOperator(
+    t3 = TaggedDockerOperator(
         task_id="convert_attachment_text",
         command="python manage.py convert_attachment_text",
     )
@@ -58,7 +55,7 @@ with DAG(
             "python manage.py update_index --batch-size=100 --age=1 --remove"
         )
 
-    t4 = BlackboxDockerOperator(
+    t4 = TaggedDockerOperator(
         task_id="update_index",
         command=update_index_command,
     )

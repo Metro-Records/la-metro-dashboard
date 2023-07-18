@@ -6,10 +6,9 @@ from constants import (
     LA_METRO_DATABASE_URL,
     LA_METRO_SEARCH_URL,
     START_DATE,
-    ENVIRONMENT,
     LA_METRO_CONFIGS,
 )
-from operators.blackbox_docker_operator import BlackboxDockerOperator
+from operators.blackbox_docker_operator import TaggedDockerOperator
 
 
 default_args = {
@@ -19,8 +18,6 @@ default_args = {
     "environment": {
         "LA_METRO_DATABASE_URL": LA_METRO_DATABASE_URL,
         "SEARCH_URL": LA_METRO_SEARCH_URL,
-        "DECRYPTED_SETTINGS": "configs/settings_deployment.{}.py".format(ENVIRONMENT),
-        "DESTINATION_SETTINGS": "councilmatic/settings_deployment.py",
         **LA_METRO_CONFIGS,
     },
 }
@@ -31,7 +28,7 @@ with DAG(
     schedule_interval="0 1 * * *",
     description="Sync Metro subjects with SmartLogic terms once nightly. Only used on staging.",
 ) as dag:
-    t1 = BlackboxDockerOperator(
+    t1 = TaggedDockerOperator(
         task_id="refresh_guid",
         command="python manage.py refresh_guid",
     )
