@@ -8,6 +8,7 @@ from constants import (
     GPG_KEYRING_PATH,
     AIRFLOW_DIR_PATH,
     LA_METRO_DOCKER_IMAGE_TAG,
+    LA_SCRAPERS_DOCKER_IMAGE_TAG,
 )
 
 
@@ -46,6 +47,10 @@ class BlackboxDockerOperator(TaggedDockerOperator):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.image = "{image}:{tag}".format(
+            image=self.image, tag=kwargs.get("tag", LA_SCRAPERS_DOCKER_IMAGE_TAG)
+        )
 
         if not all(
             k in self.environment
