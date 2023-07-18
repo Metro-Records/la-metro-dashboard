@@ -16,7 +16,7 @@ default_args = {
     "execution_timeout": timedelta(minutes=20),
     "image": "ghcr.io/metro-records/la-metro-councilmatic",
     "environment": {
-        "LA_METRO_DATABASE_URL": LA_METRO_DATABASE_URL,
+        "DATABASE_URL": LA_METRO_DATABASE_URL,
         "SEARCH_URL": LA_METRO_SEARCH_URL,
         **LA_METRO_CONFIGS,
     },
