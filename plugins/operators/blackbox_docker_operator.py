@@ -7,7 +7,7 @@ from constants import (
     DOCKER_NETWORK,
     GPG_KEYRING_PATH,
     AIRFLOW_DIR_PATH,
-    LA_SCRAPERS_DOCKER_IMAGE_TAG,
+    LA_METRO_DOCKER_IMAGE_TAG,
 )
 
 
@@ -24,7 +24,7 @@ class TaggedDockerOperator(DockerOperator):
 
         # Append appropriate tag to specified image
         self.image = "{image}:{tag}".format(
-            image=self.image, tag=kwargs.get("tag", LA_SCRAPERS_DOCKER_IMAGE_TAG)
+            image=self.image, tag=kwargs.get("tag", LA_METRO_DOCKER_IMAGE_TAG)
         )
 
         if not self.network_mode:  # Give DAG-configured network precedence
