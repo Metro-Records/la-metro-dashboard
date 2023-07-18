@@ -23,11 +23,6 @@ class TaggedDockerOperator(DockerOperator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Append appropriate tag to specified image
-        self.image = "{image}:{tag}".format(
-            image=self.image, tag=kwargs.get("tag", LA_METRO_DOCKER_IMAGE_TAG)
-        )
-
         if not self.network_mode:  # Give DAG-configured network precedence
             self.network_mode = DOCKER_NETWORK
 
@@ -47,10 +42,6 @@ class BlackboxDockerOperator(TaggedDockerOperator):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.image = "{image}:{tag}".format(
-            image=self.image, tag=kwargs.get("tag", LA_SCRAPERS_DOCKER_IMAGE_TAG)
-        )
 
         if not all(
             k in self.environment
