@@ -40,6 +40,8 @@ class BlackboxDockerOperator(TaggedDockerOperator):
         (os.path.join(AIRFLOW_DIR_PATH, "scripts"), "/app/airflow_scripts"),
     ]
 
+    MOUNTS = [Mount(target, source, type="bind") for source, target in DEFAULT_VOLUMES]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -52,7 +54,6 @@ class BlackboxDockerOperator(TaggedDockerOperator):
                 "environment variables"
             )
 
-        self.mount_tmp_dir = False
         self.mounts = list(self.mounts + self.MOUNTS)
 
         self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(
