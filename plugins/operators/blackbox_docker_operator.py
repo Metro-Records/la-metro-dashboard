@@ -52,6 +52,9 @@ class BlackboxDockerOperator(TaggedDockerOperator):
                 "environment variables"
             )
 
+        self.mount_tmp_dir = False
+        self.mounts = list(self.mounts + self.MOUNTS)
+
         self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(
             self.command
         )
