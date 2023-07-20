@@ -36,8 +36,6 @@ class TaggedDockerOperator(DockerOperator):
 class BlackboxDockerOperator(TaggedDockerOperator):
     DEFAULT_VOLUMES = [
         (GPG_KEYRING_PATH, "/root/.gnupg"),
-        (os.path.join(AIRFLOW_DIR_PATH, "configs"), "/app/airflow_configs"),
-        (os.path.join(AIRFLOW_DIR_PATH, "scripts"), "/app/airflow_scripts"),
     ]
 
     MOUNTS = [Mount(target, source, type="bind") for source, target in DEFAULT_VOLUMES]
