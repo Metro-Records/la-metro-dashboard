@@ -14,6 +14,7 @@ from constants import (
 
 class TaggedDockerOperator(DockerOperator):
     DEFAULT_VOLUMES = [
+        (GPG_KEYRING_PATH, "/root/.gnupg"),
         (os.path.join(AIRFLOW_DIR_PATH, "configs"), "/app/airflow_configs"),
         (os.path.join(AIRFLOW_DIR_PATH, "scripts"), "/app/airflow_scripts"),
     ]
@@ -34,12 +35,6 @@ class TaggedDockerOperator(DockerOperator):
 
 
 class BlackboxDockerOperator(TaggedDockerOperator):
-    DEFAULT_VOLUMES = [
-        (GPG_KEYRING_PATH, "/root/.gnupg"),
-        (os.path.join(AIRFLOW_DIR_PATH, "configs"), "/app/airflow_configs"),
-        (os.path.join(AIRFLOW_DIR_PATH, "scripts"), "/app/airflow_scripts"),
-    ]
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
