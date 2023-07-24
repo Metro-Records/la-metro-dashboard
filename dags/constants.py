@@ -58,5 +58,5 @@ LA_METRO_CONFIGS = {
     "SMART_LOGIC_KEY": os.getenv("SMART_LOGIC_KEY"),
     "REFRESH_KEY": os.getenv("REFRESH_KEY"),
     "MERGE_HOST": os.getenv("MERGE_HOST"),
-    "MERGE_ENDPOINT": os.getnev("MERGE_ENDPOINT")
+    "MERGE_ENDPOINT": os.getenv("MERGE_ENDPOINT")
 }
