@@ -44,7 +44,7 @@ default_args = {
 with DAG(
     "clean_stale_db_objects",
     default_args=default_args,
-    schedule_interval="0 0 1 * *",
+    schedule_interval="0 0 * * 0",
     description="Deletes objects from the database that have not"
     "been seen in a recent scrape",
 ) as dag:
