@@ -23,3 +23,5 @@ branch_config:
     deploymentGroupName: production
   heroku:
     deploymentGroupName: heroku
+  heroku-prod:
+    deploymentGroupName: heroku-prod

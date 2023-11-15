@@ -6,6 +6,7 @@ on:
       - main
       - deploy
       - heroku
+      - heroku-prod
   pull_request:
     branches:
       - main
