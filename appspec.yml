@@ -3,7 +3,6 @@ os: linux
 files:
  - source: /
    destination: /home/datamade/la-metro-dashboard-deployment-root
-file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStop:
   - location: scripts/app_stop.sh
