@@ -25,3 +25,5 @@ branch_config:
     deploymentGroupName: heroku
   heroku-prod:
     deploymentGroupName: heroku-prod
+    deploymentGroupConfig:
+      serviceRoleArn: arn:aws:iam::043472417040:role/codeDeploy
