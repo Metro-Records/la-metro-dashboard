@@ -48,7 +48,7 @@ jobs:
         airflow db init
 
   deploy:
-    # needs: test
+    needs: test
     name: Deploy to AWS
     runs-on: ubuntu-latest
     steps:
