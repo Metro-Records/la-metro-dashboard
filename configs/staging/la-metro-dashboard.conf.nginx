@@ -4,14 +4,14 @@ server {
     # Set the domain name that Nginx will listen on. If the app needs to listen on
     # additional domains (such as the www subdomain of the root domain), add them
     # here as a space-delimited list, and adjust the second server block below similarly.
-    server_name la-metro-dashboard-staging.datamade.us;
+    server_name la-metro-dashboard-heroku.datamade.us;
     access_log /var/log/nginx/la-metro-dashboard-access.log;
     error_log /var/log/nginx/la-metro-dashboard-error.log;
     client_max_body_size 500m;
 
     ssl on;
-    ssl_certificate /etc/letsencrypt/live/la-metro-dashboard-staging.datamade.us/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/la-metro-dashboard-staging.datamade.us/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/la-metro-dashboard-heroku.datamade.us/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/la-metro-dashboard-heroku.datamade.us/privkey.pem;
 
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
@@ -58,10 +58,10 @@ server {
 server {
     listen 80;
 
-    server_name la-metro-dashboard-staging.datamade.us;
+    server_name la-metro-dashboard-heroku.datamade.us;
 
     location / {
-        return 301 https://la-metro-dashboard-staging.datamade.us$request_uri;
+        return 301 https://la-metro-dashboard-heroku.datamade.us$request_uri;
     }
 
 }
