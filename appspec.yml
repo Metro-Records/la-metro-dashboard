@@ -18,12 +18,8 @@ hooks:
     runas: root
 branch_config:
   main:
-    deploymentGroupName: staging
-  deploy:
-    deploymentGroupName: production
-  heroku:
     deploymentGroupName: heroku
-  heroku-prod:
+  deploy:
     deploymentGroupName: heroku-prod
     deploymentGroupConfig:
       serviceRoleArn: arn:aws:iam::043472417040:role/codeDeploy
