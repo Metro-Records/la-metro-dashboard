@@ -156,5 +156,3 @@ webserver_config.py
 /configs/la-metro-dashboard.production.conf.supervisor
 /configs/staging/.env
 /configs/production/.env
-/configs/heroku/.env
-/configs/heroku-prod/.env
