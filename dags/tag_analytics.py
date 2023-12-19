@@ -10,7 +10,7 @@ from constants import (
     LA_METRO_CONFIGS,
     ENVIRONMENT,
 )
-from operators.blackbox_docker_operator import TaggedDockerOperator
+from operators.blackbox_docker_operator import BlackboxDockerOperator
 
 
 default_args = {
@@ -33,7 +33,7 @@ with DAG(
     description="Generates analytics for Metro agenda tags and"
     "uploads a CSV file to Google Drive",
 ) as dag:
-    t1 = TaggedDockerOperator(
+    t1 = BlackboxDockerOperator(
         task_id="generate_tag_analytics",
         command="python manage.py generate_tag_analytics",
     )
