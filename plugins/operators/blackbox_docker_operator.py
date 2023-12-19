@@ -7,8 +7,6 @@ from constants import (
     DOCKER_NETWORK,
     GPG_KEYRING_PATH,
     AIRFLOW_DIR_PATH,
-    LA_METRO_DOCKER_IMAGE_TAG,
-    LA_SCRAPERS_DOCKER_IMAGE_TAG,
 )
 
 
@@ -19,7 +17,9 @@ class TaggedDockerOperator(DockerOperator):
         (os.path.join(AIRFLOW_DIR_PATH, "scripts"), "/app/airflow_scripts"),
     ]
 
-    MOUNTS = [Mount(target, source, type="bind") for source, target in DEFAULT_VOLUMES]
+    MOUNTS = [
+            Mount(target, source, type="bind") for source, target in DEFAULT_VOLUMES
+            ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,15 +38,6 @@ class BlackboxDockerOperator(TaggedDockerOperator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if not all(
-            k in self.environment
-            for k in ("DECRYPTED_SETTINGS", "DESTINATION_SETTINGS")
-        ):
-            raise ValueError(
-                "Must set DECRYPTED_SETTINGS and DESTINATION_SETTINGS "
-                "environment variables"
-            )
-
-        self.command = '/bin/bash -ce "airflow_scripts/concat_settings.sh; {}"'.format(
+        self.command = '/bin/bash -ce "blackbox_postdeploy; {}"'.format(
             self.command
         )
