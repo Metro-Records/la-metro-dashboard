@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from airflow import DAG
+from airflow.models import Variable
 
 from constants import (
     LA_METRO_IMAGE_URL,
@@ -18,10 +19,11 @@ default_args = {
     "execution_timeout": timedelta(minutes=10),
     "image": LA_METRO_IMAGE_URL,
     "environment": {
+        **LA_METRO_CONFIGS,
         "DATABASE_URL": LA_METRO_DATABASE_URL,
         "SEARCH_URL": LA_METRO_SEARCH_URL,
         "SENTRY_ENVIRONMENT": ENVIRONMENT,
-        **LA_METRO_CONFIGS,
+        "GOOGLE_SERVICE_ACCT_API_KEY": Variable.get("google_service_acct_api_key")
     },
 }
 
