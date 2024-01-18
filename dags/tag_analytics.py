@@ -23,7 +23,8 @@ default_args = {
         "DATABASE_URL": LA_METRO_DATABASE_URL,
         "SEARCH_URL": LA_METRO_SEARCH_URL,
         "SENTRY_ENVIRONMENT": ENVIRONMENT,
-        "GOOGLE_SERVICE_ACCT_API_KEY": Variable.get("google_service_acct_api_key")
+        "GOOGLE_SERVICE_ACCT_API_KEY": Variable.get("google_service_acct_api_key"),
+        "REMOTE_ANALYTICS_FOLDER": Variable.get("remote_analytics_folder")
     },
 }
 
