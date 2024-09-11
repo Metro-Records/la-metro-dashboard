@@ -12,38 +12,25 @@ An Airflow-based dashboard for the LA Metro ETL pipeline!
 
 Perform the following steps from your terminal.
 
-1. Clone this repository and its submodule, then `cd` into the superproject.
+1. Clone [the LA Metro Councilmatic repository](ttps://github.com/Metro-Records/la-metro-councilmatic) and follow the instructions in its
+README to build and run the application.
 
-    ```bash
-    git clone --recursive https://github.com/Metro-Records/la-metro-dashboard.git
-    cd la-metro-dashboard
-    ```
-2. Build `la-metro-dashboard` application, and create a local `.env` file. Fill
-in the absolute location of your GPG keyring, usually the absolute path for ` ~/.gnupg`.
+2. Clone this repository and create a local `.env` file. 
 
-    ```bash
-    docker-compose build
-    cp .env.example .env
-    # Fill in the correct value for GPG_KEYRING_PATH
-    ```
+```bash
+cp .env.example .env
+```
 
-3. Once the command exits, follow the instructions to build the [LA Metro Councilmatic application](https://github.com/Metro-Records/la-metro-councilmatic#setup)
+Fill in the absolute location of your GPG keyring, usually the absolute path for ` ~/.gnupg`.
 
-4. In order to run the `la-metro-dashboard` application, the `la-metro-councilmatic`
-app must already be running. Open a new shell, move into the `la-metro-councilmatic`
-application, and run it.
 
-	```bash
-    cd la-metro-councilmatic && docker-compose up app
-    ```
+3. Build and run the dashboard:
 
-	Once la-metro-councilmatic is running, in your first shell, run the la-metro-dashboard application.
+```bash
+docker-compose up
+```
 
-	```bash
-	docker-compose up
-	```
-
-5. Finally, to visit the dashboard app, go to http://localhost:8080/admin/. The
+4. Finally, to visit the dashboard app, go to http://localhost:8080/admin/. The
 Councilmatic app runs on http://localhost:8001/.
 
 See the Airflow documentation for more on [navigating the UI](https://airflow.apache.org/docs/stable/ui.html)
