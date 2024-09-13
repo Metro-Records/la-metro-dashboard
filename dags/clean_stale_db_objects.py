@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from airflow import DAG
+from airflow.decorators import dag, task
 
 from constants import (
     LA_METRO_DATABASE_URL,
@@ -8,7 +8,7 @@ from constants import (
     LA_METRO_DOCKER_IMAGE_TAG,
     LA_METRO_STAGING_DATABASE_URL,
     START_DATE,
-    LA_SCRAPERS_IMAGE_URL
+    LA_SCRAPERS_IMAGE_URL,
 )
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
@@ -41,16 +41,31 @@ default_args = {
     },
 }
 
-with DAG(
-    "clean_stale_db_objects",
-    default_args=default_args,
+
+@dag(
     schedule_interval="0 0 * * 0",
     description="Deletes objects from the database that have not"
     "been seen in a recent scrape",
-) as dag:
+    default_args=default_args,
+    params={"window": 7, "max": 25, "report": False},
+)
+def clean_stale_db_objects(window=7, max=25, report=False):
+    @task
+    def get_flags(**kwargs):
+        if kwargs["params"]["report"]:
+            return "--report"
+        else:
+            return f"--window={kwargs['params']['window']} --max={kwargs['params']['max']} --yes"
 
-    BlackboxDockerOperator(
+    flags = get_flags()
+
+    pupa_clean = BlackboxDockerOperator(
         task_id="clean_stale_db_objects",
         environment=docker_base_environment,
-        command="pupa clean --noinput",
+        command=f"pupa clean {flags}",
     )
+
+    flags >> pupa_clean
+
+
+clean_stale_db_objects()

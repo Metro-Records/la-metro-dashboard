@@ -82,3 +82,4 @@ volumes:
 networks:
   app_net:
     name: la-metro-councilmatic_default
+    external: true
