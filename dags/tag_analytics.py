@@ -16,7 +16,7 @@ from operators.blackbox_docker_operator import TaggedDockerOperator
 
 default_args = {
     "start_date": START_DATE,
-    "execution_timeout": timedelta(minutes=10),
+    "execution_timeout": timedelta(minutes=20),
     "image": LA_METRO_IMAGE_URL,
     "environment": {
         **LA_METRO_CONFIGS,
