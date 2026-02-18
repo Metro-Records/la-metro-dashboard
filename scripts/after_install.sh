@@ -31,7 +31,7 @@ chown -R datamade.www-data /var/log/la-metro-dashboard
 # understood by the versions of pip and setuptools that ship with the operating
 # system packages.
 sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade pip
-sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade setuptools
+sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade "setuptools<81"
 
 # Install the project requirements into the deployment specific virtual
 # environment.
