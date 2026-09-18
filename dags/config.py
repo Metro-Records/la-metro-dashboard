@@ -50,7 +50,7 @@ SCRAPING_DAGS = {
             '5 21-23 * * 5',
             '5 0-5 * * 6',
         ],
-        'execution_timeout': timedelta(minutes=90),
+        'execution_timeout': timedelta(hours=2),
         'command': 'scraper_scripts/targeted-scrape.sh',
         'docker_environment': {
             'TARGET': 'bills',
