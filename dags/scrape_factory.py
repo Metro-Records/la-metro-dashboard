@@ -1,9 +1,6 @@
 import os
 
 from airflow import DAG
-from airflow.models import TaskInstance
-from airflow.operators.python_operator import ShortCircuitOperator
-from airflow.utils.db import provide_session
 
 from croniter import croniter
 from docker.types import Mount
@@ -61,18 +58,6 @@ def get_dag_id(dag_name, dag_config, interval):
         )
 
 
-@provide_session
-def previous_scrape_done(session=None, **kwargs):
-    running_scrapes = session.query(TaskInstance).filter(
-        TaskInstance.dag_id == kwargs["dag"].dag_id,
-        TaskInstance.task_id == "scrape",
-        TaskInstance.start_date < kwargs["execution_date"],
-        TaskInstance.state == "running",
-    )
-
-    return running_scrapes.count() == 0
-
-
 seen_ids = []
 
 for dag_name, dag_config in SCRAPING_DAGS.items():
@@ -107,12 +92,6 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
         docker_environment.update(dag_config["docker_environment"])
 
         with dag:
-            check_previous = ShortCircuitOperator(
-                task_id="check_previous",
-                python_callable=previous_scrape_done,
-                provide_context=True,
-            )
-
             scrape = BlackboxDockerOperator(
                 task_id="scrape",
                 image=LA_SCRAPERS_IMAGE_URL,
@@ -134,8 +113,6 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                     dag_config["docker_environment"].get("TARGET"), SCRAPER_POOL_NAME
                 ),
             )
-
-            check_previous >> scrape
 
         globals()[dag_id] = dag
 
