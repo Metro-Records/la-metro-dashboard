@@ -40,7 +40,9 @@ and [development](https://airflow.apache.org/docs/stable/tutorial.html).
 (see `SCRAPER_POOL_NAMES_BY_TARGET` in `dags/constants.py`), so e.g. a
 windowed bill scrape only queues behind `full_scrape`'s bill task, not its
 people/events tasks too. This keeps containers from running concurrently
-and exhausting host memory. Create the pools once per environment:
+and exhausting host memory. Staging and production deploys create these
+pools automatically in `scripts/after_install.sh`; in development, create
+them once yourself:
 
 ```bash
 airflow pools set scraper_people 1 "Serializes people/org scraper containers to avoid OOM on shared host"
