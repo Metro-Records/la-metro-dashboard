@@ -93,6 +93,12 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                 "execution_timeout": dag_config["execution_timeout"],
             },
             description=dag_config["description"],
+            # Scrapes are serialized behind the "scraper" pool during
+            # full_scrape, so runs queue up while it's blocked. Cap active
+            # runs at 1 so only one run per DAG is pending to catch up once
+            # the pool frees, instead of piling up and replaying every
+            # missed interval.
+            max_active_runs=1,
         )
 
         docker_environment = docker_base_environment.copy()
