@@ -36,6 +36,14 @@ Councilmatic app runs on http://localhost:8001/.
 See the Airflow documentation for more on [navigating the UI](https://airflow.apache.org/docs/stable/ui.html)
 and [development](https://airflow.apache.org/docs/stable/tutorial.html).
 
+5. Scraper containers are serialized through a dedicated Airflow pool (see
+`SCRAPER_POOL_NAME` in `dags/constants.py`) so they don't run concurrently
+and exhaust host memory. Create the pool once per environment:
+
+```bash
+airflow pools set scraper 1 "Serializes scraper containers to avoid OOM on shared host"
+```
+
 ## Application dependencies
 
 Dashboard DAGS are based on one of two applications:

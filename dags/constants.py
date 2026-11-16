@@ -41,6 +41,12 @@ LA_METRO_DATABASE_URL = os.getenv(
 LA_METRO_STAGING_DATABASE_URL = os.getenv("LA_METRO_STAGING_DATABASE_URL", "")
 LA_METRO_SEARCH_URL = os.getenv("LA_METRO_SEARCH_URL", "http://solr:8983/solr/lametro")
 
+# Cap memory per scraper container and serialize scraper containers through a
+# dedicated pool, so a scrape can't exhaust memory on the host (shared with
+# the Airflow scheduler/webserver and Postgres on a 4GB box).
+SCRAPER_CONTAINER_MEM_LIMIT = os.getenv("SCRAPER_CONTAINER_MEM_LIMIT", "2g")
+SCRAPER_POOL_NAME = os.getenv("SCRAPER_POOL_NAME", "scraper")
+
 # Get AWS credentials
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
