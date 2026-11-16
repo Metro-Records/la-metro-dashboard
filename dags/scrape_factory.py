@@ -1,9 +1,6 @@
 import os
 
 from airflow import DAG
-from airflow.models import TaskInstance
-from airflow.operators.python_operator import ShortCircuitOperator
-from airflow.utils.db import provide_session
 
 from croniter import croniter
 from docker.types import Mount
@@ -16,7 +13,9 @@ from constants import (
     AIRFLOW_DIR_PATH,
     START_DATE,
     ENVIRONMENT,
-    LA_METRO_CONFIGS
+    LA_METRO_CONFIGS,
+    SCRAPER_POOL_NAME,
+    SCRAPER_POOL_NAMES_BY_TARGET,
 )
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
@@ -59,18 +58,6 @@ def get_dag_id(dag_name, dag_config, interval):
         )
 
 
-@provide_session
-def previous_scrape_done(session=None, **kwargs):
-    running_scrapes = session.query(TaskInstance).filter(
-        TaskInstance.dag_id == kwargs["dag"].dag_id,
-        TaskInstance.task_id == "scrape",
-        TaskInstance.start_date < kwargs["execution_date"],
-        TaskInstance.state == "running",
-    )
-
-    return running_scrapes.count() == 0
-
-
 seen_ids = []
 
 for dag_name, dag_config in SCRAPING_DAGS.items():
@@ -93,18 +80,18 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                 "execution_timeout": dag_config["execution_timeout"],
             },
             description=dag_config["description"],
+            # Scrapes of the same entity type are serialized behind a
+            # shared pool, so runs can queue up while another of the same
+            # type is running. Cap active runs at 1 so only one run per DAG
+            # is pending to catch up once the pool frees, instead of piling
+            # up and replaying every missed interval.
+            max_active_runs=1,
         )
 
         docker_environment = docker_base_environment.copy()
         docker_environment.update(dag_config["docker_environment"])
 
         with dag:
-            check_previous = ShortCircuitOperator(
-                task_id="check_previous",
-                python_callable=previous_scrape_done,
-                provide_context=True,
-            )
-
             scrape = BlackboxDockerOperator(
                 task_id="scrape",
                 image=LA_SCRAPERS_IMAGE_URL,
@@ -122,9 +109,10 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                 ],
                 command=dag_config["command"],
                 environment=docker_environment,
+                pool=SCRAPER_POOL_NAMES_BY_TARGET.get(
+                    dag_config["docker_environment"].get("TARGET"), SCRAPER_POOL_NAME
+                ),
             )
-
-            check_previous >> scrape
 
         globals()[dag_id] = dag
 

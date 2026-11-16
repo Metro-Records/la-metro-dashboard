@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 
 from airflow import DAG
+from airflow.models.pool import Pool
 from docker.types import Mount
 
 from constants import (
@@ -30,6 +31,9 @@ default_docker_args = {
         ),
     ],
     "command": "scraper_scripts/targeted-scrape.sh",
+    # Don't serialize against the scraper_* pools: full_scrape can't afford
+    # to wait on, or block, the windowed/fast scrapes.
+    "pool": Pool.DEFAULT_POOL_NAME,
 }
 
 docker_base_environment = {
