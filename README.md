@@ -36,12 +36,17 @@ Councilmatic app runs on http://localhost:8001/.
 See the Airflow documentation for more on [navigating the UI](https://airflow.apache.org/docs/stable/ui.html)
 and [development](https://airflow.apache.org/docs/stable/tutorial.html).
 
-5. Scraper containers are serialized through a dedicated Airflow pool (see
-`SCRAPER_POOL_NAME` in `dags/constants.py`) so they don't run concurrently
-and exhaust host memory. Create the pool once per environment:
+5. Scraper containers are serialized through per-entity-type Airflow pools
+(see `SCRAPER_POOL_NAMES_BY_TARGET` in `dags/constants.py`), so e.g. a
+windowed bill scrape only queues behind `full_scrape`'s bill task, not its
+people/events tasks too. This keeps containers from running concurrently
+and exhausting host memory. Create the pools once per environment:
 
 ```bash
-airflow pools set scraper 1 "Serializes scraper containers to avoid OOM on shared host"
+airflow pools set scraper_people 1 "Serializes people/org scraper containers to avoid OOM on shared host"
+airflow pools set scraper_events 1 "Serializes event scraper containers to avoid OOM on shared host"
+airflow pools set scraper_bills 1 "Serializes bill scraper containers to avoid OOM on shared host"
+airflow pools set scraper 1 "Serializes scraper containers with no single entity type (e.g. clean_stale_db_objects) to avoid OOM on shared host"
 ```
 
 ## Application dependencies

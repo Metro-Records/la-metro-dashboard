@@ -11,6 +11,7 @@ from constants import (
     START_DATE,
     ENVIRONMENT,
     LA_SCRAPERS_IMAGE_URL,
+    SCRAPER_POOL_NAMES_BY_TARGET,
 )
 from operators.blackbox_docker_operator import BlackboxDockerOperator
 
@@ -58,6 +59,7 @@ with DAG(
     person_scrape = BlackboxDockerOperator(
         task_id="scrape_people_orgs",
         environment=scrape_people_orgs_environment,
+        pool=SCRAPER_POOL_NAMES_BY_TARGET["people"],
         **default_docker_args
     )
 
@@ -67,6 +69,7 @@ with DAG(
     event_scrape = BlackboxDockerOperator(
         task_id="scrape_events",
         environment=scrape_events_environment,
+        pool=SCRAPER_POOL_NAMES_BY_TARGET["events"],
         **default_docker_args
     )
 
@@ -81,6 +84,7 @@ with DAG(
     bill_scrape = BlackboxDockerOperator(
         task_id="scrape_bills",
         environment=scrape_bills_environment,
+        pool=SCRAPER_POOL_NAMES_BY_TARGET["bills"],
         **default_docker_args
     )
 

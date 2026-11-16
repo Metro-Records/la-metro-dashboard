@@ -41,11 +41,21 @@ LA_METRO_DATABASE_URL = os.getenv(
 LA_METRO_STAGING_DATABASE_URL = os.getenv("LA_METRO_STAGING_DATABASE_URL", "")
 LA_METRO_SEARCH_URL = os.getenv("LA_METRO_SEARCH_URL", "http://solr:8983/solr/lametro")
 
-# Cap memory per scraper container and serialize scraper containers through a
-# dedicated pool, so a scrape can't exhaust memory on the host (shared with
-# the Airflow scheduler/webserver and Postgres on a 4GB box).
+# Cap memory per scraper container, so a scrape can't exhaust memory on the
+# host (shared with the Airflow scheduler/webserver and Postgres on a 4GB
+# box).
 SCRAPER_CONTAINER_MEM_LIMIT = os.getenv("SCRAPER_CONTAINER_MEM_LIMIT", "2g")
+
+# Serialize scraper containers through per-entity-type pools, so e.g. a
+# windowed bill scrape only queues behind full_scrape's bill task, not its
+# people/events tasks too. Tasks that don't scrape a single entity type
+# (like clean_stale_db_objects) fall back to SCRAPER_POOL_NAME.
 SCRAPER_POOL_NAME = os.getenv("SCRAPER_POOL_NAME", "scraper")
+SCRAPER_POOL_NAMES_BY_TARGET = {
+    "people": os.getenv("SCRAPER_POOL_NAME_PEOPLE", "scraper_people"),
+    "events": os.getenv("SCRAPER_POOL_NAME_EVENTS", "scraper_events"),
+    "bills": os.getenv("SCRAPER_POOL_NAME_BILLS", "scraper_bills"),
+}
 
 # Get AWS credentials
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
