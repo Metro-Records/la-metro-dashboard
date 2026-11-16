@@ -54,6 +54,20 @@ psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${DATABASE}'" |
 source ${BASH_SOURCE%/*}/../configs/$DEPLOYMENT_GROUP_NAME/.env
 $VENV_DIR/bin/airflow db init
 
+# Create the scraper pools if they don't already exist, so scraper
+# containers are capped and serialized per entity type. See
+# SCRAPER_POOL_NAMES_BY_TARGET/SCRAPER_POOL_NAME in dags/constants.py.
+declare -A SCRAPER_POOLS=(
+    [scraper_people]="Serializes people/org scraper containers to avoid OOM on shared host"
+    [scraper_events]="Serializes event scraper containers to avoid OOM on shared host"
+    [scraper_bills]="Serializes bill scraper containers to avoid OOM on shared host"
+    [scraper]="Serializes scraper containers with no single entity type (e.g. clean_stale_db_objects) to avoid OOM on shared host"
+)
+for pool_name in "${!SCRAPER_POOLS[@]}"; do
+    $VENV_DIR/bin/airflow pools get $pool_name > /dev/null 2>&1 || \
+        $VENV_DIR/bin/airflow pools set $pool_name 1 "${SCRAPER_POOLS[$pool_name]}"
+done
+
 # Echo a simple nginx configuration into the correct place, and tell
 # certbot to request a cert if one does not already exist.
 # Wondering about the DOMAIN variable? It becomes available by source-ing
