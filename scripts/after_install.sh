@@ -63,12 +63,15 @@ declare -A SCRAPER_POOLS=(
     [scraper_people]="Serializes people/org scraper containers to avoid OOM on shared host"
     [scraper_events]="Serializes event scraper containers to avoid OOM on shared host"
     [scraper_bills]="Serializes bill scraper containers to avoid OOM on shared host"
-    [management]="Serializes management tasks (hourly_processing, make_packet) to avoid OOM on shared host"
 )
 for pool_name in "${!SCRAPER_POOLS[@]}"; do
     $VENV_DIR/bin/airflow pools get $pool_name > /dev/null 2>&1 || \
         $VENV_DIR/bin/airflow pools set $pool_name 1 "${SCRAPER_POOLS[$pool_name]}"
 done
+
+# Management pool allows hourly_processing and make_packet to run concurrently.
+$VENV_DIR/bin/airflow pools get management > /dev/null 2>&1 || \
+    $VENV_DIR/bin/airflow pools set management 2 "Serializes management tasks (hourly_processing, make_packet) to avoid OOM on shared host"
 
 # Echo a simple nginx configuration into the correct place, and tell
 # certbot to request a cert if one does not already exist.
