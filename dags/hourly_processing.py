@@ -23,6 +23,7 @@ default_args = {
         "SENTRY_ENVIRONMENT": ENVIRONMENT,
         **LA_METRO_CONFIGS,
     },
+    "pool": "management",
 }
 
 with DAG(

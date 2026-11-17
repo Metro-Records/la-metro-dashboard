@@ -14,7 +14,6 @@ from constants import (
     START_DATE,
     ENVIRONMENT,
     LA_METRO_CONFIGS,
-    SCRAPER_POOL_NAME,
     SCRAPER_POOL_NAMES_BY_TARGET,
 )
 from operators.blackbox_docker_operator import BlackboxDockerOperator
@@ -110,7 +109,7 @@ for dag_name, dag_config in SCRAPING_DAGS.items():
                 command=dag_config["command"],
                 environment=docker_environment,
                 pool=SCRAPER_POOL_NAMES_BY_TARGET.get(
-                    dag_config["docker_environment"].get("TARGET"), SCRAPER_POOL_NAME
+                    dag_config["docker_environment"].get("TARGET")
                 ),
             )
 

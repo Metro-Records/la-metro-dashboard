@@ -44,4 +44,5 @@ with DAG(
         },
         force_pull=True,
         auto_remove=True,
+        pool="management"
     )

@@ -49,10 +49,7 @@ SCRAPER_CONTAINER_MEM_LIMIT = os.getenv("SCRAPER_CONTAINER_MEM_LIMIT", "2g")
 # Serialize the shorter, frequent scrape_factory containers through
 # per-entity-type pools, so e.g. a windowed bill scrape only queues behind
 # another bill scrape, not an events or people one. full_scrape can't
-# afford to wait on, or block, these, so it isn't a member of any pool
-# here. Tasks that don't scrape a single entity type (like
-# clean_stale_db_objects) fall back to SCRAPER_POOL_NAME.
-SCRAPER_POOL_NAME = os.getenv("SCRAPER_POOL_NAME", "scraper")
+# afford to wait on, or block, these, so it isn't a member of any pool.
 SCRAPER_POOL_NAMES_BY_TARGET = {
     "people": os.getenv("SCRAPER_POOL_NAME_PEOPLE", "scraper_people"),
     "events": os.getenv("SCRAPER_POOL_NAME_EVENTS", "scraper_events"),

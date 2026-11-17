@@ -1,5 +1,6 @@
 import os
 
+from airflow.models.pool import Pool
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
@@ -10,7 +11,6 @@ from constants import (
     LA_METRO_DOCKER_IMAGE_TAG,
     LA_SCRAPERS_DOCKER_IMAGE_TAG,
     SCRAPER_CONTAINER_MEM_LIMIT,
-    SCRAPER_POOL_NAME,
 )
 
 
@@ -43,7 +43,7 @@ class TaggedDockerOperator(DockerOperator):
         # Cap container memory and serialize scraper containers on the host,
         # so a scrape can't exhaust memory shared with Airflow and Postgres.
         self.mem_limit = mem_limit or SCRAPER_CONTAINER_MEM_LIMIT
-        self.pool = pool or SCRAPER_POOL_NAME
+        self.pool = pool or Pool.DEFAULT_POOL_NAME
 
 
 class BlackboxDockerOperator(TaggedDockerOperator):
